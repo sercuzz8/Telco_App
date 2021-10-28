@@ -116,8 +116,8 @@ CREATE TABLE Order(
 	CONSTRAINT ’totalChk’ CHECK (totalValue = monthlyFee*monthsNumber + (’SELECT sum(monthlyFee) FROM ProductOrder WHERE order_id = id’)*monthsNumber),
 	CONSTRAINT ‘validitiCheck’ CHECK((monthsNumber, monthlyFee) = (‘SELECT monthsNumber, monthlyFee FROM ValidityPeriod WHERE package_id = package_id’))
 
-/*
-CREATE TABLE ServiceActivation (
+
+CREATE TABLE ServiceActivationSchedule (
 	user_id varchar(50) NOT NULL,
 	service_id int NOT NULL,
 	activation Date NOT NULL,
@@ -126,7 +126,6 @@ CREATE TABLE ServiceActivation (
 	FOREIGN KEY (user_id) REFERENCES User(username) --TODO: Penso che nel caso in cui lo user venga cancellato sia comunque necessario mantenere questa tavola per motivi di contabilità
 	FOREIGN KEY (user_id) REFERENCES User(username) --TODO: Come sopra
 )
-*/
 
 /* 
 
