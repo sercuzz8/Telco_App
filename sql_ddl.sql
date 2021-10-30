@@ -3,132 +3,121 @@
 
 -- User and Weak Entities
 
---The consumer application has a public Landing page with a form for login and a form for registration.
+-- The consumer application has a public Landing page with a form for login and a form for registration.
 CREATE TABLE User (
-	id varchar(16) NOT NULL UNIQUE, -- ** see auditing table ** -- 
+	id varchar(16) NOT NULL UNIQUE PRIMARY KEY, -- ** see auditing table ** -- 
 	username varchar(50) NOT NULL UNIQUE, -- Registration requires a username,
 	password varchar(16) NOT NULL, -- Registration requires a password
 	email varchar(50) NOT NULL UNIQUE,  -- Registration requires an email
-	insolvent int default '0', -- If the external service rejects the billing, the order is put in the rejected status and the user is flagged
+	insolvent int DEFAULT 0 -- If the external service rejects the billing, the order is put in the rejected status and the user is flagged
 					-- as insolvent.
-	PRIMARY KEY (id));
+	);
 	
-
 CREATE TABLE CustomerOrder (
 	-- The order is associated with the chosen optional products.. 	
 	-- The order is associated with the validity period of its service package
-	id int NOT NULL AUTO_INCREMENT, -- an ID of creation
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY, -- an ID of creation
 	date Date NOT NULL, -- a date of creation
 	hour Time NOT NULL, -- an hour of creation
 	userId varchar(16) NOT NULL UNIQUE, -- The order is associated with the user
 	packageId int NOT NULL, -- The order is associated with the service package, 
+	monthsNumber int NOT NULL, -- ** Actually the order is associated with the validity period but the validity period is associated with only 
+					-- one service package thus the validity period is associated with a single service package **
 	start Date NOT NULL, -- It contains the start date of the subscription
-	valid int NOT NULL DEFAULT ‘0’,  -- If the external service accepts the billing, the order is marked as valid 
-	monthsNumber int NOT NULL,
-	monthlyFee float NOT NULL,
+	valid int NOT NULL DEFAULT 0,  -- If the external service accepts the billing, the order is marked as valid 
 	totalVaue float NOT NULL, --  It also contains the total value
-	PRIMARY KEY(id),
 	FOREIGN KEY (packageId) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (monthsNumber, monthlyFee) REFERENCES ValidityPeriod(monthsNumber, monthlyFee) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT ’totalChk’ CHECK (totalValue = monthlyFee*monthsNumber + (’SELECT sum(monthlyFee) FROM ProductCustomerOrder WHERE customerOrderId = id’)*monthsNumber),
-	CONSTRAINT ‘validitiCheck’ CHECK((monthsNumber, monthlyFee) = (‘SELECT monthsNumber, monthlyFee FROM ValidityPeriod WHERE packageId = packageId’))
+	FOREIGN KEY (packageId, monthsNumber) REFERENCES ValidityPeriod(packageId, monthsNumber) ON DELETE CASCADE ON UPDATE CASCADE -- ,
+	-- CONSTRAINT ’totalChk’ CHECK (totalValue = monthlyFee*monthsNumber + (’SELECT sum(monthlyFee) FROM ProductCustomerOrder WHERE customerOrderId = id’)*monthsNumber),
+	-- CONSTRAINT ‘validityCheck’ CHECK((monthsNumber, monthlyFee) = (‘SELECT monthsNumber, monthlyFee FROM ValidityPeriod WHERE packageId = packageId’))
+    );
 
--- When the same user causes three failed payments, an alert is created in a dedicated auditing table, with the user Id, username, email, and the amount, date and time of the last rejection.
-
+-- When the same user causes three failed payments, an alert is created in a dedicated auditing table,
 CREATE TABLE AuditingTable (
-	userId varchar(16) NOT NULL UNIQUE,
-	username varchar(50) NOT NULL UNIQUE,
-	email varchar(50) NOT NULL UNIQUE,
-	lastRejectionAmount float NOT NULL,
-	lastRejectionDate Date NOT NULL,
-	lastRejectionTime Time NOT NULL,
-	PRIMARY KEY (userId)
+	userId varchar(16) NOT NULL UNIQUE PRIMARY KEY, -- with the user Id
+	username varchar(50) NOT NULL UNIQUE, -- with the user username
+	email varchar(50) NOT NULL UNIQUE, -- with the user email
+	lastRejectionAmount float NOT NULL, -- the amount of the last rejection
+	lastRejectionDate Date NOT NULL, -- the date of the last rejection
+	lastRejectionTime Time NOT NULL, -- the time of the last rejection
 	FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE ON UPDATE CASCADE);
 	
 -- Service and its specializations
 
--- Services are of four types: fixed phone, mobile phone, fixed internet,and mobile internet.
+-- Services are of four types:
 CREATE TABLE Service (
-	id int NOT NULL AUTO_INCREMENT,
-	name varchar(50) not null,
-	PRIMARY KEY(id));
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name varchar(50) NOT NULL);
 
-
+-- fixed phone,
 CREATE TABLE FixedPhone (
-	id int NOT NULL AUTO_INCREMENT,
-	PRIMARY KEY (id),
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	FOREIGN KEY (id) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE);
 
- 
+-- mobile phone,
 -- The mobile phone service specifies 
 CREATE TABLE MobilePhone (
-	id int NOT NULL AUTO_INCREMENT,
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	minNumber int NOT NULL, -- the number of minutes included in the package 
 	smsNumber int NOT NULL, -- the number of SMSs included in the package 
 	minFee float NOT NULL, -- plus the fee for extra minutes 
-	smsFee float NOT NULL, -- 
-	PRIMARY KEY (id),
+	smsFee float NOT NULL, -- plus the fee for extra SMSs
 	FOREIGN KEY (id) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE);
 
+-- mobile internet
 -- The mobile internet services specify : 
 CREATE TABLE MobileInternet (
-	id int NOT NULL AUTO_INCREMENT,
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	gbNumber int NOT NULL, -- the number of Gigabytes included in the package
 	gbFee float NOT NULL, -- and the fee for extra Gigabytes
-	PRIMARY KEY (id),
 	FOREIGN KEY (id) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE);
 
+-- fixed internet
 -- The fixed internet services specify 
 CREATE TABLE FixedInternet (
-	id int NOT NULL AUTO_INCREMENT,
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	gbNumber int NOT NULL, -- the number of Gigabytes included in the package
 	gbFee float NOT NULL, -- and the fee for extra Gigabytes
-	PRIMARY KEY (id),
 	FOREIGN KEY (id) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE);
 
 -- ----------------------------------------------------------------------------------------
 
 
--- An optional product has a name and a monthly fee independent of the validity period
---duration. 
+-- An optional product has a name and a monthly fee independent of the validity period duration. 
+-- The validity period of an optional product is the same as the validity period that the user has chosen for the service package
 CREATE TABLE OptionalProduct (
-	id int NOT NULL AUTO_INCREMENT,
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name varchar(50) NOT NULL,
-	monthlyFee float NOT NULL,
-	-- validity period the same as the service package
-	PRIMARY KEY (id));
+	monthlyFee float NOT NULL);
 
 -- Service Package and Weak Entities
 
 -- A service package  
 CREATE TABLE ServicePackage (
-	id int NOT NULL AUTO_INCREMENT, -- has an ID
-	name varchar(50) NOT NULL, -- and a name (e.g., “Basic”, “Family”, “Business”, “All Inclusive”, etc). 
-	PRIMARY KEY (id));
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY, -- has an ID
+	name varchar(50) NOT NULL -- and a name (e.g., “Basic”, “Family”, “Business”, “All Inclusive”, etc). 
+	);
 	
 CREATE TABLE ValidityPeriod (
 	packageId int NOT NULL, -- A service package must be associated with one validity period
 	monthsNumber int NOT NULL, -- A validity period specifies the number of months (12, 24, or 36)
 	monthlyFee float NOT NULL, -- Each validity period has a different monthly fee (e.g., 20€/month for 12 months, 18€/month for 24 months, and 15€ /month for 36 months).
-	customerOrderId int NOT NULL,
-	PRIMARY KEY (packageId), 
+	PRIMARY KEY (packageId,monthsNumber), 
 	FOREIGN KEY (packageId) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (customerOrderId) REFERENCES CustomerOrder(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT 'fixedNumber' CHECK (monthsNumber=12 OR monthsNumber=24 OR monthsNumber=36));
-	-- The validity period of an optional product is the same as the validity period that the user has chosen for the service package
+	CONSTRAINT CHECK (monthsNumber=12 OR monthsNumber=24 OR monthsNumber=36));
+	
 
 -- If the external service accepts the billing, the order is marked as valid and a service activation schedule is created for the user
 
 CREATE TABLE ServiceActivationSchedule (
-	userId varchar(50) NOT NULL, -- To activate for the user
+	userId varchar(50) NOT NULL PRIMARY KEY, -- (see below) To activate for the user
 	serviceId int NOT NULL, -- A service activation schedule is a record of the services
-	--  and optional products 
+	--  and optional products (see above)
 	activationDate Date NOT NULL, -- With their date of activation 
 	deactivationDate Date NOT NULL, --  With their date of deactivation
-	PRIMARY KEY (userId),
-	FOREIGN KEY (userId) REFERENCES User(id) --TODO: Penso che nel caso in cui lo user venga cancellato sia comunque necessario mantenere questa tavola per motivi di contabilità
-	FOREIGN KEY (serviceId) REFERENCES Service(id) --TODO: Come sopra
-)
+	FOREIGN KEY (userId) REFERENCES User(id), -- TODO: Penso che nel caso in cui lo user venga cancellato sia comunque necessario mantenere questa tavola per motivi di contabilità
+	FOREIGN KEY (serviceId) REFERENCES Service(id) -- TODO: Come sopra 
+	);
 
 -- M:M RELATIONS ---------------------------------------------------------------------------------------------
 
