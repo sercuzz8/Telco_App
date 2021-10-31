@@ -146,6 +146,3 @@ CREATE TABLE ProductCustomerOrder (
 	PRIMARY KEY (customerOrderId, productId),
 	FOREIGN KEY (customerOrderId) REFERENCES CustomerOrder(id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (productId) REFERENCES OptionalProduct(id) ON DELETE CASCADE ON UPDATE CASCADE);
-
--- -----------------------------------------------------------------------------------------------------------------
-
