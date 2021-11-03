@@ -26,9 +26,10 @@ CREATE TABLE CustomerOrder (
 	valid int NOT NULL DEFAULT 0,  -- If the external service accepts the billing, the order is marked as valid 
 	totalVaue float NOT NULL, --  It also contains the total value
 	FOREIGN KEY (username) REFERENCES User(username),
-	FOREIGN KEY (packageId, monthsNumber) REFERENCES ValidityPeriod(packageId, monthsNumber) ON DELETE CASCADE ON UPDATE CASCADE ,
+	-- FOREIGN KEY (packageId) REFERENCES ServicePackage(id) may we have to reference also the relation with the service package or is it ambiguous?
+	FOREIGN KEY (packageId, monthsNumber) REFERENCES ValidityPeriod(packageId, monthsNumber), -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
 	CONSTRAINT ’totalChk’ CHECK (totalValue = monthlyFee*monthsNumber + (SELECT sum(monthlyFee) FROM ProductCustomerOrder WHERE customerOrderId = id)*monthsNumber),
-	CONSTRAINT ‘validityCheck’ CHECK( monthsNumber = (SELECT monthsNumber FROM ValidityPeriod WHERE packageId = packageId))
+	-- deleted unnecessarty constraint on monthNumber
     );
 
 -- When the same user causes three failed payments, an alert is created in a dedicated auditing table,
@@ -108,7 +109,7 @@ CREATE TABLE ValidityPeriod (
 	monthlyFee float NOT NULL, -- Each validity period has a different monthly fee (e.g., 20€/month for 12 months, 18€/month for 24 months, and 15€ /month for 36 months).
 	PRIMARY KEY (packageId,monthsNumber), 
 	FOREIGN KEY (packageId) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT CHECK (monthsNumber=12 OR monthsNumber=24 OR monthsNumber=36)
+	CONSTRAINT 'periodEvaluation' CHECK (monthsNumber=12 OR monthsNumber=24 OR monthsNumber=36)
     );
 	
 
