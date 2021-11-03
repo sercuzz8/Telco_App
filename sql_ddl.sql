@@ -25,6 +25,7 @@ CREATE TABLE CustomerOrder (
 	start Date NOT NULL, -- It contains the start date of the subscription
 	valid int NOT NULL DEFAULT 0,  -- If the external service accepts the billing, the order is marked as valid 
 	totalVaue float NOT NULL, --  It also contains the total value
+	FOREIGN KEY (username) REFERENCES User(username),
 	FOREIGN KEY (packageId, monthsNumber) REFERENCES ValidityPeriod(packageId, monthsNumber) ON DELETE CASCADE ON UPDATE CASCADE ,
 	CONSTRAINT ’totalChk’ CHECK (totalValue = monthlyFee*monthsNumber + (SELECT sum(monthlyFee) FROM ProductCustomerOrder WHERE customerOrderId = id)*monthsNumber),
 	CONSTRAINT ‘validityCheck’ CHECK( monthsNumber = (SELECT monthsNumber FROM ValidityPeriod WHERE packageId = packageId))
