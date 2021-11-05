@@ -27,7 +27,7 @@ CREATE TABLE ValidityPeriod (
 	monthlyFee float NOT NULL, -- Each validity period has a different monthly fee (e.g., 20€/month for 12 months, 18€/month for 24 months, and 15€ /month for 36 months).
 	PRIMARY KEY (packageId,monthsNumber), 
 	FOREIGN KEY (packageId) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT fixed_months CHECK (monthsNumber in (12, 24, 36))
+	CONSTRAINT period_evaluation CHECK (monthsNumber in (12, 24, 36))
     );
 	
 CREATE TABLE CustomerOrder (
@@ -54,16 +54,13 @@ CREATE TABLE CustomerOrder (
 	*/
 
 	FOREIGN KEY (username) REFERENCES User(username),
-<<<<<<< HEAD
-	FOREIGN KEY (packageId, monthsNumber) REFERENCES ValidityPeriod(packageId, monthsNumber) ON DELETE CASCADE ON UPDATE CASCADE
-);
-=======
 	-- FOREIGN KEY (packageId) REFERENCES ServicePackage(id) may we have to reference also the relation with the service package or is it ambiguous?
+		-- I think it is ambiguous -Sergio
 	FOREIGN KEY (packageId, monthsNumber) REFERENCES ValidityPeriod(packageId, monthsNumber), -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
-	CONSTRAINT ’totalChk’ CHECK (totalValue = monthlyFee*monthsNumber + (SELECT sum(monthlyFee) FROM ProductCustomerOrder WHERE customerOrderId = id)*monthsNumber),
+	-- CONSTRAINT ’totalChk’ CHECK (totalValue = monthlyFee*monthsNumber + (SELECT sum(monthlyFee) FROM ProductCustomerOrder WHERE customerOrderId = id)*monthsNumber),
+	-- We should use a trigger
 	-- deleted unnecessarty constraint on monthNumber
     );
->>>>>>> 065ed234ed1ebff3bebc2fb0802ef3fbe03cd99d
 
 -- When the same user causes three failed payments, an alert is created in a dedicated auditing table,
 CREATE TABLE Auditing (
@@ -131,25 +128,6 @@ CREATE TABLE OptionalProduct (
 
 -- Service Package and Weak Entities
 
-<<<<<<< HEAD
-
-=======
--- A service package  
-CREATE TABLE ServicePackage (
-	id int NOT NULL AUTO_INCREMENT PRIMARY KEY, -- has an ID
-	name varchar(50) NOT NULL -- and a name (e.g., “Basic”, “Family”, “Business”, “All Inclusive”, etc). 
-	);
-	
-CREATE TABLE ValidityPeriod (
-	packageId int NOT NULL, -- A service package must be associated with one validity period
-	monthsNumber int NOT NULL, -- A validity period specifies the number of months (12, 24, or 36)
-	monthlyFee float NOT NULL, -- Each validity period has a different monthly fee (e.g., 20€/month for 12 months, 18€/month for 24 months, and 15€ /month for 36 months).
-	PRIMARY KEY (packageId,monthsNumber), 
-	FOREIGN KEY (packageId) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT 'periodEvaluation' CHECK (monthsNumber=12 OR monthsNumber=24 OR monthsNumber=36)
-    );
-	
->>>>>>> 065ed234ed1ebff3bebc2fb0802ef3fbe03cd99d
 
 -- If the external service accepts the billing, the order is marked as valid and a service activation schedule is created for the user
 

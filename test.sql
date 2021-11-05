@@ -83,4 +83,4 @@ INSERT INTO CustomerOrder (id, date, hour, username, packageId , monthsNumber, s
 DELETE FROM User WHERE username='sergio';
 INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergio', 'sergio@sergio.com', 0);
 INSERT INTO Auditing (username, email, lastRejectionAmount, lastRejectionDate, lastRejectionTime) VALUES ("sergio", "not@email.com", 0.7, 2021-01-01, 11:00:00);
--- Result: constraint on email violated = OK
+-- Result: constraint on email violated
