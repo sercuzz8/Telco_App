@@ -56,7 +56,7 @@ CREATE TABLE CustomerOrder (
 	FOREIGN KEY (username) REFERENCES User(username),
 	-- FOREIGN KEY (packageId) REFERENCES ServicePackage(id) may we have to reference also the relation with the service package or is it ambiguous?
 		-- I think it is ambiguous -Sergio
-	FOREIGN KEY (packageId, monthsNumber) REFERENCES ValidityPeriod(packageId, monthsNumber), -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
+	FOREIGN KEY (packageId, monthsNumber) REFERENCES ValidityPeriod(packageId, monthsNumber) -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
 	-- CONSTRAINT ’totalChk’ CHECK (totalValue = monthlyFee*monthsNumber + (SELECT sum(monthlyFee) FROM ProductCustomerOrder WHERE customerOrderId = id)*monthsNumber),
 	-- We should use a trigger
 	-- deleted unnecessarty constraint on monthNumber
@@ -69,7 +69,7 @@ CREATE TABLE Auditing (
 	lastRejectionAmount float NOT NULL, -- the amount of the last rejection
 	lastRejectionDate Date NOT NULL, -- the date of the last rejection
 	lastRejectionTime Time NOT NULL, -- the time of the last rejection
-	FOREIGN KEY (username) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (username) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE
 	-- CONSTRAINT correct_email CHECK (email in (SELECT u.email FROM User as u WHERE u.username=username))
     );
 	
@@ -169,11 +169,11 @@ CREATE TABLE purchasesProducts (
 	productId int NOT NULL,
 	PRIMARY KEY (customerOrderId, productId),
 	FOREIGN KEY (customerOrderId) REFERENCES CustomerOrder(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (productId) REFERENCES OptionalProduct(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT allowed_product CHECK 
+	FOREIGN KEY (productId) REFERENCES OptionalProduct(id) ON DELETE CASCADE ON UPDATE CASCADE
+	/* CONSTRAINT allowed_product CHECK 
 	(productId in 
 		(SELECT OP.productId FROM offersProducts AS OP WHERE OP.packageId =
 			(SELECT CO.packageId from CustomerOrder AS CO WHERE CO.customerOrderId=customerOrderId)
 		) 
-	)
+	) */
 );
