@@ -17,7 +17,7 @@ CREATE TABLE User (
 
 CREATE TABLE Employee ( 
 	code varchar(16) PRIMARY KEY,
-	password varchar(16) NOT NULL, -- Registration requires a password
+	password varchar(16) NOT NULL -- Registration requires a password
 	);
     
 -- A service package  
@@ -41,9 +41,9 @@ CREATE TABLE CustomerOrder (
 	id int NOT NULL PRIMARY KEY, -- an ID of creation
 	date Date NOT NULL, -- a date of creation
 	hour Time NOT NULL, -- an hour of creation
-	username varchar(50) NOT NULL UNIQUE, -- The order is associated with the user
-	packageId int NOT NULL, -- The order is associated with the service package, 
-	monthsNumber int NOT NULL, -- ** Actually the order is associated with the validity period but the validity period is associated with only 
+	user varchar(50) NOT NULL UNIQUE, -- The order is associated with the user
+	package int NOT NULL, -- The order is associated with the service package, 
+	months int NOT NULL, -- ** Actually the order is associated with the validity period but the validity period is associated with only 
 					-- one service package thus the validity period is associated with a single service package **
 	start Date NOT NULL, -- It contains the start date of the subscription
 	valid int NOT NULL DEFAULT 0,  -- If the external service accepts the billing, the order is marked as valid 
@@ -53,28 +53,28 @@ CREATE TABLE CustomerOrder (
 	One trigger for insert
 	monthsNumber*
 		-- Sum of monthly fees of the Service Package
-		((SELECT monthlyFee FROM ValidityPeriod AS V WHERE (V.packageId=packageId AND V.monthsNumber=monthsNumber)) +
+		((SELECT monthlyFee FROM ValidityPeriod AS V WHERE (V.packageId=package AND V.monthsNumber=months)) +
 		-- Sum of all the fees of the Optional Product
 		(SELECT SUM(O.monthlyFee) FROM OptionalProduct as O WHERE (
 			O.id in ( SELECT productId FROM purchasesProducts WHERE customerOrderId=id )))), --  It also contains the total value
 	*/
 
-	FOREIGN KEY (username) REFERENCES User(username),
+	FOREIGN KEY (user) REFERENCES User(username),
 	-- FOREIGN KEY (packageId) REFERENCES ServicePackage(id) may we have to reference also the relation with the service package or is it ambiguous?
 		-- I think it is ambiguous -Sergio
-	FOREIGN KEY (packageId, monthsNumber) REFERENCES ValidityPeriod(packageId, monthsNumber) -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
+	FOREIGN KEY (package, months) REFERENCES ValidityPeriod(packageId, monthsNumber) -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
 	-- We should use a trigger
 	-- deleted unnecessarty constraint on monthNumber
     );
 
 -- When the same user causes three failed payments, an alert is created in a dedicated auditing table,
 CREATE TABLE Auditing (
-	username varchar(50) PRIMARY KEY, -- with the user username
+	user varchar(50) PRIMARY KEY, -- with the user username
 	email varchar(50) NOT NULL UNIQUE, -- with the user email
 	lastRejectionAmount float NOT NULL, -- the amount of the last rejection
 	lastRejectionDate Date NOT NULL, -- the date of the last rejection
 	lastRejectionTime Time NOT NULL, -- the time of the last rejection
-	FOREIGN KEY (username) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (user) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE
 	-- TRIGGER: CONSTRAINT correct_email CHECK (email in (SELECT u.email FROM User as u WHERE u.username=username))
     );
 	
@@ -88,37 +88,37 @@ CREATE TABLE Service (
 
 -- fixed phone,
 CREATE TABLE FixedPhone (
-	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	FOREIGN KEY (id) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
+	serviceId int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	FOREIGN KEY (serviceId) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
 -- mobile phone,
 -- The mobile phone service specifies 
 CREATE TABLE MobilePhone (
-	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	serviceId int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	minNumber int NOT NULL, -- the number of minutes included in the package 
 	smsNumber int NOT NULL, -- the number of SMSs included in the package 
 	minFee float NOT NULL, -- plus the fee for extra minutes 
 	smsFee float NOT NULL, -- plus the fee for extra SMSs
-	FOREIGN KEY (id) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (serviceId) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
 -- mobile internet
 -- The mobile internet services specify : 
 CREATE TABLE MobileInternet (
-	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	serviceId int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	gbNumber int NOT NULL, -- the number of Gigabytes included in the package
 	gbFee float NOT NULL, -- and the fee for extra Gigabytes
-	FOREIGN KEY (id) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (serviceId) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
 -- fixed internet
 -- The fixed internet services specify 
 CREATE TABLE FixedInternet (
-	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	serviceId int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	gbNumber int NOT NULL, -- the number of Gigabytes included in the package
 	gbFee float NOT NULL, -- and the fee for extra Gigabytes
-	FOREIGN KEY (id) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (serviceId) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
 /*CREATE TABLE TypeService (
@@ -147,10 +147,10 @@ CREATE TABLE OptionalProduct (
 CREATE TABLE ServiceActivationSchedule (
 	serviceId int NOT NULL PRIMARY KEY, -- A service activation schedule is a record of the services
 	--  and optional products (see above)
-	username varchar(50) NOT NULL,
+	user varchar(50) NOT NULL,
 	activationDate Date NOT NULL, -- With their date of activation 
 	deactivationDate Date NOT NULL, --  With their date of deactivation
-	FOREIGN KEY (username) REFERENCES User(username), -- TODO: Penso che nel caso in cui lo user venga cancellato sia comunque necessario mantenere questa tavola per motivi di contabilità
+	FOREIGN KEY (user) REFERENCES User(username), -- TODO: Penso che nel caso in cui lo user venga cancellato sia comunque necessario mantenere questa tavola per motivi di contabilità
 	FOREIGN KEY (serviceId) REFERENCES Service(id) -- TODO: Come sopra 
 	);
 
