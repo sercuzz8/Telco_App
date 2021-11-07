@@ -8,11 +8,16 @@ USE testSchema;
 
 -- The consumer application has a public Landing page with a form for login and a form for registration.
 CREATE TABLE User ( 
-	username varchar(50) NOT NULL UNIQUE PRIMARY KEY, -- Registration requires a username,
+	username varchar(50) PRIMARY KEY, -- Registration requires a username,
 	password varchar(16) NOT NULL, -- Registration requires a password
 	email varchar(50) NOT NULL UNIQUE,  -- Registration requires an email
 	insolvent int DEFAULT 0 -- If the external service rejects the billing, the order is put in the rejected status and the user is flagged
 					-- as insolvent.
+	);
+
+CREATE TABLE Employee ( 
+	code varchar(16) PRIMARY KEY,
+	password varchar(16) NOT NULL, -- Registration requires a password
 	);
     
 -- A service package  
@@ -45,6 +50,7 @@ CREATE TABLE CustomerOrder (
 	totalVaue float DEFAULT 0,
 
 	/*
+	One trigger for insert
 	monthsNumber*
 		-- Sum of monthly fees of the Service Package
 		((SELECT monthlyFee FROM ValidityPeriod AS V WHERE (V.packageId=packageId AND V.monthsNumber=monthsNumber)) +
@@ -57,20 +63,19 @@ CREATE TABLE CustomerOrder (
 	-- FOREIGN KEY (packageId) REFERENCES ServicePackage(id) may we have to reference also the relation with the service package or is it ambiguous?
 		-- I think it is ambiguous -Sergio
 	FOREIGN KEY (packageId, monthsNumber) REFERENCES ValidityPeriod(packageId, monthsNumber) -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
-	-- CONSTRAINT ’totalChk’ CHECK (totalValue = monthlyFee*monthsNumber + (SELECT sum(monthlyFee) FROM ProductCustomerOrder WHERE customerOrderId = id)*monthsNumber),
 	-- We should use a trigger
 	-- deleted unnecessarty constraint on monthNumber
     );
 
 -- When the same user causes three failed payments, an alert is created in a dedicated auditing table,
 CREATE TABLE Auditing (
-	username varchar(50) NOT NULL UNIQUE PRIMARY KEY, -- with the user username
+	username varchar(50) PRIMARY KEY, -- with the user username
 	email varchar(50) NOT NULL UNIQUE, -- with the user email
 	lastRejectionAmount float NOT NULL, -- the amount of the last rejection
 	lastRejectionDate Date NOT NULL, -- the date of the last rejection
 	lastRejectionTime Time NOT NULL, -- the time of the last rejection
 	FOREIGN KEY (username) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE
-	-- CONSTRAINT correct_email CHECK (email in (SELECT u.email FROM User as u WHERE u.username=username))
+	-- TRIGGER: CONSTRAINT correct_email CHECK (email in (SELECT u.email FROM User as u WHERE u.username=username))
     );
 	
 -- Service and its specializations
@@ -116,6 +121,14 @@ CREATE TABLE FixedInternet (
 	FOREIGN KEY (id) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
+/*CREATE TABLE TypeService (
+	id int NOT NULL UNIQUE AUTO_INCREMENT,
+	serviceType int,
+	PRIMARY KEY (id, serviceType),
+	FOREIGN KEY (id) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT 'allowed_types' CHECK (serviceType in (1,2,3,4))
+)*/
+
 -- ----------------------------------------------------------------------------------------
 
 -- An optional product has a name and a monthly fee independent of the validity period duration. 
@@ -141,7 +154,7 @@ CREATE TABLE ServiceActivationSchedule (
 	FOREIGN KEY (serviceId) REFERENCES Service(id) -- TODO: Come sopra 
 	);
 
--- M:M RELATIONS ---------------------------------------------------------------------------------------------
+-- N:N RELATIONS ---------------------------------------------------------------------------------------------
 
 -- A package may be associated with one or more optional products (e.g., an SMS news feed, an internet TV channel, etc.)
 -- The same optional product can be offered in different service packages. !!!
@@ -170,7 +183,7 @@ CREATE TABLE purchasesProducts (
 	PRIMARY KEY (customerOrderId, productId),
 	FOREIGN KEY (customerOrderId) REFERENCES CustomerOrder(id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (productId) REFERENCES OptionalProduct(id) ON DELETE CASCADE ON UPDATE CASCADE
-	/* CONSTRAINT allowed_product CHECK 
+	/*TRIGGER: CONSTRAINT allowed_product CHECK 
 	(productId in 
 		(SELECT OP.productId FROM offersProducts AS OP WHERE OP.packageId =
 			(SELECT CO.packageId from CustomerOrder AS CO WHERE CO.customerOrderId=customerOrderId)
