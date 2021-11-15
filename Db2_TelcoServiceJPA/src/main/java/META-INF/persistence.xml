@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.2">
+    <persistence-unit name="EmployeeService" transaction-type="RESOURCE_LOCAL">
+        <class>project.entities.AuditingTable</class>
+        <class>project.entities.CustomerOrder</class>
+        <class>project.entities.OptionalProduct</class>
+        <class>project.entities.SAS</class>
+        <class>project.entities.User</class>
+        <class>project.entities.ValidityPeriod</class>
+        <validation-mode>NONE</validation-mode>
+		<properties>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/EmpServDB"/> 
+			<property name="javax.persistence.jdbc.user" value="root"/>
+			<property name="javax.persistence.jdbc.password" value="25ApRiLe99"/>
+
+            <!-- enable this property to see SQL and other logging -->
+            <!-- property name="eclipselink.logging.level" value="FINE"/ -->
+        </properties>
+    </persistence-unit>
+</persistence>
