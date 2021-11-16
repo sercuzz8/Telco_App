@@ -70,8 +70,8 @@ public class CustomerOrder {
 	
 	//relationship "has" with ServicePackage
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="package")
-	private ServicePackage package;
+	@JoinColumn(name="sPackage")
+	private ServicePackage sPackage;
 	
 	//relationship "include"
 	@ManyToMany(fetch=FetchType.LAZY)

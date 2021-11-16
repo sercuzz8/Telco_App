@@ -41,8 +41,8 @@ public class ValidityPeriod {
 	private Collection<CustomerOrder> orders;
 	
 	//relationship "isAssociatedWith"
-	@ManyToOne
-	@JoinColumn(fetch=FetchType.EAGER, name="packageId")
-	private ServicePackage package;
+	@ManyToOne (fetch=FetchType.EAGER)
+	@JoinColumn(name="packageId")
+	private ServicePackage sPackage;
 
 }

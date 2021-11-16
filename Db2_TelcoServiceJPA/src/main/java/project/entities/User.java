@@ -3,7 +3,7 @@ package project.entities;
 import java.util.Collection;
 
 import javax.persistence.*;
-import jakarta.persistence.NamedQuery;
+import javax.persistence.NamedQuery;
 
 @Entity
 

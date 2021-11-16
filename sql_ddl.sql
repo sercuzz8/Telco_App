@@ -83,7 +83,6 @@ CREATE TABLE Auditing (
 -- Services are of four types:
 CREATE TABLE Service (
 	id int NOT NULL AUTO_INCREMENT PRIMARY KEY
-	-- name varchar(50) NOT NULL
     );
 
 -- fixed phone,
