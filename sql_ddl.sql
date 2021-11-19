@@ -1,6 +1,6 @@
-DROP schema testSchema;
-CREATE schema testSchema;
-USE testSchema;
+DROP schema telcoDB;
+CREATE schema telcoDB;
+USE telcoDB;
 
 -- ENTITIES
 
@@ -47,7 +47,7 @@ CREATE TABLE CustomerOrder (
 					-- one service package thus the validity period is associated with a single service package **
 	start Date NOT NULL, -- It contains the start date of the subscription
 	valid int NOT NULL DEFAULT 0,  -- If the external service accepts the billing, the order is marked as valid 
-	totalVaue float DEFAULT 0,
+	totalValue float DEFAULT 0,
 
 	/*
 	One trigger for insert

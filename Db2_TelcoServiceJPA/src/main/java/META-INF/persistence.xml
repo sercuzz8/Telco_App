@@ -1,21 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.2">
-    <persistence-unit name="EmployeeService" transaction-type="RESOURCE_LOCAL">
-        <class>project.entities.AuditingTable</class>
-        <class>project.entities.CustomerOrder</class>
-        <class>project.entities.OptionalProduct</class>
-        <class>project.entities.SAS</class>
-        <class>project.entities.User</class>
-        <class>project.entities.ValidityPeriod</class>
-        <validation-mode>NONE</validation-mode>
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2"
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+	<persistence-unit name="Db2_TelcoServiceJPA" transaction-type="JTA">
+		<jta-data-source>telcoDB</jta-data-source>
+		<class>it.polimi.db2.telco.entities.CustomerOrder</class>
+		<class>it.polimi.db2.telco.entities.Employee</class>
+		<class>it.polimi.db2.telco.entities.FixedInternet</class>
+		<class>it.polimi.db2.telco.entities.FixedPhone</class>
+		<class>it.polimi.db2.telco.entities.MobileInternet</class>
+		<class>it.polimi.db2.telco.entities.MobilePhone</class>
+		<class>it.polimi.db2.telco.entities.OptionalProduct</class>
+		<class>it.polimi.db2.telco.entities.SAS</class>
+		<class>it.polimi.db2.telco.entities.Service</class>
+		<class>it.polimi.db2.telco.entities.ServicePackage</class>
+		<class>it.polimi.db2.telco.entities.User</class>
+		<class>it.polimi.db2.telco.entities.ValidityPeriod</class>
+		<class>it.polimi.db2.telco.entities.Auditing</class>		
 		<properties>
-            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/EmpServDB"/> 
-			<property name="javax.persistence.jdbc.user" value="root"/>
-			<property name="javax.persistence.jdbc.password" value="25ApRiLe99"/>
-
-            <!-- enable this property to see SQL and other logging -->
-            <!-- property name="eclipselink.logging.level" value="FINE"/ -->
-        </properties>
-    </persistence-unit>
+			<property name="eclipselink.logging.level" value="FINE" />
+		</properties>
+	</persistence-unit>
 </persistence>
