@@ -1,7 +1,5 @@
 package it.polimi.db2.telco.entities;
 
-import java.util.Collection;
-
 import javax.persistence.*;
 import javax.persistence.NamedQuery;
 
@@ -56,12 +54,4 @@ public class User {
 	public boolean getInsolvent() {
 		return this.insolvent;
 	}
-	
-	//relationship "has" with ServiceActivationSchedule
-	@OneToMany(fetch=FetchType.LAZY, mappedBy = "user")
-	private Collection<SAS> serviceActivationSchedules;
-	
-	//relationship "has" with AuditingTable
-	@OneToOne(mappedBy="user")
-	private Auditing alert;
 }
