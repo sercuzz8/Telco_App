@@ -9,6 +9,8 @@ import javax.persistence.*;
 public class Auditing {
 	
 	@Id
+	@OneToOne
+	@PrimaryKeyJoinColumn(referencedColumnName="username")
 	private User user;
 	
 	private String email;
