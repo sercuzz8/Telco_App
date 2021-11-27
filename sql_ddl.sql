@@ -95,12 +95,12 @@ CREATE TABLE OptionalProduct (
     );
 
 CREATE TABLE ServiceActivationSchedule (
-	service int NOT NULL PRIMARY KEY, 
+	package int NOT NULL PRIMARY KEY, 
 	user varchar(50) NOT NULL,
 	activationDate Date NOT NULL, 
 	deactivationDate Date NOT NULL,
 	FOREIGN KEY (user) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (service) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (package) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
 
@@ -129,6 +129,13 @@ CREATE TABLE purchasesProducts (
     );
 
 
+/*CREATE VIEW PurchasesPerPackage AS
+SELECT SP.id, COUNT(SA.package)
+FROM ServicePackage as SP, ServiceActivationSchedule as SA
+WHERE SA.package=SP.id
+*/
+
+-- TODO: Add the materialized views of the data, to be populated by triggers
 
 CREATE TRIGGER Calculate_Total AFTER INSERT ON purchasesProducts 
 FOR EACH ROW
@@ -143,18 +150,6 @@ FOR EACH ROW
  			O.id in ( SELECT productId FROM purchasesProducts WHERE customerOrderId=c.id ))))
 		)
         WHERE c.id=new.customerOrderId; --  It also contains the total value
-        
-CREATE TRIGGER Insert_Email BEFORE INSERT ON Auditing 
-FOR EACH ROW 
-	UPDATE Auditing AS a SET
-	a.email=(SELECT u.email FROM User AS u WHERE u.username=a.user)
-    WHERE a.user=new.user;
-    
-CREATE TRIGGER Mark_User AFTER UPDATE ON CustomerOrder
-	FOR EACH ROW
-	UPDATE User AS u SET
-    u.insolvent= new.rejected
-	WHERE (new.rejected <> old.rejected AND u.username=new.user);
 
 delimiter //
 CREATE TRIGGER Create_Fixed_Phone_Service BEFORE INSERT ON FixedPhone
@@ -199,7 +194,25 @@ CREATE TRIGGER Product_Not_On_package
     BEGIN
 	IF (new.productId NOT IN (
 		SELECT OP.productId FROM offersProducts AS OP WHERE OP.packageId =
-			(SELECT CO.packageId from CustomerOrder AS CO WHERE CO.customerOrderId=new.customerOrderId)))
+			(SELECT CO.package from CustomerOrder AS CO WHERE CO.id=new.customerOrderId)))
+		THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Product not offered with the package';
 	END IF;
+	END;
+
+CREATE TRIGGER Three_Failed_Payments
+	BEFORE UPDATE ON CustomerOrder
+	FOR EACH ROW
+    BEGIN 
+		IF (new.rejected=1)
+		THEN
+			UPDATE User SET insolvent=1 WHERE username=new.user ;
+		ELSEIF (new.rejected=3)
+        THEN
+			BEGIN
+			SET @insolvent_mail = (SELECT u.email FROM User AS u WHERE u.username=new.user);
+			INSERT INTO Auditing (user, email, lastRejectionAmount, lastRejectionDate, lastRejectionTime) values (new.user, @insolvent_mail ,new.totalValue, CURRENT_DATE(), CURRENT_TIME()); 
+			END;
+		END IF;
 	END;
 delimiter;

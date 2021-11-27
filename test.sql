@@ -7,12 +7,6 @@ INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergi
 INSERT INTO User (username, password, email, insolvent) VALUES ('ale', 'ale', 'sergio@sergio.com', 0);
 -- Result: Ale not written because of duplicate email = OK
 
--- 2. No specialized service without "General" one
-INSERT INTO Service (id, name) VALUES (1);
-INSERT INTO FixedPhone (id) VALUES (1);
-INSERT INTO FixedPhone (id) VALUES (2);
--- RESULT: Third insert not operated because child with no parent = OK
-
 -- 3. No two different services (e.g. Mobile and Fixed) with the same ID
 -- RESULT: 
 
@@ -107,3 +101,64 @@ select * from FixedPhone;
 select * from MobilePhone;
 select * from MobileInternet;
 select * from FixedInternet;
+
+--
+
+INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergio', 'sergio@sergio.com', 0);
+INSERT INTO ServicePackage (id, name) VALUES (1,"Basic");
+INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 12, 12.5);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (1, "SMS Addition", 10.0);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (2, "TV Addition", 15.0);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (3, "Stuff", 15.0);
+INSERT INTO offersProducts (packageId, productId) VALUES (1,1);
+INSERT INTO offersProducts (packageId, productId) VALUES (1,2);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months, rejected, totalValue) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12, 0, 0);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,1);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,2);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,3);
+select * from purchasesProducts;
+
+--
+
+INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergio', 'sergio@sergio.com', 0);
+INSERT INTO ServicePackage (id, name) VALUES (1,"Basic");
+INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 12, 12.5);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (1, "SMS Addition", 10.0);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (2, "TV Addition", 15.0);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (3, "Stuff", 15.0);
+INSERT INTO offersProducts (packageId, productId) VALUES (1,1);
+INSERT INTO offersProducts (packageId, productId) VALUES (1,2);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months, rejected, totalValue) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12, 0, 0);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,1);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,2);
+UPDATE CustomerOrder SET rejected=1 WHERE id=1;
+select * from User;
+select * from Auditing;
+
+--
+
+INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergio', 'sergio@sergio.com', 0);
+INSERT INTO ServicePackage (id, name) VALUES (1,"Basic");
+INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 12, 12.5);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (1, "SMS Addition", 10.0);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (2, "TV Addition", 15.0);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (3, "Stuff", 15.0);
+INSERT INTO offersProducts (packageId, productId) VALUES (1,1);
+INSERT INTO offersProducts (packageId, productId) VALUES (1,2);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months, rejected, totalValue) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12, 0, 0);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,1);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,2);
+UPDATE CustomerOrder SET rejected=1 WHERE id=1;
+UPDATE CustomerOrder SET rejected=2 WHERE id=1;
+UPDATE CustomerOrder SET rejected=3 WHERE id=1;
+select * from Auditing;
+
+--
+
+insert into MobilePhone values (1, 1, 1, 1.0, 1.0);
+insert into MobilePhone values (2, 1, 1, 1.0, 1.0);
+DELETE FROM Service WHERE (id=1);
+select * from Service;
+select * from MobilePhone;
+
+
