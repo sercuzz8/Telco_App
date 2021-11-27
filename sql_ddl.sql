@@ -2,161 +2,108 @@ DROP schema telcoDB;
 CREATE schema telcoDB;
 USE telcoDB;
 
--- ENTITIES
 
--- User and Weak Entities
-
--- The consumer application has a public Landing page with a form for login and a form for registration.
 CREATE TABLE User ( 
-	username varchar(50) PRIMARY KEY, -- Registration requires a username,
-	password varchar(16) NOT NULL, -- Registration requires a password
-	email varchar(50) NOT NULL UNIQUE,  -- Registration requires an email
-	insolvent int DEFAULT 0 -- If the external service rejects the billing, the order is put in the rejected status and the user is flagged
-					-- as insolvent.
+	username varchar(50) PRIMARY KEY,
+	password varchar(16) NOT NULL,
+	email varchar(50) NOT NULL UNIQUE,  
+	insolvent int NOT NULL DEFAULT 0 
 	);
 
 CREATE TABLE Employee ( 
 	code varchar(16) PRIMARY KEY,
-	password varchar(16) NOT NULL -- Registration requires a password
+	password varchar(16) NOT NULL
 	);
     
--- A service package  
 CREATE TABLE ServicePackage (
-	id int NOT NULL AUTO_INCREMENT PRIMARY KEY, -- has an ID
-	name varchar(50) NOT NULL -- and a name (e.g., “Basic”, “Family”, “Business”, “All Inclusive”, etc). 
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+	name varchar(50) NOT NULL
 	);
 	
 CREATE TABLE ValidityPeriod (
-	packageId int NOT NULL, -- A service package must be associated with one validity period
-	monthsNumber int NOT NULL, -- A validity period specifies the number of months (12, 24, or 36)
-	monthlyFee float NOT NULL, -- Each validity period has a different monthly fee (e.g., 20€/month for 12 months, 18€/month for 24 months, and 15€ /month for 36 months).
+	packageId int NOT NULL, 
+	monthsNumber int NOT NULL, 
+	monthlyFee float NOT NULL, 
 	PRIMARY KEY (packageId,monthsNumber), 
 	FOREIGN KEY (packageId) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT period_evaluation CHECK (monthsNumber in (12, 24, 36))
+	CONSTRAINT Out_Of_Fixed_Values CHECK (monthsNumber in (12, 24, 36))
     );
 	
 CREATE TABLE CustomerOrder (
-	-- The order is associated with the chosen optional products.. 	
-	-- The order is associated with the validity period of its service package
-	id int NOT NULL PRIMARY KEY, -- an ID of creation
-	date Date NOT NULL, -- a date of creation
-	hour Time NOT NULL, -- an hour of creation
-	user varchar(50) NOT NULL UNIQUE, -- The order is associated with the user
-	package int NOT NULL, -- The order is associated with the service package, 
-	months int NOT NULL, -- ** Actually the order is associated with the validity period but the validity period is associated with only 
-					-- one service package thus the validity period is associated with a single service package **
-	start Date NOT NULL, -- It contains the start date of the subscription
-	valid int NOT NULL DEFAULT 0,  -- If the external service accepts the billing, the order is marked as valid 
-	totalValue float DEFAULT 0,
-
-	/*
-	One trigger for insert
-	monthsNumber*
-		-- Sum of monthly fees of the Service Package
-		((SELECT monthlyFee FROM ValidityPeriod AS V WHERE (V.packageId=package AND V.monthsNumber=months)) +
-		-- Sum of all the fees of the Optional Product
-		(SELECT SUM(O.monthlyFee) FROM OptionalProduct as O WHERE (
-			O.id in ( SELECT productId FROM purchasesProducts WHERE customerOrderId=id )))), --  It also contains the total value
-	*/
-
+	id int NOT NULL PRIMARY KEY,
+	date Date NOT NULL, 
+	hour Time NOT NULL,
+	start Date NOT NULL,
+	user varchar(50) NOT NULL UNIQUE, 
+	package int NOT NULL, -- The order is associated with the validity period but the validity period is associated with only
+	months int NOT NULL, -- one service package thus the validity period is associated with a single service package
+	rejected int NOT NULL DEFAULT 0,  -- We assume that the most natural occurence is that the order is valid
+	totalValue float,
 	FOREIGN KEY (user) REFERENCES User(username),
-	-- FOREIGN KEY (packageId) REFERENCES ServicePackage(id) may we have to reference also the relation with the service package or is it ambiguous?
-		-- I think it is ambiguous -Sergio
 	FOREIGN KEY (package, months) REFERENCES ValidityPeriod(packageId, monthsNumber) -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
-	-- We should use a trigger
-	-- deleted unnecessarty constraint on monthNumber
     );
 
--- When the same user causes three failed payments, an alert is created in a dedicated auditing table,
 CREATE TABLE Auditing (
-	user varchar(50) PRIMARY KEY, -- with the user username
-	email varchar(50) NOT NULL UNIQUE, -- with the user email
-	lastRejectionAmount float NOT NULL, -- the amount of the last rejection
-	lastRejectionDate Date NOT NULL, -- the date of the last rejection
-	lastRejectionTime Time NOT NULL, -- the time of the last rejection
+	user varchar(50) PRIMARY KEY, 
+	email varchar(50), -- we set it null by default because we will populate the table by the use of triggers
+						-- in addition, this table does not change over its lifetime
+	lastRejectionAmount float NOT NULL, 
+	lastRejectionDate Date NOT NULL, 
+	lastRejectionTime Time NOT NULL,
 	FOREIGN KEY (user) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE
-	-- TRIGGER: CONSTRAINT correct_email CHECK (email in (SELECT u.email FROM User as u WHERE u.username=username))
     );
 	
--- Service and its specializations
 
--- Services are of four types:
 CREATE TABLE Service (
 	id int NOT NULL AUTO_INCREMENT PRIMARY KEY
     );
 
--- fixed phone,
+
 CREATE TABLE FixedPhone (
 	serviceId int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	FOREIGN KEY (serviceId) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
--- mobile phone,
--- The mobile phone service specifies 
 CREATE TABLE MobilePhone (
 	serviceId int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	minNumber int NOT NULL, -- the number of minutes included in the package 
-	smsNumber int NOT NULL, -- the number of SMSs included in the package 
-	minFee float NOT NULL, -- plus the fee for extra minutes 
-	smsFee float NOT NULL, -- plus the fee for extra SMSs
+	minNumber int NOT NULL,  
+	smsNumber int NOT NULL, 
+	minFee float NOT NULL,  
+	smsFee float NOT NULL, 
 	FOREIGN KEY (serviceId) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
--- mobile internet
--- The mobile internet services specify : 
 CREATE TABLE MobileInternet (
 	serviceId int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	gbNumber int NOT NULL, -- the number of Gigabytes included in the package
-	gbFee float NOT NULL, -- and the fee for extra Gigabytes
+	gbNumber int NOT NULL,
+	gbFee float NOT NULL, 
 	FOREIGN KEY (serviceId) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
--- fixed internet
--- The fixed internet services specify 
+
 CREATE TABLE FixedInternet (
 	serviceId int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	gbNumber int NOT NULL, -- the number of Gigabytes included in the package
-	gbFee float NOT NULL, -- and the fee for extra Gigabytes
+	gbNumber int NOT NULL, 
+	gbFee float NOT NULL, 
 	FOREIGN KEY (serviceId) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
-/*CREATE TABLE TypeService (
-	id int NOT NULL UNIQUE AUTO_INCREMENT,
-	serviceType int,
-	PRIMARY KEY (id, serviceType),
-	FOREIGN KEY (id) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT 'allowed_types' CHECK (serviceType in (1,2,3,4))
-)*/
-
--- ----------------------------------------------------------------------------------------
-
--- An optional product has a name and a monthly fee independent of the validity period duration. 
--- The validity period of an optional product is the same as the validity period that the user has chosen for the service package
 CREATE TABLE OptionalProduct (
 	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name varchar(50) NOT NULL,
 	monthlyFee float NOT NULL
     );
 
--- Service Package and Weak Entities
-
-
--- If the external service accepts the billing, the order is marked as valid and a service activation schedule is created for the user
-
 CREATE TABLE ServiceActivationSchedule (
-	serviceId int NOT NULL PRIMARY KEY, -- A service activation schedule is a record of the services
-	--  and optional products (see above)
+	service int NOT NULL PRIMARY KEY, 
 	user varchar(50) NOT NULL,
-	activationDate Date NOT NULL, -- With their date of activation 
-	deactivationDate Date NOT NULL, --  With their date of deactivation
-	FOREIGN KEY (user) REFERENCES User(username), -- TODO: Penso che nel caso in cui lo user venga cancellato sia comunque necessario mantenere questa tavola per motivi di contabilità
-	FOREIGN KEY (serviceId) REFERENCES Service(id) -- TODO: Come sopra 
+	activationDate Date NOT NULL, 
+	deactivationDate Date NOT NULL,
+	FOREIGN KEY (user) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (service) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
--- N:N RELATIONS ---------------------------------------------------------------------------------------------
 
--- A package may be associated with one or more optional products (e.g., an SMS news feed, an internet TV channel, etc.)
--- The same optional product can be offered in different service packages. !!!
 CREATE TABLE offersProducts (
 	packageId int NOT NULL,
 	productId int NOT NULL,
@@ -165,8 +112,6 @@ CREATE TABLE offersProducts (
 	FOREIGN KEY (productId) REFERENCES OptionalProduct(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
--- A service package comprises one or more services. No additional constraints are specified, thus we assume that
--- there is a N:N relation between service packages and services
 CREATE TABLE includesServices (
 	packageId int NOT NULL,
 	serviceId int NOT NULL,
@@ -175,17 +120,86 @@ CREATE TABLE includesServices (
 	FOREIGN KEY (serviceId) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
--- N:N relation between products and customer orders (which optional products are put in which customer order)
 CREATE TABLE purchasesProducts (
 	customerOrderId int NOT NULL,
 	productId int NOT NULL,
 	PRIMARY KEY (customerOrderId, productId),
 	FOREIGN KEY (customerOrderId) REFERENCES CustomerOrder(id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (productId) REFERENCES OptionalProduct(id) ON DELETE CASCADE ON UPDATE CASCADE
-	/*TRIGGER: CONSTRAINT allowed_product CHECK 
-	(productId in 
-		(SELECT OP.productId FROM offersProducts AS OP WHERE OP.packageId =
-			(SELECT CO.packageId from CustomerOrder AS CO WHERE CO.customerOrderId=customerOrderId)
-		) 
-	) */
-);
+    );
+
+
+
+CREATE TRIGGER Calculate_Total AFTER INSERT ON purchasesProducts 
+FOR EACH ROW
+	UPDATE CustomerOrder AS c SET
+        c.totalValue = (
+		c.months *
+ 		-- Sum of fees of the Service Package
+ 		((SELECT V.monthlyFee FROM ValidityPeriod AS V WHERE (V.packageId=c.package AND V.monthsNumber=c.months))
+		 +
+ 		-- Sum of all the fees of the Optional Product
+ 		(SELECT SUM(O.monthlyFee) FROM OptionalProduct as O WHERE (
+ 			O.id in ( SELECT productId FROM purchasesProducts WHERE customerOrderId=c.id ))))
+		)
+        WHERE c.id=new.customerOrderId; --  It also contains the total value
+        
+CREATE TRIGGER Insert_Email BEFORE INSERT ON Auditing 
+FOR EACH ROW 
+	UPDATE Auditing AS a SET
+	a.email=(SELECT u.email FROM User AS u WHERE u.username=a.user)
+    WHERE a.user=new.user;
+    
+CREATE TRIGGER Mark_User AFTER UPDATE ON CustomerOrder
+	FOR EACH ROW
+	UPDATE User AS u SET
+    u.insolvent= new.rejected
+	WHERE (new.rejected <> old.rejected AND u.username=new.user);
+
+delimiter //
+CREATE TRIGGER Create_Fixed_Phone_Service BEFORE INSERT ON FixedPhone
+	FOR EACH ROW
+    BEGIN
+	IF new.serviceId IN (SELECT id FROM Service WHERE id=new.ServiceId) THEN 
+		SET new.ServiceId = ((SELECT MAX(id) FROM Service) + 1);
+	END IF;
+    INSERT INTO Service(id) VALUES (new.serviceId);
+    END;
+
+CREATE TRIGGER Create_Mobile_Phone_Service BEFORE INSERT ON MobilePhone
+	FOR EACH ROW
+    BEGIN
+	IF new.serviceId IN (SELECT id FROM Service WHERE id=new.ServiceId) THEN 
+		SET new.ServiceId = ((SELECT MAX(id) FROM Service) + 1);
+	END IF;
+    INSERT INTO Service(id) VALUES (new.serviceId);
+    END;
+
+CREATE TRIGGER Create_Fixed_Internet_Service BEFORE INSERT ON FixedInternet
+	FOR EACH ROW
+    BEGIN
+	IF new.serviceId IN (SELECT id FROM Service WHERE id=new.ServiceId) THEN 
+		SET new.ServiceId = ((SELECT MAX(id) FROM Service) + 1);
+	END IF;
+    INSERT INTO Service(id) VALUES (new.serviceId);
+    END;
+
+CREATE TRIGGER Create_Mobile_Internet_Service BEFORE INSERT ON MobileInternet
+	FOR EACH ROW
+    BEGIN
+	IF new.serviceId IN (SELECT id FROM Service WHERE id=new.ServiceId) THEN 
+		SET new.ServiceId = ((SELECT MAX(id) FROM Service) + 1);
+	END IF;
+    INSERT INTO Service(id) VALUES (new.serviceId);
+    END;
+
+CREATE TRIGGER Product_Not_On_package 
+	BEFORE INSERT ON purchasesProducts 
+	FOR EACH ROW
+    BEGIN
+	IF (new.productId NOT IN (
+		SELECT OP.productId FROM offersProducts AS OP WHERE OP.packageId =
+			(SELECT CO.packageId from CustomerOrder AS CO WHERE CO.customerOrderId=new.customerOrderId)))
+	END IF;
+	END;
+delimiter;
