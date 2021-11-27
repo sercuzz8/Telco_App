@@ -200,7 +200,7 @@ CREATE TRIGGER Product_Not_On_package
 	END IF;
 	END;
 
-CREATE TRIGGER Three_Failed_Payments
+CREATE TRIGGER Failed_Payments
 	BEFORE UPDATE ON CustomerOrder
 	FOR EACH ROW
     BEGIN 
