@@ -95,10 +95,11 @@ CREATE TABLE OptionalProduct (
     );
 
 CREATE TABLE ServiceActivationSchedule (
-	package int NOT NULL PRIMARY KEY, 
+	package int NOT NULL, 
 	user varchar(50) NOT NULL,
-	activationDate Date NOT NULL, 
-	deactivationDate Date NOT NULL,
+	activationDate Date, 
+	deactivationDate Date,
+	PRIMARY KEY (package, user),
 	FOREIGN KEY (user) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (package) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
@@ -129,11 +130,10 @@ CREATE TABLE purchasesProducts (
     );
 
 
-/*CREATE VIEW PurchasesPerPackage AS
-SELECT SP.id, COUNT(SA.package)
-FROM ServicePackage as SP, ServiceActivationSchedule as SA
-WHERE SA.package=SP.id
-*/
+CREATE VIEW PurchasesPerPackage AS
+SELECT id, COUNT(*)
+FROM ServicePackage p JOIN ServiceActivationSchedule s ON p.id=s.package
+GROUP BY id;
 
 -- TODO: Add the materialized views of the data, to be populated by triggers
 
@@ -215,4 +215,13 @@ CREATE TRIGGER Failed_Payments
 			END;
 		END IF;
 	END;
+    
+CREATE TRIGGER Calculate_Activaction 
+	BEFORE INSERT ON ServiceActivationSchedule
+	FOR EACH ROW
+		BEGIN
+		SET @interval = (SELECT C.months FROM CustomerOrder as C WHERE C.user=new.user AND C.package = new.package);
+		SET	new.activationDate = (SELECT C.start FROM CustomerOrder as C WHERE C.user=new.user AND C.package = new.package);
+		SET new.deactivationDate = date_add(new.activationDate, interval @interval month);
+		END;
 delimiter;
