@@ -1,10 +1,85 @@
 -- Testing part:
 
+INSERT INTO User (username, password, email) VALUES ('sergio', 'sergio', 'sergio@sergio.com');
+INSERT INTO User (username, password, email) VALUES ('ale', 'ale', 'ale@ale.com');
+INSERT INTO User (username, password, email) VALUES ('paolo', 'paolo', 'paolo@paolo.com');
+INSERT INTO User (username, password, email) VALUES ('donald', 'donald', 'donald@d.com');
+INSERT INTO User (username, password, email) VALUES ('fabio', 'fabio', 'fabio@fa.it');
+INSERT INTO User (username, password, email) VALUES ('marco', 'fabio', 'marco@mar.it');
+
+
+INSERT INTO ServicePackage (id, name) VALUES (1,"Basic");
+INSERT INTO ServicePackage (id, name) VALUES (2,"Deluxe");
+
+INSERT INTO FixedPhone VALUES (1);
+INSERT INTO MobilePhone VALUES (2, 100, 50, 0.5, 0.2);
+INSERT INTO MobileInternet VALUES (3, 50, 0.7);
+INSERT INTO FixedInternet VALUES (4, 150, 0.2);
+
+INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 12, 12.5);
+INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 24, 10.5);
+INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 36, 9.5);
+
+INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (2, 12, 30);
+INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (2, 24, 27);
+INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (2, 36, 25);
+
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (1, "Radio Addition", 10.0);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (2, "TV Addition", 15.0);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (3, "Stuff", 15.0);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (4, "Metfixplus", 30.0);
+INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (5, "Cable change", 7.0);
+
+INSERT INTO offersProducts (packageId, productId) VALUES (1,1);
+INSERT INTO offersProducts (packageId, productId) VALUES (1,2);
+INSERT INTO offersProducts (packageId, productId) VALUES (2,1);
+INSERT INTO offersProducts (packageId, productId) VALUES (2,2);
+INSERT INTO offersProducts (packageId, productId) VALUES (2,3);
+INSERT INTO offersProducts (packageId, productId) VALUES (2,4);
+INSERT INTO offersProducts (packageId, productId) VALUES (2,5);
+
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (2, '2021-02-01', '13:00', '2021-04-01' ,"ale", 1, 24);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (3, '2021-02-01', '13:00', '2021-04-01' ,"paolo", 1, 12);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (4, '2021-02-01', '13:00', '2021-04-01' ,"donald", 2, 36);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (5, '2021-01-01', '13:00', '2021-03-01' ,"fabio", 1, 12);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (6, '2021-01-01', '13:00', '2021-03-01' ,"marco", 2, 24);
+
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,1);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,2);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (2,1);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (3,1);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (4,1);
+INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (4,4);
+
+INSERT INTO ServiceActivationSchedule (package, user) VALUES (1, 'sergio');
+INSERT INTO ServiceActivationSchedule (package, user) VALUES (1, 'ale');
+INSERT INTO ServiceActivationSchedule (package, user) VALUES (1, 'paolo');
+INSERT INTO ServiceActivationSchedule (package, user) VALUES (2, 'donald');
+
+UPDATE CustomerOrder SET rejected=1 WHERE id=5;
+UPDATE CustomerOrder SET rejected=2 WHERE id=5;
+UPDATE CustomerOrder SET rejected=3 WHERE id=5;
+
+UPDATE CustomerOrder SET rejected=1 WHERE id=6;
+
+-- SELECT * FROM PackageValidityPeriod;
+
+-- SELECT * FROM ValiditySaleProduct;
+
+SELECT * FROM AVGProductsSold;
+
+-- SELECT * FROM InsolventUsers;
+
+-- SELECT * FROM BestSellers;
+
+---------------------------------------------------------------------
+
 -- 1. Avoid duplicate mail
 DELETE FROM User WHERE username='sergio';
 DELETE FROM User WHERE username='ale';
-INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergio', 'sergio@sergio.com', 0);
-INSERT INTO User (username, password, email, insolvent) VALUES ('ale', 'ale', 'sergio@sergio.com', 0);
+INSERT INTO User (username, password, email) VALUES ('sergio', 'sergio', 'sergio@sergio.com');
+INSERT INTO User (username, password, email) VALUES ('ale', 'ale', 'sergio@sergio.com');
 -- Result: Ale not written because of duplicate email = OK
 
 -- 3. No two different services (e.g. Mobile and Fixed) with the same ID
@@ -71,14 +146,14 @@ DELETE FROM OptionalProduct WHERE id=2;
 DELETE FROM offersProducts WHERE packageId=1;
 DELETE FROM purchasesProducts WHERE customerOrderId=1;
 DELETE FROM CustomerOrder WHERE id=1;
-INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergio', 'sergio@sergio.com', 0);
+INSERT INTO User (username, password, email) VALUES ('sergio', 'sergio', 'sergio@sergio.com');
 INSERT INTO ServicePackage (id, name) VALUES (1,"Basic");
 INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 12, 12.5);
 INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (1, "SMS Addition", 10.0);
 INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (2, "TV Addition", 15.0);
 INSERT INTO offersProducts (packageId, productId) VALUES (1,1);
 INSERT INTO offersProducts (packageId, productId) VALUES (1,2);
-INSERT INTO CustomerOrder (id, date, hour, start, user, package , months, rejected, totalValue) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12, 0, 0);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12);
 INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,1);
 INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,2);
 SELECT totalValue FROM CustomerOrder WHERE id=1;
@@ -87,13 +162,13 @@ SELECT totalValue FROM CustomerOrder WHERE id=1;
 -- 9. The email on the auditing table can be only that of the user
 
 DELETE FROM User WHERE username='sergio';
-INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergio', 'sergio@sergio.com', 0);
+INSERT INTO User (username, password, email) VALUES ('sergio', 'sergio', 'sergio@sergio.com');
 INSERT INTO Auditing (username, email, lastRejectionAmount, lastRejectionDate, lastRejectionTime) VALUES ("sergio", "not@email.com", 0.7, 2021-01-01, 11:00:00);
 -- Result: constraint on email violated
 
 -- 10. One user can't buy a product not offered with the package
 
-INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergio', 'sergio@sergio.com', 0);
+INSERT INTO User (username, password, email) VALUES ('sergio', 'sergio', 'sergio@sergio.com');
 INSERT INTO ServicePackage (id, name) VALUES (1,"Basic");
 INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 12, 12.5);
 INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (1, "SMS Addition", 10.0);
@@ -101,7 +176,7 @@ INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (2, "TV Addition", 15.
 INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (3, "Stuff", 15.0);
 INSERT INTO offersProducts (packageId, productId) VALUES (1,1);
 INSERT INTO offersProducts (packageId, productId) VALUES (1,2);
-INSERT INTO CustomerOrder (id, date, hour, start, user, package , months, rejected, totalValue) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12, 0, 0);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12);
 INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,1);
 INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,2);
 INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,3);
@@ -111,7 +186,7 @@ SELECT * FROM purchasesProducts;
 
 -- 11. A user is rejected its payment
 
-INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergio', 'sergio@sergio.com', 0);
+INSERT INTO User (username, password, email) VALUES ('sergio', 'sergio', 'sergio@sergio.com');
 INSERT INTO ServicePackage (id, name) VALUES (1,"Basic");
 INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 12, 12.5);
 INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (1, "SMS Addition", 10.0);
@@ -119,7 +194,7 @@ INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (2, "TV Addition", 15.
 INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (3, "Stuff", 15.0);
 INSERT INTO offersProducts (packageId, productId) VALUES (1,1);
 INSERT INTO offersProducts (packageId, productId) VALUES (1,2);
-INSERT INTO CustomerOrder (id, date, hour, start, user, package , months, rejected, totalValue) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12, 0, 0);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12);
 INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,1);
 INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,2);
 UPDATE CustomerOrder SET rejected=1 WHERE id=1;
@@ -130,7 +205,7 @@ SELECT * FROM Auditing;
 
 -- 12. A user fails three payments
 
-INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergio', 'sergio@sergio.com', 0);
+INSERT INTO User (username, password, email) VALUES ('sergio', 'sergio', 'sergio@sergio.com');
 INSERT INTO ServicePackage (id, name) VALUES (1,"Basic");
 INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 12, 12.5);
 INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (1, "SMS Addition", 10.0);
@@ -138,7 +213,7 @@ INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (2, "TV Addition", 15.
 INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (3, "Stuff", 15.0);
 INSERT INTO offersProducts (packageId, productId) VALUES (1,1);
 INSERT INTO offersProducts (packageId, productId) VALUES (1,2);
-INSERT INTO CustomerOrder (id, date, hour, start, user, package , months, rejected, totalValue) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12, 0, 0);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12);
 INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,1);
 INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,2);
 UPDATE CustomerOrder SET rejected=1 WHERE id=1;
@@ -157,54 +232,3 @@ SELECT * FROM Service;
 SELECT * FROM MobilePhone;
 
 -- Result: operated
-
--- Example of VALUES:
-
-INSERT INTO User (username, password, email, insolvent) VALUES ('sergio', 'sergio', 'sergio@sergio.com', 0);
-INSERT INTO User (username, password, email, insolvent) VALUES ('ale', 'ale', 'ale@ale.com', 0);
-INSERT INTO User (username, password, email, insolvent) VALUES ('paolo', 'paolo', 'paolo@paolo.com', 0);
-INSERT INTO User (username, password, email, insolvent) VALUES ('donald', 'donald', 'donald@d.com', 0);
-
-INSERT INTO ServicePackage (id, name) VALUES (1,"Basic");
-INSERT INTO ServicePackage (id, name) VALUES (2,"Deluxe");
-
-INSERT INTO FixedPhone VALUES (1);
-INSERT INTO MobilePhone VALUES (2, 100, 50, 0.5, 0.2);
-INSERT INTO MobileInternet VALUES (3, 50, 0.7);
-INSERT INTO FixedInternet VALUES (4, 150, 0.2);
-
-INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 12, 12.5);
-INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 24, 10.5);
-INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (1, 36, 9.5);
-
-INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (2, 12, 30);
-INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (2, 24, 27);
-INSERT INTO ValidityPeriod (packageId, monthsNumber, monthlyFee) VALUES (2, 36, 25);
-
-INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (1, "SMS Addition", 10.0);
-INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (2, "TV Addition", 15.0);
-INSERT INTO OptionalProduct (id, name, monthlyFee) VALUES (3, "Stuff", 15.0);
-INSERT INTO offersProducts (packageId, productId) VALUES (1,1);
-INSERT INTO offersProducts (packageId, productId) VALUES (1,2);
-
-INSERT INTO CustomerOrder (id, date, hour, start, user, package , months, rejected, totalValue) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12, 0, 0);
-INSERT INTO CustomerOrder (id, date, hour, start, user, package , months, rejected, totalValue) VALUES (2, '2021-02-01', '13:00', '2021-04-01' ,"ale", 1, 24, 0, 0);
-INSERT INTO CustomerOrder (id, date, hour, start, user, package , months, rejected, totalValue) VALUES (3, '2021-02-01', '13:00', '2021-04-01' ,"paolo", 1, 12, 0, 0);
-INSERT INTO CustomerOrder (id, date, hour, start, user, package , months, rejected, totalValue) VALUES (4, '2021-02-01', '13:00', '2021-04-01' ,"donald", 1, 36, 0, 0);
-
-INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,1);
-INSERT INTO purchasesProducts (customerOrderId, productId) VALUES (1,2);
-
-INSERT INTO ServiceActivationSchedule (package, user) VALUES (1, 'sergio');
-INSERT INTO ServiceActivationSchedule (package, user) VALUES (1, 'ale');
-INSERT INTO ServiceActivationSchedule (package, user) VALUES (1, 'paolo');
-INSERT INTO ServiceActivationSchedule (package, user) VALUES (2, 'donald');
-
-SELECT * FROM ServiceActivationSchedule;
-
-
-SELECT * FROM PurchasesPerPackage;
-
-
-
---

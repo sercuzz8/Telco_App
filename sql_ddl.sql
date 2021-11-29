@@ -129,26 +129,57 @@ CREATE TABLE purchasesProducts (
 	FOREIGN KEY (productId) REFERENCES OptionalProduct(id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
+CREATE VIEW PurchasesPackage (package, purchases) AS
+SELECT package, COUNT(*)
+FROM ServiceActivationSchedule 
+GROUP BY package;
 
-CREATE VIEW PurchasesPerPackage AS
-SELECT id, COUNT(*)
-FROM ServicePackage p JOIN ServiceActivationSchedule s ON p.id=s.package
-GROUP BY id;
+CREATE VIEW PackageValidityPeriod (package, months, purchases) AS
+SELECT package, TIMESTAMPDIFF(MONTH,activationDate,deactivationDate), COUNT(*)
+FROM ServiceActivationSchedule	
+GROUP BY package, TIMESTAMPDIFF(MONTH,activationDate,deactivationDate)
+ORDER BY package, TIMESTAMPDIFF(MONTH,activationDate,deactivationDate);
+
+CREATE VIEW ValiditySaleProduct (package, withProducts, withoutProducts) AS
+SELECT s.package, SUM(c.totalValue), SUM(v.monthsNumber*v.monthlyFee)
+FROM ServiceActivationSchedule AS s, CustomerOrder AS c, ValidityPeriod as v
+WHERE s.package = c.package AND s.user=c.user AND c.package=v.packageId AND c.months=v.monthsNumber
+GROUP BY s.package;
+
+CREATE VIEW AVGProductsSold (package, avgProducts) AS
+SELECT s.package, COUNT(p.productId)
+FROM ServiceActivationSchedule AS s, CustomerOrder AS c, purchasesProducts AS p
+WHERE s.package = c.package AND s.user=c.user AND p.customerOrderId=c.id
+GROUP BY s.package, c.user;
+
+CREATE VIEW InsolventUsers(insolvent, rejectedOrder, alertDate) AS
+SELECT c.user, c.id, a.lastRejectionDate
+FROM CustomerOrder c LEFT JOIN Auditing a ON c.user=a.user
+WHERE rejected>0;
+
+CREATE VIEW BestSellers(productId, numOfSales) AS
+SELECT p.productId, COUNT(*) AS NUM
+FROM ServiceActivationSchedule AS s, CustomerOrder AS c, purchasesProducts AS p
+WHERE s.package = c.package AND s.user=c.user AND p.customerOrderId=c.id
+GROUP BY p.productId
+ORDER BY NUM DESC;
+-- LIMIT 5;
 
 -- TODO: Add the materialized views of the data, to be populated by triggers
 
-CREATE TRIGGER Calculate_Total AFTER INSERT ON purchasesProducts 
+CREATE TRIGGER Calculate_Fee BEFORE INSERT ON CustomerOrder
+FOR EACH ROW
+	SET new.totalValue = new.months *
+ 		-- Sum of fees of the Service Package
+ 		(SELECT V.monthlyFee FROM ValidityPeriod AS V WHERE V.packageId=new.package AND V.monthsNumber=new.months);
+
+CREATE TRIGGER Adjust_Total AFTER INSERT ON purchasesProducts 
 FOR EACH ROW
 	UPDATE CustomerOrder AS c SET
         c.totalValue = (
-		c.months *
- 		-- Sum of fees of the Service Package
- 		((SELECT V.monthlyFee FROM ValidityPeriod AS V WHERE (V.packageId=c.package AND V.monthsNumber=c.months))
-		 +
+		c.totalValue + c.months *
  		-- Sum of all the fees of the Optional Product
- 		(SELECT SUM(O.monthlyFee) FROM OptionalProduct as O WHERE (
- 			O.id in ( SELECT productId FROM purchasesProducts WHERE customerOrderId=c.id ))))
-		)
+ 		(SELECT O.monthlyFee FROM OptionalProduct as O WHERE O.id = new.productId))
         WHERE c.id=new.customerOrderId; --  It also contains the total value
 
 delimiter //
