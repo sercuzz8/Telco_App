@@ -33,10 +33,10 @@ CREATE TABLE CustomerOrder (
 	date Date NOT NULL, 
 	hour Time NOT NULL,
 	start Date NOT NULL,
-	user varchar(50) NOT NULL UNIQUE, 
+	user varchar(50) NOT NULL, -- Not unique because the same user can buy different packages
 	package int NOT NULL, -- The order is associated with the validity period but the validity period is associated with only
 	months int NOT NULL, -- one service package thus the validity period is associated with a single service package
-	rejected int NOT NULL DEFAULT 0,  -- We assume that the most natural occurence is that the order is valid
+	rejected int NOT NULL DEFAULT 0,  
 	valid int NOT NULL DEFAULT 0,
 	totalValue float,
 	FOREIGN KEY (user) REFERENCES User(username),
@@ -142,7 +142,8 @@ CREATE TABLE purchasesProducts (
 CREATE VIEW PurchasesPackage (package, purchases) AS
 SELECT package, COUNT(*)
 FROM ServiceActivationSchedule 
-GROUP BY package;
+GROUP BY package
+ORDER BY package ASC;
 
 CREATE VIEW PackageValidityPeriod (package, months, purchases) AS
 SELECT package, TIMESTAMPDIFF(MONTH,activationDate,deactivationDate), COUNT(*)
@@ -154,7 +155,8 @@ CREATE VIEW ValiditySaleProduct (package, withProducts, withoutProducts) AS
 SELECT s.package, SUM(c.totalValue), SUM(v.monthsNumber*v.monthlyFee)
 FROM ServiceActivationSchedule AS s, CustomerOrder AS c, ValidityPeriod as v
 WHERE s.package = c.package AND s.user=c.user AND c.package=v.packageId AND c.months=v.monthsNumber
-GROUP BY s.package;
+GROUP BY s.package
+ORDER BY s.package ASC;
 
 CREATE VIEW AVGProductsSold (package, avgProducts) AS
 SELECT s.package, COUNT(p.product)
@@ -165,7 +167,8 @@ GROUP BY s.package, s.user;
 CREATE VIEW InsolventUsers(insolvent, rejectedOrder, alertDate) AS
 SELECT c.user, c.id, a.lastRejectionDate
 FROM CustomerOrder c LEFT JOIN Auditing a ON c.user=a.user
-WHERE rejected>0;
+WHERE rejected>0
+ORDER BY c.user ASC;
 
 CREATE VIEW BestSellers(productId, numOfSales) AS
 SELECT p.product, COUNT(*) AS NUM

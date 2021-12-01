@@ -44,6 +44,7 @@ INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES
 INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (4, '2021-02-01', '13:00', '2021-04-01' ,"donald", 2, 36);
 INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (5, '2021-01-01', '13:00', '2021-03-01' ,"fabio", 1, 12);
 INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (6, '2021-01-01', '13:00', '2021-03-01' ,"marco", 2, 24);
+INSERT INTO CustomerOrder (id, date, hour, start, user, package , months) VALUES (7, '2021-05-01', '13:00', '2021-08-01' ,"marco", 1, 12);
 
 INSERT INTO choosesProducts (customerOrderId, productId) VALUES (1,1);
 INSERT INTO choosesProducts (customerOrderId, productId) VALUES (1,2);
@@ -51,6 +52,7 @@ INSERT INTO choosesProducts (customerOrderId, productId) VALUES (2,1);
 INSERT INTO choosesProducts (customerOrderId, productId) VALUES (3,1);
 INSERT INTO choosesProducts (customerOrderId, productId) VALUES (4,1);
 INSERT INTO choosesProducts (customerOrderId, productId) VALUES (4,4);
+INSERT INTO choosesProducts (customerOrderId, productId) VALUES (7,2);
 
 
 UPDATE CustomerOrder SET valid=1 WHERE id=1;
@@ -63,6 +65,8 @@ UPDATE CustomerOrder SET rejected=2 WHERE id=5;
 UPDATE CustomerOrder SET rejected=3 WHERE id=5;
 
 UPDATE CustomerOrder SET rejected=1 WHERE id=6;
+
+UPDATE CustomerOrder SET valid=1 WHERE id=6;
 
 SELECT * FROM ServiceActivationSchedule;
 
