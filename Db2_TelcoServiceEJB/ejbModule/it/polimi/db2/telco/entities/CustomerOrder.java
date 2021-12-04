@@ -8,6 +8,7 @@ import java.util.Collection;
 import javax.persistence.*;
 
 @Entity
+@NamedQuery(name="CustomerOrder.findRejectedOrdersOfUser", query="SELECT o FROM CustomerOrder o WHERE o.user=?1 and o.rejected>0")
 public class CustomerOrder {
 	
 	@Id @GeneratedValue (strategy=GenerationType.AUTO)
@@ -17,6 +18,7 @@ public class CustomerOrder {
 	private LocalTime hour;
 	private LocalDateTime start;
 	private float totalValue;
+	private int rejected;
 	private boolean valid;
 	
 	public CustomerOrder() {}
@@ -40,6 +42,10 @@ public class CustomerOrder {
 	public void setTotalValue(float tv) {
 		this.totalValue = tv;
 	}
+	public void setRejected(int rej) {
+		this.rejected = rej;
+	}
+	
 	public void setValid(boolean val) {
 		this.valid = val;
 	}
@@ -59,6 +65,10 @@ public class CustomerOrder {
 	public float getTotalValue() {
 		return this.totalValue;
 	}
+	public int getRejected() {
+		return this.rejected;
+	}
+	
 	public boolean getValid() {
 		return this.valid;
 	}
@@ -76,9 +86,9 @@ public class CustomerOrder {
 	//relationship "include"
 	@ManyToMany(fetch=FetchType.LAZY)
 	@JoinTable(
-			name="purchasesProducts",
-			joinColumns={@JoinColumn(name="customerOrderId")},
-			inverseJoinColumns={@JoinColumn(name="productId")}
+			name="choosesProducts",
+			joinColumns={@JoinColumn(name="customerOrder")},
+			inverseJoinColumns={@JoinColumn(name="product")}
 			)
 	private Collection<OptionalProduct> products;
 	

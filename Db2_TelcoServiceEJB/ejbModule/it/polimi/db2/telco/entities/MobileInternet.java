@@ -9,15 +9,15 @@ public class MobileInternet {
 	
 	@Id
 	@OneToOne
-	@PrimaryKeyJoinColumn(name="serviceId", referencedColumnName="id")
-	protected Service serviceId;
+	@PrimaryKeyJoinColumn(name="service", referencedColumnName="id")
+	protected Service service;
 
 	private int gbNumber;
 	private float gbFee;
 	
 	public void setId(Service service) 
     {
-        this.serviceId = service;
+        this.service = service;
     }
 
 	public int getGbNumber() {

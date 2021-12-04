@@ -7,12 +7,13 @@ import javax.persistence.*;
 
 @Entity
 @IdClass(ValidityPeriodId.class)
+@NamedQuery(name="ValidityPeriod.findAllByPackage", query="SELECT v FROM ValidityPeriod v WHERE v.id=?1 ORDER BY v.monthsNumber ASC")
 public class ValidityPeriod implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@Column(name="packageId")
+	@Column(name="package")
 	private int id;
 	@Id
 	private int monthsNumber;
@@ -47,7 +48,7 @@ public class ValidityPeriod implements Serializable{
 	
 	//relationship "isAssociatedWith"
 	@ManyToOne (fetch=FetchType.EAGER)
-	@JoinColumn(name="packageId")
+	@JoinColumn(name="package")
 	private ServicePackage sPackage;
 
 }

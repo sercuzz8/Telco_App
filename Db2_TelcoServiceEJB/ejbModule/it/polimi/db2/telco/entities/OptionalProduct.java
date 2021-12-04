@@ -15,8 +15,10 @@ public class OptionalProduct {
 	
 	public OptionalProduct() {}
 	
-	public OptionalProduct(int id) {
+	public OptionalProduct(int id, String name, float monthlyFee) {
 		this.id = id;
+		this.name = name;
+		this.monthlyFee = monthlyFee;
 	}
 	
 	public void setName(String name) {
@@ -32,9 +34,11 @@ public class OptionalProduct {
 	public int getId() {
 		return this.id;
 	}
+	
 	public String getName() {
 		return this.name;
 	}
+	
 	public float getMonthlyFee() {
 		return this.monthlyFee;
 	}

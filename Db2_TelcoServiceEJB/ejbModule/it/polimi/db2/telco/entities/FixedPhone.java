@@ -9,12 +9,12 @@ public class FixedPhone {
 	
 	@Id
 	@OneToOne
-	@PrimaryKeyJoinColumn(name="serviceId", referencedColumnName="id")
-	protected Service serviceId;
+	@PrimaryKeyJoinColumn(name="service", referencedColumnName="id")
+	protected Service service;
 
 	public void setId(Service service) 
     {
-        this.serviceId = service;
+        this.service = service;
     }
 	
 

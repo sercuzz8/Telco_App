@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.persistence.*;
 
 @Entity
+@NamedQuery(name="ServicePackage.findAll", query="SELECT s FROM ServicePackage S")
 public class ServicePackage {
 	@Id@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
@@ -32,16 +33,16 @@ public class ServicePackage {
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(
 			name="offersProducts",
-			joinColumns={@JoinColumn(name="packageId")},
-			inverseJoinColumns={@JoinColumn(name="productId")}
+			joinColumns={@JoinColumn(name="package")},
+			inverseJoinColumns={@JoinColumn(name="product")}
 			)
 	private Collection<OptionalProduct> products;
 
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(
 			name="includesServices",
-			joinColumns={@JoinColumn(name="packageId")},
-			inverseJoinColumns={@JoinColumn(name="serviceId")}
+			joinColumns={@JoinColumn(name="package")},
+			inverseJoinColumns={@JoinColumn(name="service")}
 			)
 	private Collection<Service> services;
 

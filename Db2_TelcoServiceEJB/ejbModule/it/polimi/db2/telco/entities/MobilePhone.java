@@ -9,8 +9,8 @@ public class MobilePhone {
 	
 	@Id
 	@OneToOne
-	@PrimaryKeyJoinColumn(name="serviceId", referencedColumnName="id")
-	protected Service serviceId;
+	@PrimaryKeyJoinColumn(name="service", referencedColumnName="id")
+	protected Service service;
 
 	
 	private int minNumber;
@@ -20,7 +20,7 @@ public class MobilePhone {
 
 	public void setId(Service service) 
     {
-        this.serviceId = service;
+        this.service = service;
     }
 	
 	public int getMinNumber() {
