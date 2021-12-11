@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="DB2_TelcoServiceWEB">
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <dependent-module archiveName="DB2_TelcoServiceEJB.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/DB2_TelcoServiceEJB/DB2_TelcoServiceEJB">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="DB2_TelcoServiceWEB"/>
+        <property name="java-output-path" value="/DB2_TelcoServiceWEB/build/classes"/>
+    </wb-module>
+</project-modules>

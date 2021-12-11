@@ -2,275 +2,216 @@ DROP schema telcoDB;
 CREATE schema telcoDB;
 USE telcoDB;
 
-CREATE TABLE User ( 
+CREATE TABLE CUSTOMER ( 
 	username varchar(50) PRIMARY KEY,
 	password varchar(16) NOT NULL,
 	email varchar(50) NOT NULL UNIQUE,  
 	insolvent int NOT NULL DEFAULT 0 
 	);
 
-CREATE TABLE Employee ( 
+CREATE TABLE EMPLOYEE ( 
 	code varchar(16) PRIMARY KEY,
 	password varchar(16) NOT NULL
 	);
 		
-CREATE TABLE ServicePackage (
+CREATE TABLE SERVICEPACKAGE (
 	id int NOT NULL AUTO_INCREMENT PRIMARY KEY, 
 	name varchar(50) NOT NULL
 	);
 		
-CREATE TABLE ValidityPeriod (
+CREATE TABLE VALIDITYPERIOD (
 	package int NOT NULL, 
-	monthsNumber int NOT NULL, 
-	monthlyFee float NOT NULL, 
-	PRIMARY KEY (package,monthsNumber), 
-	FOREIGN KEY (package) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT Out_Of_Fixed_Values CHECK (monthsNumber in (12, 24, 36))
+	monthsnumber int NOT NULL, 
+	monthlyfee float NOT NULL, 
+	PRIMARY KEY (package,monthsnumber), 
+	FOREIGN KEY (package) REFERENCES SERVICEPACKAGE(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT out_of_fixed_values CHECK (monthsnumber in (12, 24, 36))
 	);
 		
-CREATE TABLE CustomerOrder (
+CREATE TABLE CUSTOMERORDER (
 	id int NOT NULL PRIMARY KEY,
 	date Date NOT NULL, 
 	hour Time NOT NULL,
 	start Date NOT NULL,
-	user varchar(50) NOT NULL, -- Not unique because the same user can buy different packages
+	customer varchar(50) NOT NULL, -- Not unique because the same customer can buy different packages
 	package int NOT NULL, -- The order is associated with the validity period but the validity period is associated with only
 	months int NOT NULL, -- one service package thus the validity period is associated with a single service package
 	rejected int NOT NULL DEFAULT 0,  
 	valid int NOT NULL DEFAULT 0,
 	totalValue float,
-	FOREIGN KEY (user) REFERENCES User(username),
-	FOREIGN KEY (package, months) REFERENCES ValidityPeriod(package, monthsNumber) -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
+	FOREIGN KEY (customer) REFERENCES CUSTOMER(username),
+	FOREIGN KEY (package, months) REFERENCES VALIDITYPERIOD(package, monthsnumber) -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
 	);
 
-CREATE TABLE Auditing (
-	user varchar(50) PRIMARY KEY, 
+CREATE TABLE AUDITING (
+	customer varchar(50) PRIMARY KEY, 
 	email varchar(50), -- we set it null by default because we will populate the table by the use of triggers
 						-- in addition, this table does not change over its lifetime
-	lastRejectionAmount float NOT NULL, 
-	lastRejectionDate Date NOT NULL, 
-	lastRejectionTime Time NOT NULL,
-	FOREIGN KEY (user) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE
-	);
-		
-
-CREATE TABLE Service (
-	id int NOT NULL AUTO_INCREMENT PRIMARY KEY
+	lastrejectionamount float NOT NULL, 
+	lastrejectiondate Date NOT NULL, 
+	lastrejectiontime Time NOT NULL,
+	FOREIGN KEY (customer) REFERENCES CUSTOMER(username) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
-
-CREATE TABLE FixedPhone (
-	service int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	FOREIGN KEY (service) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE SERVICE (
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	servicetype ENUM('fixed_phone','mobile_phone','fixed_internet','mobile_internet'),
+	minnumber int DEFAULT 0,  
+	smsnumber int DEFAULT 0, 
+    gbnumber int DEFAULT 0,
+	minfee float DEFAULT 0.0,  
+	smsfee float DEFAULT 0.0,
+	gbfee float DEFAULT 0.0
 	);
 
-CREATE TABLE MobilePhone (
-	service int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	minNumber int NOT NULL,  
-	smsNumber int NOT NULL, 
-	minFee float NOT NULL,  
-	smsFee float NOT NULL, 
-	FOREIGN KEY (service) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
-	);
-
-CREATE TABLE MobileInternet (
-	service int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	gbNumber int NOT NULL,
-	gbFee float NOT NULL, 
-	FOREIGN KEY (service) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
-	);
-
-
-CREATE TABLE FixedInternet (
-	service int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	gbNumber int NOT NULL, 
-	gbFee float NOT NULL, 
-	FOREIGN KEY (service) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
-	);
-
-CREATE TABLE OptionalProduct (
+CREATE TABLE OPTIONALPRODUCT (
 	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name varchar(50) NOT NULL,
-	monthlyFee float NOT NULL
+	monthlyfee float NOT NULL
 	);
 
-CREATE TABLE ServiceActivationSchedule (
+CREATE TABLE SERVICEACTIVATIONSCHEDULE (
 	package int NOT NULL, 
-	user varchar(50) NOT NULL,
-	activationDate Date, 
-	deactivationDate Date,
-	PRIMARY KEY (package, user),
-	FOREIGN KEY (user) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (package) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE
+	customer varchar(50) NOT NULL,
+	activationdate Date, 
+	deactivationdate Date,
+	PRIMARY KEY (package, customer),
+	FOREIGN KEY (customer) REFERENCES CUSTOMER(username) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (package) REFERENCES SERVICEPACKAGE(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
 
-CREATE TABLE offersProducts (
+CREATE TABLE offersproducts (
 	package int NOT NULL,
 	product int NOT NULL,
 	PRIMARY KEY (package, product),
-	FOREIGN KEY (package) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (product) REFERENCES OptionalProduct(id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (package) REFERENCES SERVICEPACKAGE(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (product) REFERENCES OPTIONALPRODUCT(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
-CREATE TABLE includesServices (
+CREATE TABLE includesservices (
 	package int NOT NULL,
 	service int NOT NULL,
 	PRIMARY KEY (package, service),
-	FOREIGN KEY (package) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (service) REFERENCES Service(id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (package) REFERENCES SERVICEPACKAGE(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (service) REFERENCES SERVICE(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
-CREATE TABLE choosesProducts (
-	customerOrder int NOT NULL,
+CREATE TABLE choosesproducts (
+	customerorder int NOT NULL,
 	product int NOT NULL,
-	PRIMARY KEY (customerOrder, product),
-	FOREIGN KEY (customerOrder) REFERENCES CustomerOrder(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (product) REFERENCES OptionalProduct(id) ON DELETE CASCADE ON UPDATE CASCADE
+	PRIMARY KEY (customerorder, product),
+	FOREIGN KEY (customerorder) REFERENCES CUSTOMERORDER(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (product) REFERENCES OPTIONALPRODUCT(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
-CREATE TABLE purchasesProducts (
+CREATE TABLE purchasesproducts (
 	package int NOT NULL,
-	user varchar(50) NOT NULL,
+	customer varchar(50) NOT NULL,
 	product int NOT NULL,
-	PRIMARY KEY (package, user, product),
-	FOREIGN KEY (package) REFERENCES ServicePackage(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (user) REFERENCES User(username) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (product) REFERENCES OptionalProduct(id) ON DELETE CASCADE ON UPDATE CASCADE
+	PRIMARY KEY (package, customer, product),
+	FOREIGN KEY (package) REFERENCES SERVICEPACKAGE(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (customer) REFERENCES CUSTOMER(username) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (product) REFERENCES OPTIONALPRODUCT(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
-CREATE VIEW PurchasesPackage (package, purchases) AS
+CREATE VIEW purchasespackage (package, purchases) AS
 SELECT package, COUNT(*)
-FROM ServiceActivationSchedule 
+FROM SERVICEACTIVATIONSCHEDULE 
 GROUP BY package
 ORDER BY package ASC;
 
-CREATE VIEW PackageValidityPeriod (package, months, purchases) AS
-SELECT package, TIMESTAMPDIFF(MONTH,activationDate,deactivationDate), COUNT(*)
-FROM ServiceActivationSchedule	
-GROUP BY package, TIMESTAMPDIFF(MONTH,activationDate,deactivationDate)
-ORDER BY package, TIMESTAMPDIFF(MONTH,activationDate,deactivationDate);
+CREATE VIEW packagevalidityperiod (package, months, purchases) AS
+SELECT package, TIMESTAMPDIFF(MONTH,activationdate,deactivationdate), COUNT(*)
+FROM SERVICEACTIVATIONSCHEDULE	
+GROUP BY package, TIMESTAMPDIFF(MONTH,activationdate,deactivationdate)
+ORDER BY package, TIMESTAMPDIFF(MONTH,activationdate,deactivationdate);
 
-CREATE VIEW ValiditySaleProduct (package, withProducts, withoutProducts) AS
-SELECT s.package, SUM(c.totalValue), SUM(v.monthsNumber*v.monthlyFee)
-FROM ServiceActivationSchedule AS s, CustomerOrder AS c, ValidityPeriod as v
-WHERE s.package = c.package AND s.user=c.user AND c.package=v.package AND c.months=v.monthsNumber
+CREATE VIEW validitysaleproduct (package, withProducts, withoutProducts) AS
+SELECT s.package, SUM(c.totalValue), SUM(v.monthsnumber*v.monthlyfee)
+FROM SERVICEACTIVATIONSCHEDULE AS s, CUSTOMERORDER AS c, VALIDITYPERIOD as v
+WHERE s.package = c.package AND s.customer=c.customer AND c.package=v.package AND c.months=v.monthsnumber
 GROUP BY s.package
 ORDER BY s.package ASC;
 
-CREATE VIEW AVGProductsSold (package, avgProducts) AS
-SELECT o.package, COUNT(p.product)/COUNT(o.product)
-FROM  offersProducts o LEFT JOIN purchasesProducts p ON p.package=o.package AND p.product=o.product
-GROUP BY o.package;
+CREATE VIEW avgproductsold (package, avgProducts) AS
+SELECT s.package, COUNT(p.product)
+FROM SERVICEACTIVATIONSCHEDULE AS s, purchasesproducts as p
+WHERE s.package = p.package AND s.customer=p.customer
+GROUP BY s.package, s.customer;
 
-CREATE VIEW InsolventUsers(insolvent, rejectedOrder, alertDate) AS
-SELECT c.user, c.id, a.lastRejectionDate
-FROM CustomerOrder c LEFT JOIN Auditing a ON c.user=a.user
+CREATE VIEW insolventcustomers(insolvent, rejectedOrder, alertDate) AS
+SELECT c.customer, c.id, a.lastrejectiondate
+FROM CUSTOMERORDER c LEFT JOIN AUDITING a ON c.customer=a.customer
 WHERE rejected>0
-ORDER BY c.user ASC;
+ORDER BY c.customer ASC;
 
-CREATE VIEW BestSellers(product, numOfSales) AS
+CREATE VIEW bestsellers(product, numOfSales) AS
 SELECT p.product, COUNT(*) AS NUM
-FROM ServiceActivationSchedule AS s, purchasesProducts as p
-WHERE s.package = p.package AND s.user=p.user
+FROM SERVICEACTIVATIONSCHEDULE AS s, purchasesproducts as p
+WHERE s.package = p.package AND s.customer=p.customer
 GROUP BY p.product
 ORDER BY NUM DESC;
 -- LIMIT 5;
 
 -- TODO: Add the materialized views of the data, to be populated by triggers
-CREATE TRIGGER Calculate_Fee BEFORE INSERT ON CustomerOrder
+CREATE TRIGGER calculate_fee BEFORE INSERT ON CUSTOMERORDER
 FOR EACH ROW
 	SET new.totalValue = new.months *
-		-- Sum of fees of the Service Package
-		(SELECT V.monthlyFee FROM ValidityPeriod AS V WHERE V.package=new.package AND V.monthsNumber=new.months);
+		-- Sum of fees of the SERVICE Package
+		(SELECT V.monthlyfee FROM VALIDITYPERIOD AS V WHERE V.package=new.package AND V.monthsnumber=new.months);
 
-CREATE TRIGGER Adjust_Total AFTER INSERT ON choosesProducts 
+CREATE TRIGGER adjust_Total AFTER INSERT ON choosesproducts 
 FOR EACH ROW
-	UPDATE CustomerOrder AS c SET
+	UPDATE CUSTOMERORDER AS c SET
 		c.totalValue = (
 		c.totalValue + c.months *
 		-- Sum of all the fees of the Optional Product
-		(SELECT O.monthlyFee FROM OptionalProduct as O WHERE O.id = new.product))
-		WHERE c.id=new.customerOrder; --  It also contains the total value
+		(SELECT O.monthlyfee FROM OPTIONALPRODUCT as O WHERE O.id = new.product))
+		WHERE c.id=new.customerorder; --  It also contains the total value
 
 delimiter //
-CREATE TRIGGER Create_Fixed_Phone_Service BEFORE INSERT ON FixedPhone
-	FOR EACH ROW
-	BEGIN
-	IF new.service IN (SELECT id FROM Service WHERE id=new.service) THEN 
-		SET new.service = ((SELECT MAX(id) FROM Service) + 1);
-	END IF;
-	INSERT INTO Service(id) VALUES (new.service);
-	END;
-
-CREATE TRIGGER Create_Mobile_Phone_Service BEFORE INSERT ON MobilePhone
-	FOR EACH ROW
-	BEGIN
-	IF new.service IN (SELECT id FROM Service WHERE id=new.service) THEN 
-		SET new.service = ((SELECT MAX(id) FROM Service) + 1);
-	END IF;
-	INSERT INTO Service(id) VALUES (new.service);
-	END;
-
-CREATE TRIGGER Create_Fixed_Internet_Service BEFORE INSERT ON FixedInternet
-	FOR EACH ROW
-	BEGIN
-	IF new.service IN (SELECT id FROM Service WHERE id=new.service) THEN 
-		SET new.Service = ((SELECT MAX(id) FROM Service) + 1);
-	END IF;
-	INSERT INTO Service(id) VALUES (new.service);
-	END;
-
-CREATE TRIGGER Create_Mobile_Internet_Service BEFORE INSERT ON MobileInternet
-	FOR EACH ROW
-	BEGIN
-	IF new.service IN (SELECT id FROM Service WHERE id=new.service) THEN 
-		SET new.Service = ((SELECT MAX(id) FROM Service) + 1);
-	END IF;
-	INSERT INTO Service(id) VALUES (new.service);
-	END;
-
-CREATE TRIGGER Product_Not_On_package 
-	BEFORE INSERT ON choosesProducts 
+CREATE TRIGGER product_not_on_package 
+	BEFORE INSERT ON choosesproducts 
 	FOR EACH ROW
 	BEGIN
 	IF (new.product NOT IN (
-		SELECT op.product FROM offersProducts AS op WHERE op.package =
-			(SELECT co.package from CustomerOrder AS co WHERE co.id=new.customerOrder)))
+		SELECT OP.product FROM offersproducts AS OP WHERE OP.package =
+			(SELECT CO.package from CUSTOMERORDER AS CO WHERE CO.id=new.customerorder)))
 		THEN
 			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Product not offered with the package';
 	END IF;
-	END;
+	END//
 
-CREATE TRIGGER Accepted_Payment
-	AFTER UPDATE ON CustomerOrder
+CREATE TRIGGER accepted_payment
+	AFTER UPDATE ON CUSTOMERORDER
 	FOR EACH ROW
 	IF (new.valid=1 and old.valid<>1)
 	THEN
 		BEGIN
-		INSERT INTO ServiceActivationSchedule (package, user, activationDate, deactivationDate) VALUES (new.package, new.user, new.start, date_add(new.start, interval new.months month));
+		INSERT INTO SERVICEACTIVATIONSCHEDULE (package, customer, activationdate, deactivationdate) VALUES (new.package, new.customer, new.start, date_add(new.start, interval new.months month));
 		
-		INSERT INTO purchasesProducts(package, user, product)
-		SELECT co.package, co.user, ch.product 
-		FROM CustomerOrder co JOIN choosesProducts ch ON ch.customerOrder=co.id
+		INSERT INTO purchasesproducts(package, customer, product)
+		SELECT co.package, co.customer, ch.product 
+		FROM CUSTOMERORDER co JOIN choosesproducts ch ON ch.customerorder=co.id
 		WHERE co.id=new.id;
 
 		END;
-	END IF;
+	END IF//
 
-CREATE TRIGGER Failed_Payments
-	AFTER UPDATE ON CustomerOrder
+CREATE TRIGGER failed_payments
+	AFTER UPDATE ON CUSTOMERORDER
 	FOR EACH ROW
 	BEGIN 
 		IF (new.rejected=1 and old.rejected<>1)
 		THEN
-			UPDATE User SET insolvent=1 WHERE username=new.user;
+			UPDATE CUSTOMER SET insolvent=1 WHERE username=new.customer ;
 		ELSEIF (new.rejected=3 and old.rejected<>3)
 		THEN
 			BEGIN
-			SET @insolvent_mail = (SELECT u.email FROM User AS u WHERE u.username=new.user);
-			INSERT INTO Auditing (user, email, lastRejectionAmount, lastRejectionDate, lastRejectionTime) values (new.user, @insolvent_mail, new.totalValue, CURRENT_DATE(), CURRENT_TIME()); 
+			SET @insolvent_mail = (SELECT u.email FROM CUSTOMER AS u WHERE u.username=new.customer);
+			INSERT INTO AUDITING (customer, email, lastrejectionamount, lastrejectiondate, lastrejectiontime) values (new.customer, @insolvent_mail, new.totalValue, CURRENT_DATE(), CURRENT_TIME()); 
 			END;
 		END IF;
-	END;
-delimiter;
+	END//
+delimiter ;
