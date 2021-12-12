@@ -7,6 +7,9 @@ INSERT INTO CUSTOMER (username, password, email) VALUES ('donald', 'donald', 'do
 INSERT INTO CUSTOMER (username, password, email) VALUES ('fabio', 'fabio', 'fabio@fa.it');
 INSERT INTO CUSTOMER (username, password, email) VALUES ('marco', 'fabio', 'marco@mar.it');
 
+INSERT INTO EMPLOYEE (code, password) VALUES ('1234', '1234');
+INSERT INTO EMPLOYEE (code, password) VALUES ('5678', '5678');
+
 
 INSERT INTO SERVICEPACKAGE (id, name) VALUES (1,"Basic");
 INSERT INTO SERVICEPACKAGE (id, name) VALUES (2,"Deluxe");
@@ -15,6 +18,13 @@ INSERT INTO SERVICE(id, servicetype) VALUES (1, 'fixed_phone');
 INSERT INTO SERVICE(id, servicetype, minnumber, smsnumber, minfee, smsfee) VALUES (2, 'mobile_phone', 100, 50, 0.5, 0.2);
 INSERT INTO SERVICE(id, servicetype, gbnumber, gbfee) VALUES (3, 'fixed_internet', 50, 0.7);
 INSERT INTO SERVICE(id, servicetype, gbnumber, gbfee) VALUES (4, 'mobile_internet', 150, 0.2);
+
+INSERT INTO includesservices(package, service) VALUES (1, 1);
+INSERT INTO includesservices(package, service) VALUES (1, 3);
+INSERT INTO includesservices(package, service) VALUES (2, 1);
+INSERT INTO includesservices(package, service) VALUES (2, 2);
+INSERT INTO includesservices(package, service) VALUES (2, 3);
+INSERT INTO includesservices(package, service) VALUES (2, 4);
 
 INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (1, 12, 12.5);
 INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (1, 24, 10.5);
@@ -241,14 +251,3 @@ SELECT * FROM SERVICE;
 SELECT * FROM MobilePhone;
 
 -- Result: operated*/
-
-
-/*SET @productList = (SELECT COUNT(product) FROM choosesproducts WHERE customerOrder=new.id);
-			BEGIN
-  			WHILE @productList > 0 DO
-			SET @tmp = (SELECT product FROM choosesproducts WHERE customerOrder=new.id ORDER BY product ASC LIMIT @productList-1,@productList);
-    		-- SET @tmp = @productList;
-			INSERT INTO purchasesproducts (package, customer, product) VALUES (new.package, new.customer, @tmp);
-    		SET @productList = @productList - 1;
-  			END WHILE;
-			END;*/

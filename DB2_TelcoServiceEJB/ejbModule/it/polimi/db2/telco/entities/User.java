@@ -4,7 +4,7 @@ import javax.persistence.*;
 import javax.persistence.NamedQuery;
 
 @Entity
-@Table(name="USER")
+@Table(name="CUSTOMER")
 @NamedQuery (name = "User.checkCredentials", query = "SELECT u FROM User u WHERE u.username=?1 AND u.password=?2")
 @NamedQuery(name = "User.rejectedOrders", query = "SELECT o FROM CustomerOrder o WHERE o.rejected=true AND o.user=?1")
 public class User {
@@ -16,7 +16,7 @@ public class User {
 	private boolean insolvent;
 	
 	public User() {};
-	public User(String username, String password, String email) {
+	public User(String username, String email, String password) {
 		this.username = username;
 		this.email = email;
 		this.password = password;

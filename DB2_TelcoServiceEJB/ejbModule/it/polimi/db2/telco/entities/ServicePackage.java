@@ -63,4 +63,26 @@ public class ServicePackage {
 		this.services.add(service);
 	}
 	
+	public String getNameProducts () {
+		
+		StringBuilder stb=new StringBuilder();
+		
+		for (OptionalProduct o: this.getProducts()) {
+			stb.append(o.toString());
+
+		}
+		
+		return stb.toString();
+	}
+	
+	public String getNameServices () {
+		
+		StringBuilder stb=new StringBuilder();
+		
+		for (Service s: this.getServices()) {
+			stb.append(s.toString());
+		}
+		
+		return stb.toString();
+	}
 }

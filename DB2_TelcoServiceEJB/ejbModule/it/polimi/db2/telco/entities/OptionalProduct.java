@@ -5,6 +5,8 @@ import java.util.Collection;
 import javax.persistence.*;
 
 @Entity
+@Table(name="OPTIONALPRODUCT")
+@NamedQuery(name="OptionalProduct.findAll", query="SELECT o FROM OptionalProduct o")
 public class OptionalProduct {
 	
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
@@ -20,6 +22,14 @@ public class OptionalProduct {
 		this.name = name;
 		this.monthlyFee = monthlyFee;
 	}
+	
+	//relationship "include"
+	@ManyToMany (fetch=FetchType.LAZY, mappedBy="products")
+	private Collection<CustomerOrder> orders;
+	
+	//relationship "has"
+	@ManyToMany (fetch=FetchType.LAZY, mappedBy="products")
+	private Collection<ServicePackage> packages;
 	
 	public void setName(String name) {
 		this.name = name;
@@ -43,12 +53,10 @@ public class OptionalProduct {
 		return this.monthlyFee;
 	}
 	
-	//relationship "include"
-	@ManyToMany (fetch=FetchType.LAZY, mappedBy="products")
-	private Collection<CustomerOrder> orders;
-	
-	//relationship "has"
-	@ManyToMany (fetch=FetchType.LAZY, mappedBy="products")
-	private Collection<ServicePackage> packages;
+	@Override
+	public String toString() {
+		return (this.getName() + ": " + this.getMonthlyFee() + "per month" + System.getProperty("line.separator"));
+		
+	}
 }
 

@@ -33,6 +33,12 @@ public class UserService {
 		throw new NonUniqueResultException("More users registered");
 
 	}
+
+	public void addUser(String name, String email, String pwd) {
+		// TODO Auto-generated method stub
+		User user = new User(name, email, pwd);
+		em.persist(user);
+	}
 	
 	
 	

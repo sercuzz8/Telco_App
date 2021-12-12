@@ -20,5 +20,4 @@ public class OptionalProductService {
 		OptionalProduct product=new OptionalProduct(id, name, monthlyFee);
 		em.persist(product);
 	}
-	
 }

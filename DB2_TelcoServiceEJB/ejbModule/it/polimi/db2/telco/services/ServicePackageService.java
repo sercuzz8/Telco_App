@@ -17,17 +17,16 @@ public class ServicePackageService {
 	
 	public ServicePackageService() {}
 	
+	public void createServicePackage() {
+		
+	}
+	
 	public List<ServicePackage> findAllPackages() /*throws PackageNotFoundException*/{
 		//try {
-        	System.out.println("PROVA: " + em.createNamedQuery("ServicePackage.findAll", ServicePackage.class).getResultList()); 
 			return em.createNamedQuery("ServicePackage.findAll", ServicePackage.class).getResultList();
 		/*}
 		catch (PersistenceException e){
 			throw new PackageNotFoundException("No Package Found");
 		}*/
-	}
-	
-	public void createServicePackage() {
-		
 	}
 }

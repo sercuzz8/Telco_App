@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Login</title>
+	<link rel="stylesheet" type="text/css" media="all" href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
+</head>
+<body>
+	<h1>Telco Service Application - Login</h1>
+	<form class="LoginForm" action="CheckLogin" method="POST" autocomplete="off">
+		<h2>Login</h2>
+		<p th:text=" ${errorMsg}" class="errorMsg"></p>
+		<p th:text=" ${regSucc}" class="correctMsg"></p>
+		<p><input type="text" name="username" placeholder="Username" required><br></p>
+		<p><input type="password" name="pwd" placeholder="Password" required><br></p>
+		<p><input class="buttonStyle" type="submit" value="Login now"> <br></p><br>
+		<div>
+			<p><span>Don't have an account yet?</span> <a th:href="@{/CheckRegistration}"> Register</a></p>
+		</div>
+		<div>
+			<p><span>Are you an Employee?</span> <a th:href="@{/CheckLoginEmployee}"> Employee Login</a></p>
+		</div>
+		<div>
+			<p><span>Want to browse anyway?</span> <a th:href="@{/GoToHomePage}"> Home Page</a></p>
+		</div>
+	</form>
+</body>
+</html>

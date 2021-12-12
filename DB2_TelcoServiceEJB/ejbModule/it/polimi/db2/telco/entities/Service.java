@@ -11,7 +11,7 @@ public class Service {
 	@Id@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	
-	@Column(name="servicetype")
+	@Enumerated(EnumType.STRING)
 	private ServiceType servicetype;
 	
 	private int minnumber;
@@ -47,51 +47,51 @@ public class Service {
 		this.servicetype = servicetype;
 	}
 
-	public int getMinnumber() {
+	public int getMinNumber() {
 		return minnumber;
 	}
 
-	public void setMinnumber(int minnumber) {
+	public void setMinNumber(int minnumber) {
 		this.minnumber = minnumber;
 	}
 
-	public int getSmsnumber() {
+	public int getSmsNumber() {
 		return smsnumber;
 	}
 
-	public void setSmsnumber(int smsnumber) {
+	public void setSmsNumber(int smsnumber) {
 		this.smsnumber = smsnumber;
 	}
 
-	public int getGbnumber() {
+	public int getGBNumber() {
 		return gbnumber;
 	}
 
-	public void setGbnumber(int gbnumber) {
+	public void setGBNumber(int gbnumber) {
 		this.gbnumber = gbnumber;
 	}
 
-	public float getMinfee() {
+	public float getMinFee() {
 		return minfee;
 	}
 
-	public void setMinfee(float minfee) {
+	public void setMinFee(float minfee) {
 		this.minfee = minfee;
 	}
 
-	public float getSmsfee() {
+	public float getSmsFee() {
 		return smsfee;
 	}
 
-	public void setSmsfee(float smsfee) {
+	public void setSmsFee(float smsfee) {
 		this.smsfee = smsfee;
 	}
 
-	public float getGbfee() {
+	public float getGBFee() {
 		return gbfee;
 	}
 
-	public void setGbfee(float gbfee) {
+	public void setGBFee(float gbfee) {
 		this.gbfee = gbfee;
 	}
 
@@ -103,6 +103,42 @@ public class Service {
 		this.packages = packages;
 	}
 	
-	
-	
+	@Override
+	public String toString() {
+		
+		StringBuilder stb = new StringBuilder();
+		
+		switch (this.getServicetype()) {
+		case fixed_phone:
+			stb.append("Fixed Phone");
+			stb.append(System.getProperty("line.separator"));
+			break;
+		case mobile_phone:
+			stb.append("Mobile Phone");
+			stb.append(System.getProperty("line.separator"));
+			stb.append(this.getMinNumber() + " MIN: " + this.getMinFee() + " per extra");
+			stb.append(System.getProperty("line.separator"));
+			stb.append(this.getSmsNumber() + " SMS: " + this.getMinFee() + " per extra");
+			stb.append(System.getProperty("line.separator"));
+			break;
+		case fixed_internet:
+			stb.append("Fixed Internet");
+			stb.append(System.getProperty("line.separator"));
+			stb.append(this.getGBNumber() + " GB: " + this.getGBFee() + " per extra");
+			stb.append(System.getProperty("line.separator"));
+			break;
+		case mobile_internet:
+			stb.append("Mobile Internet");
+			stb.append(System.getProperty("line.separator"));
+			stb.append(this.getGBNumber() + " GB: " + this.getGBFee() + " per extra");
+			stb.append(System.getProperty("line.separator"));
+			break;
+		default:
+			stb.append("ERROR");
+			break;
+		}
+		
+		
+		return stb.toString();
+	}
 }

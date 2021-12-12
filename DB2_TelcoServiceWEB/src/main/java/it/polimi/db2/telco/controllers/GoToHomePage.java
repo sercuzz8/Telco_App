@@ -28,13 +28,15 @@ public class GoToHomePage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine;
 	@EJB(name = "it.polimi.db2.telco.services/ServiceService")
-	private ServicePackageService dService;
+	private ServicePackageService sPacks;
 
 
 	public GoToHomePage() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	//TODO: Add Validity Period to actually connect all the fees
 
 	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
@@ -47,7 +49,7 @@ public class GoToHomePage extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		List<ServicePackage> servicePackages = dService.findAllPackages();
+		List<ServicePackage> servicePackages = sPacks.findAllPackages();
 		String path = "/WEB-INF/Home.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
