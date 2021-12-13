@@ -53,10 +53,9 @@ public class OptionalProduct {
 		return this.monthlyFee;
 	}
 	
-	@Override
+	/*@Override
 	public String toString() {
 		return (this.getName() + ": " + this.getMonthlyFee() + "per month" + System.getProperty("line.separator"));
-		
-	}
+	}*/
 }
 

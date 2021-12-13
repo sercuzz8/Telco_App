@@ -27,13 +27,6 @@ public class CheckRegistration extends HttpServlet {
 	@EJB(name = "it.polimi.db2.telco.services/UserService")
 	private UserService usrService;
 
-	/*
-	 * RegExp per il controllo della validit� dei campi
-	 */
-
-	//private static final String EMAIL_REGEXP = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
-	//private static final String PWD_REGEXP = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,}$";
-
 	public CheckRegistration() {
 		super();
 	}
@@ -68,22 +61,6 @@ public class CheckRegistration extends HttpServlet {
 			if (usrn == null || email == null || pwd == null || usrn.isBlank() || email.isBlank() || pwd.isBlank()) {
 				throw new Exception("Missing or empty credential value");
 			}
-			/*} else if (!PatternChecker.validateField(EMAIL_REGEXP, email)) {
-				ServletContext servletContext = getServletContext();
-				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-				ctx.setVariable("errorMsgEmail", "Email address not valid: it should be in the format aa@bb.cc");
-				String path = "/WEB-INF/Registration.html";
-				templateEngine.process(path, ctx, response.getWriter());
-				return;
-			} else if (!PatternChecker.validateField(PWD_REGEXP, pwd)) {
-				ServletContext servletContext = getServletContext();
-				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-				ctx.setVariable("errorMsgPassword",
-						"Password must be at least 6 characters long and include an uppercase, a lowercase and a digit");
-				String path = "/WEB-INF/Registration.html";
-				templateEngine.process(path, ctx, response.getWriter());
-				return;
-			}*/
 		} catch (Exception e) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing credential value");
 			return;
@@ -99,7 +76,7 @@ public class CheckRegistration extends HttpServlet {
 			templateEngine.process(path, ctx, response.getWriter());
 			return;
 		}
-
+		
 		String path = getServletContext().getContextPath() + "/CheckLogin";
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");

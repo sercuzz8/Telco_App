@@ -39,7 +39,7 @@ public class Service {
 		return id;
 	}
 
-	public ServiceType getServicetype() {
+	public ServiceType getServiceType() {
 		return servicetype;
 	}
 
@@ -101,44 +101,5 @@ public class Service {
 
 	public void setPackages(Collection<ServicePackage> packages) {
 		this.packages = packages;
-	}
-	
-	@Override
-	public String toString() {
-		
-		StringBuilder stb = new StringBuilder();
-		
-		switch (this.getServicetype()) {
-		case fixed_phone:
-			stb.append("Fixed Phone");
-			stb.append(System.getProperty("line.separator"));
-			break;
-		case mobile_phone:
-			stb.append("Mobile Phone");
-			stb.append(System.getProperty("line.separator"));
-			stb.append(this.getMinNumber() + " MIN: " + this.getMinFee() + " per extra");
-			stb.append(System.getProperty("line.separator"));
-			stb.append(this.getSmsNumber() + " SMS: " + this.getMinFee() + " per extra");
-			stb.append(System.getProperty("line.separator"));
-			break;
-		case fixed_internet:
-			stb.append("Fixed Internet");
-			stb.append(System.getProperty("line.separator"));
-			stb.append(this.getGBNumber() + " GB: " + this.getGBFee() + " per extra");
-			stb.append(System.getProperty("line.separator"));
-			break;
-		case mobile_internet:
-			stb.append("Mobile Internet");
-			stb.append(System.getProperty("line.separator"));
-			stb.append(this.getGBNumber() + " GB: " + this.getGBFee() + " per extra");
-			stb.append(System.getProperty("line.separator"));
-			break;
-		default:
-			stb.append("ERROR");
-			break;
-		}
-		
-		
-		return stb.toString();
 	}
 }
