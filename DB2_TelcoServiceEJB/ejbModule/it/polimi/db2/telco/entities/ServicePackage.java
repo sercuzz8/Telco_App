@@ -29,6 +29,9 @@ public class ServicePackage {
 			)
 	private Collection<Service> services;
 	
+	@OneToMany(fetch=FetchType.EAGER, mappedBy="sPackage")
+	private Collection<ValidityPeriod> validityPeriods;
+	
 	public ServicePackage () {}
 	
 	public void setId(int id) {
@@ -62,27 +65,22 @@ public class ServicePackage {
 	public void addService(Service service) {
 		this.services.add(service);
 	}
-	
-	public String getNameProducts () {
-		
-		StringBuilder stb=new StringBuilder();
-		
-		for (OptionalProduct o: this.getProducts()) {
-			stb.append(o.toString());
 
-		}
-		
-		return stb.toString();
+	public void setProducts(Collection<OptionalProduct> products) {
+		this.products = products;
 	}
-	
-	public String getNameServices () {
-		
-		StringBuilder stb=new StringBuilder();
-		
-		for (Service s: this.getServices()) {
-			stb.append(s.toString());
-		}
-		
-		return stb.toString();
+
+	public void setServices(Collection<Service> services) {
+		this.services = services;
+	}
+
+	public Collection<ValidityPeriod> getValidityPeriods() {
+		return validityPeriods;
+	}
+
+	public void setValidityPeriods(Collection<ValidityPeriod> validityPeriods) {
+		this.validityPeriods = validityPeriods;
 	}
 }
+	
+	

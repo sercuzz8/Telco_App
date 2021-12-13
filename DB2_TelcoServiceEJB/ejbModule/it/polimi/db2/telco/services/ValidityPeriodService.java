@@ -18,6 +18,10 @@ public class ValidityPeriodService {
 		return em.createNamedQuery("ValidityPeriod.findAllByPackage", ValidityPeriod.class).setParameter(1, packageId).getResultList();
 	} 
 	
+	public List<ValidityPeriod> findAllPeriods(){
+		return em.createNamedQuery("ValidityPeriod.findAll", ValidityPeriod.class).getResultList();
+	} 
+	
 	
 	public void createValidityPeriod() {
 		

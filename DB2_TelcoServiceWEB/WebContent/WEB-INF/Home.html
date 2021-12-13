@@ -26,6 +26,15 @@
 		
 			<li> <span th:text="${package.getId()}"> ID </span> : <span th:text="${package.getName()}"> Name </span> </li>
 			
+			<li th:each="validity : ${package.getValidityPeriods()}">
+			
+			<ul>
+			
+			<li> <span th:text="${validity.getMonthsNumber()}"> Months </span>
+				months : <span th:text="${validity.getMonthlyFee()}"> Fee </span> euros per month</li>
+			
+			</ul> 
+			
 			<li th:each="service : ${package.getServices()}">
 				<b>Service: </b>
 				
