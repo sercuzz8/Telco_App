@@ -50,7 +50,6 @@ public class GoToHomePage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		List<ServicePackage> servicePackages = sPacks.findAllPackages();
-		//List<CustomerOrder> validityPeriods = vPeriods.findRejectedOrdersOfUser("fabio");
 		String path = "/WEB-INF/Home.html";
 		
 		//System.out.println(servicePackages.get(0).getValidityPeriods().isEmpty());
@@ -58,7 +57,6 @@ public class GoToHomePage extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("packages", servicePackages);
-		//ctx.setVariable("periods", validityPeriods);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 

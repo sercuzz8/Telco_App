@@ -1,7 +1,9 @@
 package it.polimi.db2.telco.entities;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.*;
-import javax.persistence.NamedQuery;
 
 @Entity
 @Table(name="CUSTOMER")
@@ -14,6 +16,9 @@ public class User {
 	private String email;
 	private String password;
 	private boolean insolvent;
+	
+	@OneToMany(fetch=FetchType.EAGER, mappedBy="user")
+	private Collection<CustomerOrder> orders;
 	
 	public User() {};
 	public User(String username, String email, String password) {
@@ -53,5 +58,28 @@ public class User {
 	
 	public boolean getInsolvent() {
 		return this.insolvent;
+	}
+	
+	public Collection<CustomerOrder> getOrders() {
+		return orders;
+	}
+	
+	public void setOrders(Collection<CustomerOrder> orders) {
+		this.orders = orders;
+	}
+	
+	public Collection<CustomerOrder> getRejectedOrders() {
+		if (!this.getInsolvent()) return null;
+		else {
+			
+			Collection<CustomerOrder> results = new ArrayList<>();
+			
+			for (CustomerOrder order: this.getOrders()) {
+				if (order.getRejected()>0) 
+					results.add(order);
+				}
+			
+			return results;
+		}
 	}
 }

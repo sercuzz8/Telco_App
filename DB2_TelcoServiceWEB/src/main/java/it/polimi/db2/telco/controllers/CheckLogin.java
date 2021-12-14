@@ -14,6 +14,8 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import it.polimi.db2.telco.entities.CustomerOrder;
+import it.polimi.db2.telco.entities.OptionalProduct;
 import it.polimi.db2.telco.entities.User;
 import it.polimi.db2.telco.exceptions.CredentialsException;
 import it.polimi.db2.telco.services.UserService;
@@ -93,6 +95,12 @@ public class CheckLogin extends HttpServlet {
 			templateEngine.process(path, ctx, response.getWriter());
 		} 
 		else {
+			
+			/*for (CustomerOrder ord: user.getRejectedOrders()) {
+				for (OptionalProduct prod: ord.getProducts()) {
+					System.out.println("Here: "+ prod.getName());
+				}
+			}*/
 			request.getSession().setAttribute("user", user);
 			path = getServletContext().getContextPath() + "/GoToHomePage";
 			response.sendRedirect(path);

@@ -1,3 +1,4 @@
+
 package it.polimi.db2.telco.services;
 
 import javax.ejb.Stateless;

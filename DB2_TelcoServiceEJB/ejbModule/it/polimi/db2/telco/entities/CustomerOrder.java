@@ -25,7 +25,7 @@ public class CustomerOrder {
 	
 	//relationship "creates"
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "user")
+	@JoinColumn(name = "customer")
 	private User user;
 		
 	//relationship "has" with ServicePackage
@@ -37,11 +37,11 @@ public class CustomerOrder {
 	private ValidityPeriod validity;
 	
 	//relationship "include"
-	@ManyToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(
 			name="choosesproducts",
-			joinColumns={@JoinColumn(name="customerorder")},
-			inverseJoinColumns={@JoinColumn(name="product")}
+			joinColumns=@JoinColumn(name="customerorder"),
+			inverseJoinColumns=@JoinColumn(name="product")
 			)
 	private Collection<OptionalProduct> products;
 	
@@ -125,5 +125,17 @@ public class CustomerOrder {
 	
 	public void addProduct (OptionalProduct product) {
 		this.products.add(product);
+	}
+
+	public float getTotalvalue() {
+		return totalvalue;
+	}
+
+	public void setTotalvalue(float totalvalue) {
+		this.totalvalue = totalvalue;
+	}
+
+	public void setProducts(Collection<OptionalProduct> products) {
+		this.products = products;
 	}
 }

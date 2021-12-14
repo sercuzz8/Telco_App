@@ -1,7 +1,5 @@
 package it.polimi.db2.telco.entities;
 
-import java.util.Collection;
-
 import javax.persistence.*;
 
 @Entity
@@ -22,7 +20,7 @@ public class ValidityPeriod {
 	
 	public ValidityPeriod() {}
 	
-	public void setId(ServicePackage id) {
+	public void setPackage(ServicePackage id) {
 		this.sPackage = id;
 	}
 	public void setMonthsNumber(int mn) {
@@ -32,7 +30,7 @@ public class ValidityPeriod {
 		this.monthlyfee = mf;
 	}
 	
-	public ServicePackage getId() {
+	public ServicePackage getPackage() {
 		return this.sPackage;
 	}
 	public int getMonthsNumber() {

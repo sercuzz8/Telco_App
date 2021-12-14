@@ -11,101 +11,84 @@
 </head>
 
 <body>
+
 	<h1>Welcome to the Telco service Home Page</h1>
 
-	<div align="right">
+	<div th:if=${session.user==null} align="right">
 		<a th:href="@{/CheckLogin}">Login</a>
 	</div>
-
+	<div th:unless=${session.user==null} align="right">
+		<a th:text="${session.user.username}">Username>Login</a>
+	</div>
 
 	<section>
+	
 		<div align="left">
+		
 		<h2>All the packages offered</h2>
 		
-		<ul th:each="package : ${packages}">
+		<dl th:each="package : ${packages}">
 		
-			<li> <span th:text="${package.getId()}"> ID </span> : <span th:text="${package.getName()}"> Name </span> </li>
+			<dt> <b> <span th:text="${package.getId()}"> ID </span> : <span th:text="${package.getName()}"> Name </span> </b> </dt>
+			<dd th:each="validity : ${package.getValidityPeriods()}">	
+			<span th:text="${validity.getMonthsNumber()}"> Months </span> Months:
+			<span th:text="' ' + ${validity.getMonthlyFee()}"> Fee </span> &euro; per month
+			</dd>
 			
-			<li th:each="validity : ${package.getValidityPeriods()}">
+			<dt> <b>Services: </b> </dt>
+			<dd th:each="service : ${package.getServices()}">
+					<a th:if="${service.getServiceType().toString()=='fixed_phone'}"> Fixed Phone </a>
+					<a th:if="${service.getServiceType().toString()=='mobile_phone'}">
+					Mobile Phone:
+						<span th:text="${service.getMinNumber()}"> Number Of minutes </span> MIN:
+						<span th:text="${service.getMinFee()}"> Fee for Extra Minutes </span> &euro; per extra minute
+						<span th:text="${service.getSmsNumber()}"> Number Of SMSs </span> SMS:
+						<span th:text="${service.getSmsFee()}"> Fee for Extra SMSs </span> &euro; per extra SMS
+					</a>
+					<a th:if="${service.getServiceType().toString()=='fixed_internet'}">	
+					Fixed Internet: 
+					<span th:text="${service.getGBNumber()}"> Number Of GBs </span> GB:  
+					<span th:text="${service.getGBFee()} "> Fee for Extra GBs </span> &euro; for any extra GB
+					</a>
+					<a th:if="${service.getServiceType().toString()=='mobile_internet'}">
+					Mobile Internet: 
+					<span th:text="${service.getGBNumber()}"> Number Of GBs </span> GB:
+					<span th:text="${service.getGBFee()}"> Fee for Extra GBs </span> &euro; for any extra GB
+					</a>		
+			</dd>
 			
-			<ul>
+			<dt> <b>Optional Products </b> </dt>
+			<dd th:each="product : ${package.getProducts()}" >
+				<span th:text="${product.getName()}">Product Name</span> : 
+				<span th:text="${product.getMonthlyFee()}">Product Fee</span> &euro; per month
+			</dd>
 			
-			<li> <span th:text="${validity.getMonthsNumber()}"> Months </span>
-				months : <span th:text="${validity.getMonthlyFee()}"> Fee </span> euros per month</li>
-			
-			</ul> 
-			
-			<li th:each="service : ${package.getServices()}">
-				<b>Service: </b>
-				
-				<ul>
-					
-					<li th:if="${service.getServiceType().toString()=='fixed_phone'}">
-					
-					Fixed Phone
-					
-					</li>
-					
-					<li th:if="${service.getServiceType().toString()=='mobile_phone'}">
-					
-					Mobile Phone
-					
-						<ul>
-						
-						<li> Minutes :<span th:text="${service.getMinNumber()}"> Number Of minutes </span> 
-						/ <span th:text="${service.getMinFee()}"> Fee for Extra Minutes </span> euros per extra
-						</li>
-						
-						<li> SMS :<span th:text="${service.getSmsNumber()}"> Number Of SMSs </span> 
-						/ <span th:text="${service.getSmsFee()}"> Fee for Extra SMSs </span> euros per extra
-						</li>
-						
-						</ul>
-					
-					</li>
-					
-					<li th:if="${service.getServiceType().toString()=='fixed_internet'}">
-					
-					Fixed Internet
-					
-						<ul>
-						
-						<li> GB :<span th:text="${service.getGBNumber()}"> Number Of GBs </span> 
-						/ <span th:text="${service.getGBFee()}"> Fee for Extra GBs </span> euros per extra
-						</li>
-						
-						</ul>
-					
-					</li>
-					
-					<li th:if="${service.getServiceType().toString()=='fixed_internet'}">
-					
-					Mobile Internet
-					
-						<ul>
-						
-						<li> GB :<span th:text="${service.getGBNumber()}"> Number Of GBs </span> 
-						/ <span th:text="${service.getGBFee()}"> Fee for Extra GBs </span> euros per extra
-						</li>
-						
-						</ul>
-					
-					</li>
-					
-				</ul>
+		</dl>
+		
+		</div>
+		
+	</section>
+	
+	 <!--  -->
+	
+	<section th:if="${session.user!=null and session.user.getInsolvent()}" >
+	
+	<h2 >All your rejected orders</h2>
+		
+		<ul th:each="order: ${session.user.getRejectedOrders()}">
+			<li> ID: <span th:text="${order.getId()}">Order ID</span> </li>
+			<li> Date: <span th:text="${order.getDate()}">Order Date</span> </li>
+			<li> Hour: <span th:text="${order.getHour()}">Order Hour</span> </li>
+			<li> Date of beginning: <span th:text="${order.getStart()}">Order Start</span> </li>
+			<li> Service Package: <span th:text="${order.getValidity().getPackage().getId()}">Package ID</span></li>
+			<li> Months: <span th:text="${order.getValidity().getMonthsNumber()}">Months</span> </li>
+			<li th:each="prod : ${order.getProducts()}" > Chosen product:
+				<span th:text="${prod.getName()}">Product</span>
 			</li>
-			
-			
-			<li th:each="product : ${package.getProducts()}" >
-				<b>Optional Product:</b>
-				<ul>
-					<li><span th:text="${product.getName()}">Product Name</span></li>
-					<li><span th:text="${product.getMonthlyFee()}">Product Fee</span> euros per month</li>
-				</ul>
-			</li>
+			  
+			<li> Total cost per year: <span th:text="${order.getTotalValue()}">Order Value</span> </li>
 		</ul>
 			
-		</div>
 	</section>
 
 </body>
