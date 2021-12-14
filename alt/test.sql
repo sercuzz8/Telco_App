@@ -34,19 +34,19 @@ INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (2, 12, 30
 INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (2, 24, 27);
 INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (2, 36, 25);
 
-INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (1, "Radio Addition", 10.0);
-INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (2, "TV Addition", 15.0);
-INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (3, "Stuff", 15.0);
-INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (4, "Metfixplus", 30.0);
-INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (5, "Cable change", 7.0);
+INSERT INTO OPTIONALPRODUCT (name, monthlyfee) VALUES ("Radio Addition", 10.0);
+INSERT INTO OPTIONALPRODUCT (name, monthlyfee) VALUES ("TV Addition", 15.0);
+INSERT INTO OPTIONALPRODUCT (name, monthlyfee) VALUES ("Stuff", 15.0);
+INSERT INTO OPTIONALPRODUCT (name, monthlyfee) VALUES ("Metfixplus", 30.0);
+INSERT INTO OPTIONALPRODUCT (name, monthlyfee) VALUES ("Cable change", 7.0);
 
-INSERT INTO offersproducts (package, product) VALUES (1,1);
-INSERT INTO offersproducts (package, product) VALUES (1,2);
-INSERT INTO offersproducts (package, product) VALUES (2,1);
-INSERT INTO offersproducts (package, product) VALUES (2,2);
-INSERT INTO offersproducts (package, product) VALUES (2,3);
-INSERT INTO offersproducts (package, product) VALUES (2,4);
-INSERT INTO offersproducts (package, product) VALUES (2,5);
+INSERT INTO offersproducts (package, product) VALUES (1,"Radio Addition");
+INSERT INTO offersproducts (package, product) VALUES (1,"TV Addition");
+INSERT INTO offersproducts (package, product) VALUES (2,"Radio Addition");
+INSERT INTO offersproducts (package, product) VALUES (2,"TV Addition");
+INSERT INTO offersproducts (package, product) VALUES (2,"Stuff");
+INSERT INTO offersproducts (package, product) VALUES (2,"Metfixplus");
+INSERT INTO offersproducts (package, product) VALUES (2,"Cable change");
 
 INSERT INTO CUSTOMERORDER (id, date, hour, start, customer, package , months) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12);
 INSERT INTO CUSTOMERORDER (id, date, hour, start, customer, package , months) VALUES (2, '2021-02-01', '13:00', '2021-04-01' ,"ale", 1, 24);
@@ -62,7 +62,6 @@ INSERT INTO choosesproducts (customerorder, product) VALUES (2,1);
 INSERT INTO choosesproducts (customerorder, product) VALUES (3,1);
 INSERT INTO choosesproducts (customerorder, product) VALUES (4,1);
 INSERT INTO choosesproducts (customerorder, product) VALUES (4,4);
-INSERT INTO choosesproducts (customerorder, product) VALUES (5,1);
 INSERT INTO choosesproducts (customerorder, product) VALUES (7,2);
 
 
@@ -74,7 +73,6 @@ UPDATE CUSTOMERORDER SET valid=1 WHERE id=4;
 UPDATE CUSTOMERORDER SET rejected=1 WHERE id=5;
 UPDATE CUSTOMERORDER SET rejected=2 WHERE id=5;
 UPDATE CUSTOMERORDER SET rejected=3 WHERE id=5;
-
 
 UPDATE CUSTOMERORDER SET rejected=1 WHERE id=6;
 
