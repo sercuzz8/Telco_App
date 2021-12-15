@@ -69,8 +69,12 @@
 		
 	</section>
 	
-	 <!--  -->
+	<section>
 	
+	<a th:href="@{/GoToBuyPage}">Buy a package</a>
+	
+	</section>
+		
 	<section th:if="${session.user!=null and session.user.getInsolvent()}" >
 	
 	<h2 >All your rejected orders</h2>

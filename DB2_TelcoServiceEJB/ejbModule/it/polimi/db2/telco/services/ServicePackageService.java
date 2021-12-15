@@ -3,10 +3,8 @@ package it.polimi.db2.telco.services;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 
 import it.polimi.db2.telco.entities.*;
-import it.polimi.db2.telco.exceptions.PackageNotFoundException;
 
 import java.util.List;
 

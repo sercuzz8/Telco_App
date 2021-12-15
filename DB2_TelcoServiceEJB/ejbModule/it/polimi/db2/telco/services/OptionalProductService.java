@@ -5,9 +5,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import it.polimi.db2.telco.entities.*;
-import it.polimi.db2.telco.exceptions.*;
-
-import java.util.List;
 
 @Stateless
 public class OptionalProductService {

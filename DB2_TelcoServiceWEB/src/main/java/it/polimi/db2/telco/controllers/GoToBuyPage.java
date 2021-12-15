@@ -1,6 +1,7 @@
 package it.polimi.db2.telco.controllers;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
@@ -11,32 +12,36 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.thymeleaf.TemplateEngine;
-
-import it.polimi.db2.telco.services.*;
-import it.polimi.db2.telco.entities.*;
-import java.util.List;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import it.polimi.db2.telco.entities.ServicePackage;
+import it.polimi.db2.telco.services.CustomerOrderService;
+import it.polimi.db2.telco.services.ServicePackageService;
+
 /**
- * Servlet implementation class GoToHomePage
+ * Servlet implementation class GoToBuyPage
  */
-@WebServlet("/GoToHomePage")
-public class GoToHomePage extends HttpServlet {
+@WebServlet("/GoToBuyPage")
+public class GoToBuyPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine;
-	@EJB(name = "it.polimi.db2.telco.services/ServiceService")
+	@EJB(name = "it.polimi.db2.telco.services/ServicePackageService")
 	private ServicePackageService sPacks;
+	@EJB(name = "it.polimi.db2.telco.services/CustomerOrderService")
+	private CustomerOrderService cOrds;
 
-
-	public GoToHomePage() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	public void init() throws ServletException {
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public GoToBuyPage() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+    
+    public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
 		templateResolver.setTemplateMode(TemplateMode.HTML);
@@ -45,10 +50,11 @@ public class GoToHomePage extends HttpServlet {
 		templateResolver.setSuffix(".html");
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		List<ServicePackage> servicePackages = sPacks.findAllPackages();
-		String path = "/WEB-INF/Home.html";
+		String path = "/WEB-INF/BuyPage.html";
 		
 		//System.out.println(servicePackages.get(0).getValidityPeriods().isEmpty());
 		

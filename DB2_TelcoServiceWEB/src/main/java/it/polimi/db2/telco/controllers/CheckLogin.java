@@ -14,8 +14,6 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-import it.polimi.db2.telco.entities.CustomerOrder;
-import it.polimi.db2.telco.entities.OptionalProduct;
 import it.polimi.db2.telco.entities.User;
 import it.polimi.db2.telco.exceptions.CredentialsException;
 import it.polimi.db2.telco.services.UserService;

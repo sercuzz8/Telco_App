@@ -80,8 +80,6 @@ public class CheckRegistration extends HttpServlet {
 		String path = getServletContext().getContextPath() + "/CheckLogin";
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");
-		//out.println(
-				//"<script>window.alert('Registration successful!');" + "window.location.href = '" + path + "'</script>");
 		response.sendRedirect(path);
 		return;
 	}
