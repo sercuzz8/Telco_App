@@ -3,4 +3,9 @@
 *.MF
 *.classpath
 *.project
-*.settings
+*.prefs
+*.components
+*.xml
+Servers*
+.metadata
+.settings*

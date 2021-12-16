@@ -27,4 +27,13 @@ public class ServicePackageService {
 			throw new PackageNotFoundException("No Package Found");
 		}*/
 	}
+	
+	public ServicePackage findPackageById(int packageId) /*throws PackageNotFoundException*/{
+		//try {
+			return em.find(ServicePackage.class, packageId);
+		/*}
+		catch (PersistenceException e){
+			throw new PackageNotFoundException("No Package Found");
+		}*/
+	}
 }

@@ -11,7 +11,7 @@ public class SAS {
 	@Id
 	//relationship "has" with user
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="user")
+	@JoinColumn(name="customer")
 	private User user;
 	
 	private LocalDateTime activationdate;

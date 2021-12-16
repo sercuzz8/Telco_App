@@ -9,32 +9,49 @@
 
 <h1>Buy A Package</h1>
 
-<form class="LoginForm" action="CheckLogin" method="POST" autocomplete="off">
+<form th:if="${products==null}" class="LoginForm" action="GoToBuyPage" method="POST" autocomplete="off">
+		
 		<h2>Buy</h2>
+		
 		<p th:text=" ${errorMsg}" class="errorMsg"></p>
 		<p th:text=" ${regSucc}" class="correctMsg"></p>
+		
+		<label for="pack_id">Choose a package:</label>
 		<p>
-		Choose the package
-		<select name = "dropdown" >
-            <option th:each="package: ${packages}" value = "${package.getId()}" selected>Package Id</option>
-         </select>
-         </p>
-         <p>
-        Choose the number of months</p>
+    	<select name="pack_id" class="package-control" id="dropPackage">
+    	<option th:each="package : ${packages}" th:value="${package.getId()}" th:text="${package.getName()}"></option>
+    	</select>
+		</p>
+		
+        <label for="num_months">Choose a package:</label>
         <p>
-        <input type="radio" id="twelve_months" name="num_months" value="12">
+        <input name="num_months" type="radio" value="12">
   		<label for="12">12</label><br>
   		<input type="radio" id="twenty-four_months" name="num_months" value="24">
   		<label for="24">24</label><br>
   		<input type="radio" id="thirty-six_months" name="num_months" value="36">
   		<label for="36">36</label>
   		</p>
-		<p>Choose the optional products</p>
-		<p>
-		<input type="checkbox" id="productId" name="prdouct" value="Bike">
-		<label for="vehicle1"> I have a bike</label><br>	
-		</p>
+  		
+  		<p>
+  		<label for="startdate">Choose starting date:</label>
+		<input type="date" id="startdate" name="start_date"> 
+  		</p>
+  		
+		<p><input class="buttonStyle" type="submit" value="Confirm"><br></p>
+  		
+		
 	</form>
+
+<div  th:if="${products!=null}">
+
+<ul th:each="product: ${products}">
+
+<li><span th:text="${product.getName()}"></span></li>
+
+</ul>		
+
+</div>
 
 </body>
 
