@@ -1,5 +1,7 @@
 package it.polimi.db2.telco.services;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -12,6 +14,10 @@ public class OptionalProductService {
 	private EntityManager em;
 	
 	public OptionalProductService() {}
+	
+	public List<OptionalProduct> findAllProducts(){
+		return em.createNamedQuery("OptionalProduct.findAll", OptionalProduct.class).getResultList();
+	}
 	
 	public void createProduct(int id, String name, float monthlyFee) {
 		OptionalProduct product=new OptionalProduct(id, name, monthlyFee);

@@ -9,49 +9,46 @@
 
 <h1>Buy A Package</h1>
 
-<form th:if="${products==null}" class="LoginForm" action="GoToBuyPage" method="POST" autocomplete="off">
+<form class="LoginForm" action="GoToBuyPage" method="POST" autocomplete="off">
 		
 		<h2>Buy</h2>
 		
-		<p th:text=" ${errorMsg}" class="errorMsg"></p>
-		<p th:text=" ${regSucc}" class="correctMsg"></p>
+		<p th:text="${errorMsg}" class="errorMsg"></p>
+		<p th:text="${regSucc}" class="correctMsg"></p>
 		
-		<label for="pack_id">Choose a package:</label>
+		<label for="chosen_pack">Choose the number of months:</label>
 		<p>
-    	<select name="pack_id" class="package-control" id="dropPackage">
-    	<option th:each="package : ${packages}" th:value="${package.getId()}" th:text="${package.getName()}"></option>
+    	<select name="chosen_pack" class="package-control" id="dropPackage">
+    	<option th:each="package : ${session.packages}" th:value="${package.getId()}" th:text="${package.getName()}"></option>
     	</select>
 		</p>
 		
-        <label for="num_months">Choose a package:</label>
+        <label for="chosen_months">Choose a package:</label>
         <p>
-        <input name="num_months" type="radio" value="12">
+        <input name="chosen_months" type="radio" value="12">
   		<label for="12">12</label><br>
-  		<input type="radio" id="twenty-four_months" name="num_months" value="24">
+  		<input type="radio" id="twenty-four_months" name="chosen_months" value="24">
   		<label for="24">24</label><br>
-  		<input type="radio" id="thirty-six_months" name="num_months" value="36">
+  		<input type="radio" id="thirty-six_months" name="chosen_months" value="36">
   		<label for="36">36</label>
   		</p>
   		
   		<p>
-  		<label for="startdate">Choose starting date:</label>
+  		<label for="start_date">Choose starting date:</label>
 		<input type="date" id="startdate" name="start_date"> 
+  		</p>
+  		
+  		<p>
+  		<label for="chooseproducts">Choose some products (if you like):</label>
+		<select id="chooseproducts" name="chosen_products" size="$session.products.size()" multiple>
+  		<option th:each="prod: ${session.products}" th:value="${prod.getId()}" th:text="${prod.getName()}"></option>
+		</select> 
   		</p>
   		
 		<p><input class="buttonStyle" type="submit" value="Confirm"><br></p>
   		
 		
 	</form>
-
-<div  th:if="${products!=null}">
-
-<ul th:each="product: ${products}">
-
-<li><span th:text="${product.getName()}"></span></li>
-
-</ul>		
-
-</div>
 
 </body>
 

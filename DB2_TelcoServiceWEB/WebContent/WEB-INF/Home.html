@@ -27,7 +27,7 @@
 		
 		<h2>All the packages offered</h2>
 		
-		<dl th:each="package : ${packages}">
+		<dl th:each="package : ${session.packages}">
 		
 			<dt> <b> <span th:text="${package.getId()}"> ID </span> : <span th:text="${package.getName()}"> Name </span> </b> </dt>
 			<dd th:each="validity : ${package.getValidityPeriods()}">	
