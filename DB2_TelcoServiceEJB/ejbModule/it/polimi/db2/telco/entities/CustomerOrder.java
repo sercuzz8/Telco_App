@@ -2,6 +2,7 @@ package it.polimi.db2.telco.entities;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ public class CustomerOrder {
 	
 	@Id @GeneratedValue (strategy=GenerationType.AUTO)
 	private int id;
-	
+		
 	private LocalDate date;
 	private LocalTime hour;
 	private LocalDate start;
@@ -47,14 +48,15 @@ public class CustomerOrder {
 	
 	public CustomerOrder() {}
 	
-	public CustomerOrder(int id, LocalDate date, LocalTime hour, LocalDate start) {
-		this.id = id;
-		this.date = date;
-		this.hour = hour;
-		this.start = start;
-		this.totalvalue = 0;
-		this.rejected = 0;
+	public CustomerOrder(int id, LocalDate date, LocalTime hour, LocalDate start, ValidityPeriod val) {
+		this.id=id;
+		this.date=date;
+		this.hour=hour;
+		this.start=start;
+		this.rejected=0;
 		this.valid=false;
+		this.validity=val;
+		this.products=new ArrayList<>();
 	}
 	
 	public int getId() {
@@ -127,15 +129,14 @@ public class CustomerOrder {
 		this.products.add(product);
 	}
 
-	public float getTotalvalue() {
-		return totalvalue;
-	}
-
-	public void setTotalvalue(float totalvalue) {
-		this.totalvalue = totalvalue;
-	}
-
 	public void setProducts(Collection<OptionalProduct> products) {
 		this.products = products;
+	}
+	
+	public void computeTotalValue() {
+		this.totalvalue=this.validity.getMonthsNumber()*this.validity.getMonthlyFee();
+		for (OptionalProduct p: this.products) {
+			this.totalvalue=this.totalvalue + this.validity.getMonthsNumber()*p.getMonthlyFee(); 
+		}
 	}
 }

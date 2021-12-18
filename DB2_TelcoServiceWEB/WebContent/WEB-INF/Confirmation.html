@@ -1,10 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+<meta charset="ISO-8859-1">
+<title>Confirmation Page</title>
 </head>
+
 <body>
 
-</body>
+<h1>Confirm the Order</h1>
+
+<div align="left">
+
+<dl>
+
+<dt>Order ID:</dt>
+<dd> <span th:text="${session.order.getId()}">Order ID</span> </dd>
+<dt>Service Package Name</dt>
+<dd> <span th:text="${session.order.getValidity().getPackage().getName()}">Service Package Name</span> </dd>
+<dd> <span th:text="${session.order.getValidity().getMonthsNumber()}">Number of months</span> Months </dd>
+<dt>Products:</dt>
+<dd th:each="p: ${session.order.getProducts()}"> <span th:text="${p.getName()}">Product Name</span> </dd>
+<dt> Yearly Cost:</dt>
+<dd> <span th:text="${session.order.getTotalValue()}">Total Cost</span> </dd>
+
+</dl>
+
+</div>
+
+
+
 </html>

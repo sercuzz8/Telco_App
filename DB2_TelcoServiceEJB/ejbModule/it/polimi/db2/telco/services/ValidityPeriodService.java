@@ -14,8 +14,8 @@ public class ValidityPeriodService {
 	
 	public ValidityPeriodService() {}
 	
-	public List<ValidityPeriod> findPeriodsByPackage(int packageId){
-		return em.createNamedQuery("ValidityPeriod.findAllByPackage", ValidityPeriod.class).setParameter(1, packageId).getResultList();
+	public List<ValidityPeriod> findPeriod(ServicePackage packageId, int monthsNumber){
+		return em.createNamedQuery("ValidityPeriod.findValidity", ValidityPeriod.class).setParameter(1, packageId).setParameter(2, monthsNumber).getResultList();
 	} 
 	
 	public List<ValidityPeriod> findAllPeriods(){

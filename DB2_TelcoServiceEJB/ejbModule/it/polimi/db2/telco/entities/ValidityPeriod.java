@@ -6,7 +6,7 @@ import javax.persistence.*;
 @Table(name="VALIDITYPERIOD")
 @IdClass(ValidityPeriodId.class)
 @NamedQuery(name="ValidityPeriod.findAll", query="SELECT v FROM ValidityPeriod v")
-@NamedQuery(name="ValidityPeriod.findAllByPackage", query="SELECT v FROM ValidityPeriod v WHERE v.sPackage=?1 ORDER BY v.monthsnumber ASC")
+@NamedQuery(name="ValidityPeriod.findValidity", query="SELECT v FROM ValidityPeriod v WHERE v.sPackage=?1 AND v.monthsnumber=?2 ORDER BY v.monthsnumber ASC")
 public class ValidityPeriod {
 	
 	@Id

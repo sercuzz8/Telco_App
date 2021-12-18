@@ -3,9 +3,13 @@ package it.polimi.db2.telco.services;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
 import it.polimi.db2.telco.entities.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Random;
 
 @Stateful
 public class CustomerOrderService {
@@ -18,7 +22,25 @@ public class CustomerOrderService {
 		return em.createNamedQuery("Order.findRejectedOrderOfUser", CustomerOrder.class).setParameter(1, usrn).getResultList();
 	}
 	
-	public void createCustomerOrder() {
-		
+	public CustomerOrder createCustomerOrder(LocalDate dateOrder, LocalTime hourOrder, LocalDate startSubscription, ValidityPeriod validityPeriod) {
+		Random rand = new Random();
+		int n = rand.nextInt(1000);
+		CustomerOrder customerOrder = new CustomerOrder(n, dateOrder, hourOrder, startSubscription, validityPeriod);
+		//em.persist(customerOrder);
+		return customerOrder;
+	}	
+	
+	public void addCustomerToOrder(CustomerOrder customerOrder, User user) {
+		customerOrder.setUser(user);
+		//em.persist(customerOrder);
+	}
+	
+	public void addProductToOrder(CustomerOrder customerOrder, OptionalProduct product) {
+		customerOrder.addProduct(product);
+		//em.persist(customerOrder);
+	}
+
+	public void addCustomerOrder(CustomerOrder customerOrder) {
+		em.persist(customerOrder);
 	}
 }

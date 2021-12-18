@@ -33,7 +33,7 @@ CREATE TABLE CUSTOMERORDER (
 	date Date NOT NULL, 
 	hour Time NOT NULL,
 	start Date NOT NULL,
-	customer varchar(50) NOT NULL, -- Not unique because the same customer can buy different packages
+	customer varchar(50), -- Not unique because the same customer can buy different packages
 	package int NOT NULL, -- The order is associated with the validity period but the validity period is associated with only
 	months int NOT NULL, -- one service package thus the validity period is associated with a single service package
 	rejected int NOT NULL DEFAULT 0,  
@@ -189,6 +189,9 @@ CREATE TRIGGER accepted_payment
 	IF (new.valid=1 and old.valid<>1)
 	THEN
 		BEGIN
+		
+        UPDATE CUSTOMERORDER SET rejected=0 WHERE id=new.id ;
+
 		INSERT INTO SERVICEACTIVATIONSCHEDULE (package, customer, activationdate, deactivationdate) VALUES (new.package, new.customer, new.start, date_add(new.start, interval new.months month));
 		
 		INSERT INTO purchasesproducts(package, customer, product)
