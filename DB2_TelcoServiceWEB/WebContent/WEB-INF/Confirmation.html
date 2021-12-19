@@ -27,6 +27,28 @@
 
 </div>
 
+<div th:if=${session.user==null} align="left">
+		<a th:href="@{/CheckLogin}">Login</a>
+		<a th:href="@{/CheckRegister}">Register</a>
+</div>
 
+<div th:unless=${session.user==null} align="left">
+<form class="ConfirmForm" action="GoToConfirmationPage" method="POST" autocomplete="off">
 
+		<p th:text="${errorMsg}" class="errorMsg"></p>
+		<p th:text="${regSucc}" class="correctMsg"></p>
+		
+		<label for="success">Success or failure:</label>
+		<p>
+    	<select name="success" class="success-control" id="dropPackage">
+    	<option th:value="true" th:text="success"></option>
+    	<option th:value="false" th:text="failure"></option>
+    	</select>
+		</p>
+  		
+		<p><input class="buttonStyle" type="submit" value="Confirm"><br></p>
+  		
+		
+	</form>
+	</div>
 </html>

@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.thymeleaf.TemplateEngine;
-
 import it.polimi.db2.telco.services.*;
 import it.polimi.db2.telco.entities.*;
 import java.util.List;
@@ -30,10 +28,11 @@ public class GoToHomePage extends HttpServlet {
 	@EJB(name = "it.polimi.db2.telco.services/ServiceService")
 	private ServicePackageService sPacks;
 
+	@EJB(name = "it.polimi.db2.telco.services/CustomerOrderService")
+	private CustomerOrderService cOrds;
 
 	public GoToHomePage() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public void init() throws ServletException {
@@ -48,10 +47,7 @@ public class GoToHomePage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		List<ServicePackage> servicePackages = sPacks.findAllPackages();
-		String path = "/WEB-INF/Home.html";
-		
-		//System.out.println(servicePackages.get(0).getValidityPeriods().isEmpty());
-		
+		String path = "/WEB-INF/Home.html";		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		request.getSession().setAttribute("packages", servicePackages);
@@ -60,7 +56,14 @@ public class GoToHomePage extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		doGet(request, response);
+		
+		CustomerOrder order = null;
+		int orderId = Integer.parseInt(request.getParameter("chosen_order"));
+		order = cOrds.findById(orderId);
+		request.getSession().setAttribute("order", order);
+		String path = getServletContext().getContextPath() + "/GoToConfirmationPage";
+		response.setContentType("text/html");
+		response.sendRedirect(path);
 	}
 
 }

@@ -9,21 +9,21 @@
 
 <h1>Buy A Package</h1>
 
-<form class="LoginForm" action="GoToBuyPage" method="POST" autocomplete="off">
+<form class="BuyForm" action="GoToBuyPage" method="POST" autocomplete="off">
 		
 		<h2>Buy</h2>
 		
 		<p th:text="${errorMsg}" class="errorMsg"></p>
 		<p th:text="${regSucc}" class="correctMsg"></p>
 		
-		<label for="chosen_pack">Choose the number of months:</label>
+		<label for="chosen_pack">Choose a package:</label>
 		<p>
     	<select name="chosen_pack" class="package-control" id="dropPackage">
     	<option th:each="package : ${session.packages}" th:value="${package.getId()}" th:text="${package.getName()}"></option>
     	</select>
 		</p>
 		
-        <label for="chosen_months">Choose a package:</label>
+        <label for="chosen_months">Choose the number of months:</label>
         <p>
         <input name="chosen_months" type="radio" value="12">
   		<label for="12">12</label><br>
@@ -48,7 +48,7 @@
 		<p><input class="buttonStyle" type="submit" value="Confirm"><br></p>
   		
 		
-	</form>
+</form>
 
 </body>
 

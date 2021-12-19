@@ -1,7 +1,6 @@
 package it.polimi.db2.telco.controllers;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -15,6 +14,7 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import it.polimi.db2.telco.entities.User;
 import it.polimi.db2.telco.services.UserService;
 
 /**
@@ -54,6 +54,9 @@ public class CheckRegistration extends HttpServlet {
 		String usrn = null;
 		String email = null;
 		String pwd = null;
+		
+		User user = null;
+		
 		try {
 			usrn = StringEscapeUtils.escapeJava(request.getParameter("username"));
 			email = StringEscapeUtils.escapeJava(request.getParameter("email"));
@@ -67,7 +70,7 @@ public class CheckRegistration extends HttpServlet {
 		}
 
 		try {
-			usrService.addUser(usrn, email, pwd);
+			user=usrService.addUser(usrn, email, pwd);
 		} catch (Exception e) {
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
@@ -77,10 +80,20 @@ public class CheckRegistration extends HttpServlet {
 			return;
 		}
 		
-		String path = getServletContext().getContextPath() + "/CheckLogin";
-		PrintWriter out = response.getWriter();
+		request.getSession().setAttribute("user", user);
+		
+		if (request.getSession().getAttribute("order")!=null) {
+			String path = getServletContext().getContextPath() + "/GoToConfirmationPage";
+			response.setContentType("text/html");
+			response.sendRedirect(path);
+			return;
+		}
+		else {
+		String path = getServletContext().getContextPath() + "/GoToHomePage";
 		response.setContentType("text/html");
 		response.sendRedirect(path);
 		return;
+		}
+		
 	}
 }

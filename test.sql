@@ -1,32 +1,42 @@
-    INSERT INTO SERVICEPACKAGE (id, name) VALUES (1,"Basic");
-    INSERT INTO SERVICEPACKAGE (id, name) VALUES (2,"Deluxe");
+INSERT INTO SERVICE(id, servicetype) VALUES (1, 'fixed_phone');
+INSERT INTO SERVICE(id, servicetype, minnumber, smsnumber, minfee, smsfee) VALUES (2, 'mobile_phone', 100, 50, 0.5, 0.2);
+INSERT INTO SERVICE(id, servicetype, gbnumber, gbfee) VALUES (3, 'fixed_internet', 50, 0.7);
+INSERT INTO SERVICE(id, servicetype, gbnumber, gbfee) VALUES (4, 'mobile_internet', 150, 0.2);
 
-    INSERT INTO SERVICE(id, servicetype) VALUES (1, 'fixed_phone');
-    INSERT INTO SERVICE(id, servicetype, minnumber, smsnumber, minfee, smsfee) VALUES (2, 'mobile_phone', 100, 50, 0.5, 0.2);
-    INSERT INTO SERVICE(id, servicetype, gbnumber, gbfee) VALUES (3, 'fixed_internet', 50, 0.7);
-    INSERT INTO SERVICE(id, servicetype, gbnumber, gbfee) VALUES (4, 'mobile_internet', 150, 0.2);
+INSERT INTO EMPLOYEE (code, password) VALUES ('1234', '1234');
+INSERT INTO EMPLOYEE (code, password) VALUES ('5678', '5678');
 
-    INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (1, 12, 12.5);
-    INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (1, 24, 10.5);
-    INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (1, 36, 9.5);
+INSERT INTO SERVICEPACKAGE (id, name) VALUES (1,"Basic");
+INSERT INTO SERVICEPACKAGE (id, name) VALUES (2,"Deluxe");
 
-    INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (2, 12, 30);
-    INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (2, 24, 27);
-    INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (2, 36, 25);
+INSERT INTO includesservices(package, service) VALUES (1, 1);
+INSERT INTO includesservices(package, service) VALUES (1, 3);
+INSERT INTO includesservices(package, service) VALUES (2, 1);
+INSERT INTO includesservices(package, service) VALUES (2, 2);
+INSERT INTO includesservices(package, service) VALUES (2, 3);
+INSERT INTO includesservices(package, service) VALUES (2, 4);
 
-    INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (1, "Radio Addition", 10.0);
-    INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (2, "TV Addition", 15.0);
-    INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (3, "Stuff", 15.0);
-    INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (4, "Metfixplus", 30.0);
-    INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (5, "Cable change", 7.0);
+INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (1, 12, 12.5);
+INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (1, 24, 10.5);
+INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (1, 36, 9.5);
 
-    INSERT INTO offersproducts (package, product) VALUES (1,1);
-    INSERT INTO offersproducts (package, product) VALUES (1,2);
-    INSERT INTO offersproducts (package, product) VALUES (2,1);
-    INSERT INTO offersproducts (package, product) VALUES (2,2);
-    INSERT INTO offersproducts (package, product) VALUES (2,3);
-    INSERT INTO offersproducts (package, product) VALUES (2,4);
-    INSERT INTO offersproducts (package, product) VALUES (2,5);
+INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (2, 12, 30);
+INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (2, 24, 27);
+INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (2, 36, 25);
+
+INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (1, "Radio Addition", 10.0);
+INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (2, "TV Addition", 15.0);
+INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (3, "Stuff", 15.0);
+INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (4, "Metfixplus", 30.0);
+INSERT INTO OPTIONALPRODUCT (id, name, monthlyfee) VALUES (5, "Cable change", 7.0);
+
+INSERT INTO offersproducts (package, product) VALUES (1,1);
+INSERT INTO offersproducts (package, product) VALUES (1,2);
+INSERT INTO offersproducts (package, product) VALUES (2,1);
+INSERT INTO offersproducts (package, product) VALUES (2,2);
+INSERT INTO offersproducts (package, product) VALUES (2,3);
+INSERT INTO offersproducts (package, product) VALUES (2,4);
+INSERT INTO offersproducts (package, product) VALUES (2,5);
 
 -- Testing part:
 
@@ -36,16 +46,6 @@ INSERT INTO CUSTOMER (username, password, email) VALUES ('paolo', 'paolo', 'paol
 INSERT INTO CUSTOMER (username, password, email) VALUES ('donald', 'donald', 'donald@d.com');
 INSERT INTO CUSTOMER (username, password, email) VALUES ('fabio', 'fabio', 'fabio@fa.it');
 INSERT INTO CUSTOMER (username, password, email) VALUES ('marco', 'fabio', 'marco@mar.it');
-
-INSERT INTO EMPLOYEE (code, password) VALUES ('1234', '1234');
-INSERT INTO EMPLOYEE (code, password) VALUES ('5678', '5678');
-
-INSERT INTO includesservices(package, service) VALUES (1, 1);
-INSERT INTO includesservices(package, service) VALUES (1, 3);
-INSERT INTO includesservices(package, service) VALUES (2, 1);
-INSERT INTO includesservices(package, service) VALUES (2, 2);
-INSERT INTO includesservices(package, service) VALUES (2, 3);
-INSERT INTO includesservices(package, service) VALUES (2, 4);
 
 INSERT INTO CUSTOMERORDER (id, date, hour, start, customer, package , months) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12);
 INSERT INTO CUSTOMERORDER (id, date, hour, start, customer, package , months) VALUES (2, '2021-02-01', '13:00', '2021-04-01' ,"ale", 1, 24);
@@ -76,6 +76,8 @@ UPDATE CUSTOMERORDER SET rejected=3 WHERE id=5;
 
 
 UPDATE CUSTOMERORDER SET rejected=1 WHERE id=6;
+
+SELECT * FROM CUSTOMER;
 
 UPDATE CUSTOMERORDER SET valid=1 WHERE id=6;
 
@@ -127,7 +129,7 @@ INSERT INTO SERVICEPACKAGE (id, name) VALUES (1,"Basic");
 INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (1, 12, 12.5);
 -- Result: OK
 
--- 5. Only 12,24,36 Months in VALIDITYPERIOD    
+-- 5. Only 12,24,36 Months in VALIDITYPERIOD
 DELETE FROM SERVICEPACKAGE WHERE id=1;
 INSERT INTO SERVICEPACKAGE (id, name) VALUES (1,"Basic");
 INSERT INTO VALIDITYPERIOD (package, monthsnumber, monthlyfee) VALUES (1, 11, 12.5);

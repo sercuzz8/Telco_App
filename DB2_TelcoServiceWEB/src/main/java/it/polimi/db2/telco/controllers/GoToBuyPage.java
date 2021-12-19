@@ -24,9 +24,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import it.polimi.db2.telco.entities.CustomerOrder;
 import it.polimi.db2.telco.entities.OptionalProduct;
 import it.polimi.db2.telco.entities.ServicePackage;
-import it.polimi.db2.telco.entities.User;
 import it.polimi.db2.telco.entities.ValidityPeriod;
-import it.polimi.db2.telco.exceptions.CredentialsException;
 import it.polimi.db2.telco.services.CustomerOrderService;
 import it.polimi.db2.telco.services.OptionalProductService;
 import it.polimi.db2.telco.services.ServicePackageService;
@@ -54,7 +52,6 @@ public class GoToBuyPage extends HttpServlet {
 	 */
 	public GoToBuyPage() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public void init() throws ServletException {
@@ -131,8 +128,13 @@ public class GoToBuyPage extends HttpServlet {
 
 		order=cOrds.createCustomerOrder(LocalDate.now(), LocalTime.now(), LocalDate.parse(start), vPer);
 		
-		for (String p : prods) {
-			cOrds.addProductToOrder(order, oProds.findProductsById(Integer.parseInt(p)));
+		try {
+			for (String p : prods) {
+				cOrds.addProductToOrder(order, oProds.findProductsById(Integer.parseInt(p)));
+			}
+		}
+		catch(NullPointerException e) {
+			
 		}
 		
 		order.computeTotalValue();

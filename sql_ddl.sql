@@ -184,13 +184,13 @@ CREATE TRIGGER product_not_on_package
 	END//
 
 CREATE TRIGGER accepted_payment
-	AFTER UPDATE ON CUSTOMERORDER
+	BEFORE UPDATE ON CUSTOMERORDER
 	FOR EACH ROW
 	IF (new.valid=1 and old.valid<>1)
 	THEN
 		BEGIN
 		
-        UPDATE CUSTOMERORDER SET rejected=0 WHERE id=new.id ;
+		SET new.rejected=0;
 
 		INSERT INTO SERVICEACTIVATIONSCHEDULE (package, customer, activationdate, deactivationdate) VALUES (new.package, new.customer, new.start, date_add(new.start, interval new.months month));
 		
@@ -198,7 +198,17 @@ CREATE TRIGGER accepted_payment
 		SELECT co.package, co.customer, ch.product 
 		FROM CUSTOMERORDER co JOIN choosesproducts ch ON ch.customerorder=co.id
 		WHERE co.id=new.id;
-
+		
+        /*
+        
+        Set a procedure to make a user not insolvent anymore
+        
+        BEGIN 
+			set @buyer=(SELECT insolvent FROM CUSTOMER WHERE username=new.user);
+            
+            
+        END;*/
+        
 		END;
 	END IF//
 

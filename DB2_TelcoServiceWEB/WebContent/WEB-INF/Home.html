@@ -17,7 +17,8 @@
 		<a th:href="@{/CheckLogin}">Login</a>
 	</div>
 	<div th:unless=${session.user==null} align="right">
-		<a th:text="${session.user.username}">Username>Login</a>
+		<a th:text="${session.user.username}">Username</a>
+		<a th:href="@{/Logout}">Logout</a>
 	</div>
 
 	<section>
@@ -87,10 +88,26 @@
 			<li> Months: <span th:text="${order.getValidity().getMonthsNumber()}">Months</span> </li>
 			<li th:each="prod : ${order.getProducts()}" > Chosen product:
 				<span th:text="${prod.getName()}">Product</span>
-			</li>
-			  
+			</li>  
 			<li> Total cost per year: <span th:text="${order.getTotalValue()}">Order Value</span> </li>
 		</ul>
+		
+		<form class="RetryOrder" action="GoToHomePage" method="POST" autocomplete="off">
+
+		<p th:text="${errorMsg}" class="errorMsg"></p>
+		<p th:text="${regSucc}" class="correctMsg"></p>
+		
+		<label for="chosen_order">Retry an order:</label>
+		<p>
+    	<select name="chosen_order" class="order-control" id="dropOrder">
+    	<option th:each="order : ${session.user.getRejectedOrders()}" th:value="${order.getId()}" th:text="${order.getId()}"></option>
+    	</select>
+		</p>
+  		
+		<p><input class="buttonStyle" type="submit" value="Confirm"><br></p>
+  		
+		
+		</form>
 			
 	</section>
 

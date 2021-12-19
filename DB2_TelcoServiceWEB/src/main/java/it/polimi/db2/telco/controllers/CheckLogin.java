@@ -44,7 +44,22 @@ public class CheckLogin extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String path = "/Login.html";
+		
+		String path = null;
+		
+		if (request.getSession().getAttribute("user")!=null) {
+			path = getServletContext().getContextPath() + "/GoToHomePage";
+			response.sendRedirect(path);
+			return;
+		}
+		else if (request.getSession().getAttribute("employee")!=null) {
+			path = getServletContext().getContextPath() + "/GoToHomePageEmployee";
+			response.sendRedirect(path);
+			return;
+		}
+		
+		path= "/Login.html";
+		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		templateEngine.process(path, ctx, response.getWriter());
@@ -100,8 +115,14 @@ public class CheckLogin extends HttpServlet {
 				}
 			}*/
 			request.getSession().setAttribute("user", user);
+			if (request.getSession().getAttribute("order")!=null) {
+				path = getServletContext().getContextPath() + "/GoToConfirmationPage";
+				response.sendRedirect(path);
+			}
+			else {
 			path = getServletContext().getContextPath() + "/GoToHomePage";
 			response.sendRedirect(path);
+			}
 		}
 	}
 }

@@ -18,6 +18,10 @@ public class CustomerOrderService {
 	
 	public CustomerOrderService() {}
 	
+	public CustomerOrder findById(int id) {
+		return em.find(CustomerOrder.class, id);
+	}
+	
 	public List<CustomerOrder> findRejectedOrdersOfUser(String usrn){
 		return em.createNamedQuery("Order.findRejectedOrderOfUser", CustomerOrder.class).setParameter(1, usrn).getResultList();
 	}
@@ -26,21 +30,21 @@ public class CustomerOrderService {
 		Random rand = new Random();
 		int n = rand.nextInt(1000);
 		CustomerOrder customerOrder = new CustomerOrder(n, dateOrder, hourOrder, startSubscription, validityPeriod);
-		//em.persist(customerOrder);
 		return customerOrder;
 	}	
 	
 	public void addCustomerToOrder(CustomerOrder customerOrder, User user) {
 		customerOrder.setUser(user);
-		//em.persist(customerOrder);
 	}
 	
 	public void addProductToOrder(CustomerOrder customerOrder, OptionalProduct product) {
 		customerOrder.addProduct(product);
-		//em.persist(customerOrder);
 	}
 
 	public void addCustomerOrder(CustomerOrder customerOrder) {
-		em.persist(customerOrder);
+		em.merge(customerOrder);
 	}
+	
+	
+	
 }

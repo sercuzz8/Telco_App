@@ -112,9 +112,12 @@ public class CustomerOrder {
 	public void setRejected(int rej) {
 		this.rejected = rej;
 	}
+	public void incrementRejected() {
+		this.rejected++;
+	}
 	
-	public void setValid(boolean val) {
-		this.valid = val;
+	public void setValid() {
+		this.valid = true;
 	}
 	
 	public void setUser (User user) {
