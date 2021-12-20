@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Sales Report Page</title>
+<!--
+<link rel="stylesheet" type="text/css" media="all"
+	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
+	-->
+</head>
+
+<body>
+
+	<h1>Sales Report</h1>
+
+	<section>
+		<div align="left">
+		<h2>Total purchases per package</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Package Id</th>
+						<th>Number of purchases</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="view_one : ${purchases_package_view}">
+						<td><span th:text="${view_one.getPackage_()}"> Id </span></td>
+						<td><span th:text="${view_one.getPurchases()}"> Name </span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>
+	
+	<section>
+		<div align="left">
+		<h2>Total sales per package and validity period</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Package Id</th>
+						<th>Number of months</th>
+						<th>Number of purchases</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="view_two : ${purchases_validity_view}">
+						<td><span th:text="${view_two.getPackage_()}"> Id </span></td>
+						<td><span th:text="${view_two.getMonths()}"> Name </span></td>
+						<td><span th:text="${view_two.getPurchases()}"> Name </span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+	<section>
+		<div align="left">
+		<h2>Total sales per package</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Package Id</th>
+						<th>Sales with optional products</th>
+						<th>Sales without optional products</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="view_three : ${validity_sale_view}">
+						<td><span th:text="${view_three.getPackage_()}"> Id </span></td>
+						<td><span th:text="${view_three.getWithProducts()}"> Name </span></td>
+						<td><span th:text="${view_three.getWithoutProducts()}"> Name </span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>
+	
+
+	<section>
+		<div align="left">
+		<h2>Total sales per package with and without optional products</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Package Id</th>
+						<th>Average number of optional products sold</th>
+						<th>Sales without optional products</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="view_four : ${avg_product_view}">
+						<td><span th:text="${view_four.getPackage_()}"> Id </span></td>
+						<td><span th:text="${view_four.getAvgProducts()}"> Name </span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>	
+	
+	<section>
+		<div align="left">
+		<h2>Average products sold with package</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Package Id</th>
+						<th>Average number of optional products sold</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="view_four : ${avg_product_view}">
+						<td><span th:text="${view_four.getPackage_()}"> Id </span></td>
+						<td><span th:text="${view_four.getAvgProducts()}"> Name </span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>	
+	
+	<section>
+		<div align="left">
+		<h2>Insolvent users and suspended alerts</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Insolvent user</th>
+						<th>Id of the suspended order</th>
+						<th>Date of the last rejection </th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="view_five : ${insolvent_customer_view}">
+						<td><span th:text="${view_five.getInsolvent()}"> Id </span></td>
+						<td><span th:text="${view_five.getRejectedOrder()}"> Name </span></td>
+						<td><span th:text="${view_five.getAlertDate()}"> Name </span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>	
+	
+	<section>
+		<div align="left">
+		<h2>Best Sellers</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Id of the Product</th>
+						<th>Number of sales</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="view_six : ${best_seller_view}">
+						<td><span th:text="${view_six.getProduct()}"> Id </span></td>
+						<td><span th:text="${view_six.getNumOfSales()}"> Name </span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>	
+	
+
+</body>
+</html>

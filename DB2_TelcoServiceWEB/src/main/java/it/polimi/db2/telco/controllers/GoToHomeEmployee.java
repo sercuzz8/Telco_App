@@ -1,8 +1,6 @@
 package it.polimi.db2.telco.controllers;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
@@ -15,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import it.polimi.db2.telco.services.*;
 import it.polimi.db2.telco.entities.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;

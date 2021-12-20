@@ -1,6 +1,6 @@
 package it.polimi.db2.telco.services;
 
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -11,7 +11,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Random;
 
-@Stateful
+@Stateless
 public class CustomerOrderService {
 	@PersistenceContext(unitName="DB2_TelcoServiceEJB")
 	private EntityManager em;
@@ -44,7 +44,5 @@ public class CustomerOrderService {
 	public void addCustomerOrder(CustomerOrder customerOrder) {
 		em.merge(customerOrder);
 	}
-	
-	
 	
 }

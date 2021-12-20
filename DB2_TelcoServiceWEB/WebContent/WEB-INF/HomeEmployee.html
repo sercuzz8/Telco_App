@@ -12,6 +12,14 @@
 <body>
 
 	<h1>Hello Employee</h1>
+	
+	<section>
+	
+	<div>
+		<a th:href="@{/GoToSalesReportPage}">Sales Report</a>
+	</div>
+	
+	</section>
 
 	<section>
 	
@@ -85,9 +93,9 @@
 		<label for="created_package">Create a service package:</label>
 		<p>
 		<p><input type="text" name="package_name" placeholder="Package Name" required><br></p>
-		<p><input type="text" name="package_cost" placeholder="Package Cost 12 months" required><br></p>
-		<p><input type="text" name="package_cost" placeholder="Package Cost 24 months" required><br></p>
-		<p><input type="text" name="package_cost" placeholder="Package Cost 36 months" required><br></p>
+		<p><input type="text" name="package_cost_twelve" placeholder="Package Cost 12 months" required><br></p>
+		<p><input type="text" name="package_cost_twentyfour" placeholder="Package Cost 24 months" required><br></p>
+		<p><input type="text" name="package_cost_thirtysix" placeholder="Package Cost 36 months" required><br></p>
 		<p><label for="chooseproducts">Choose one or more services:</label></p>
 		<p><select id="chooseproducts" name="chosen_services" size="${services.size()}" multiple>
   		<option th:each="serv: ${services}" th:value="${serv.getId()}" th:text="${serv.getId()}"></option>
