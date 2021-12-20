@@ -25,7 +25,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 public class GoToHomePage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine;
-	@EJB(name = "it.polimi.db2.telco.services/ServiceService")
+	@EJB(name = "it.polimi.db2.telco.services/ServicePackageService")
 	private ServicePackageService sPacks;
 
 	@EJB(name = "it.polimi.db2.telco.services/CustomerOrderService")

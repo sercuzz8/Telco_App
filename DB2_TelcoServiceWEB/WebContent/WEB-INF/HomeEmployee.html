@@ -1,10 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+<meta charset="ISO-8859-1">
+<title>Telco Home Employee</title>
+<!--
+<link rel="stylesheet" type="text/css" media="all"
+	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
+	-->
 </head>
+
 <body>
+
+	<h1>Hello Employee</h1>
+
+	<section>
+	
+		<div align="left">
+		
+		<h2>Services</h2>
+		
+		<ul th:each="service : ${services}">
+			<li>
+					<a th:if="${service.getServiceType().toString()=='fixed_phone'}"> Fixed Phone </a>
+					<a th:if="${service.getServiceType().toString()=='mobile_phone'}">
+					Mobile Phone:
+						<span th:text="${service.getMinNumber()}"> Number Of minutes </span> MIN:
+						<span th:text="${service.getMinFee()}"> Fee for Extra Minutes </span> &euro; per extra minute
+						<span th:text="${service.getSmsNumber()}"> Number Of SMSs </span> SMS:
+						<span th:text="${service.getSmsFee()}"> Fee for Extra SMSs </span> &euro; per extra SMS
+					</a>
+					<a th:if="${service.getServiceType().toString()=='fixed_internet'}">	
+					Fixed Internet: 
+					<span th:text="${service.getGBNumber()}"> Number Of GBs </span> GB:  
+					<span th:text="${service.getGBFee()} "> Fee for Extra GBs </span> &euro; for any extra GB
+					</a>
+					<a th:if="${service.getServiceType().toString()=='mobile_internet'}">
+					Mobile Internet: 
+					<span th:text="${service.getGBNumber()}"> Number Of GBs </span> GB:
+					<span th:text="${service.getGBFee()}"> Fee for Extra GBs </span> &euro; for any extra GB
+					</a>		
+			</li>
+			
+			</ul>
+			
+			<h2>Products</h2>
+			
+			<ul th:each="product : ${products}" >
+			
+			<li>
+				<span th:text="${product.getName()}">Product Name</span> : 
+				<span th:text="${product.getMonthlyFee()}">Product Fee</span> &euro; per month
+			</li>
+			
+		</ul>
+		
+		</div>
+		
+	</section>
+		
+	<section>
+	
+		<form class="CreateOptionalProduct" action="GoToHomeEmployee" method="POST" autocomplete="off">
+
+		<p th:text="${errorMsg}" class="errorMsg"></p>
+		<p th:text="${regSucc}" class="correctMsg"></p>
+		
+		<label for="CreateOptionalProduct">Create a Product:</label>
+		<p>
+		<p><input type="text" name="product_name" placeholder="Product Name" required><br></p>
+		<p><input type="text" name="product_cost" placeholder="Product Cost" required><br></p>
+		<p><input class="buttonStyle" type="submit" value="Create"> <br></p><br>
+		
+		</form>
+			
+	</section>
+	
+	<section>
+	
+		<form class="CreateServicePackage" action="GoToHomeEmployee" method="POST" autocomplete="off">
+
+		<p th:text="${errorMsg}" class="errorMsg"></p>
+		<p th:text="${regSucc}" class="correctMsg"></p>
+		
+		<label for="created_package">Create a service package:</label>
+		<p>
+		<p><input type="text" name="package_name" placeholder="Package Name" required><br></p>
+		<p><input type="text" name="package_cost" placeholder="Package Cost 12 months" required><br></p>
+		<p><input type="text" name="package_cost" placeholder="Package Cost 24 months" required><br></p>
+		<p><input type="text" name="package_cost" placeholder="Package Cost 36 months" required><br></p>
+		<p><label for="chooseproducts">Choose one or more services:</label></p>
+		<p><select id="chooseproducts" name="chosen_services" size="${services.size()}" multiple>
+  		<option th:each="serv: ${services}" th:value="${serv.getId()}" th:text="${serv.getId()}"></option>
+		</select> </p>
+		<p><label for="chooseproducts">Choose zero or more products:</label></p>
+		<p><select id="chooseproducts" name="chosen_products" size="${products.size()}" multiple>
+  		<option th:each="prod: ${products}" th:value="${prod.getId()}" th:text="${prod.getName()}"></option>
+		</select> </p>
+		<p><input class="buttonStyle" type="submit" value="Create"> <br></p><br>
+		
+		</form>
+			
+	</section>  
+
 
 </body>
 </html>

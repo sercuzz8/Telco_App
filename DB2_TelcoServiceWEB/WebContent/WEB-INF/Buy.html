@@ -40,7 +40,7 @@
   		
   		<p>
   		<label for="chooseproducts">Choose some products (if you like):</label>
-		<select id="chooseproducts" name="chosen_products" size="$session.products.size()" multiple>
+		<select id="chooseproducts" name="chosen_products" size="${session.products.size()}" multiple>
   		<option th:each="prod: ${session.products}" th:value="${prod.getId()}" th:text="${prod.getName()}"></option>
 		</select> 
   		</p>

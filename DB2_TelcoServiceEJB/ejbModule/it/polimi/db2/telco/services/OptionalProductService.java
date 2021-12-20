@@ -1,6 +1,7 @@
 package it.polimi.db2.telco.services;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -24,8 +25,10 @@ public class OptionalProductService {
 		return product;
 	}
 	
-	public void createProduct(int id, String name, float monthlyFee) {
-		OptionalProduct product=new OptionalProduct(id, name, monthlyFee);
+	public void createProduct(String name, float monthlyFee) {
+		Random rand = new Random();
+		int n = rand.nextInt(1000);
+		OptionalProduct product=new OptionalProduct(n, name, monthlyFee);
 		em.persist(product);
 	}
 }

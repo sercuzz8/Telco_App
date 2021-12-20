@@ -198,28 +198,40 @@ CREATE TRIGGER accepted_payment
 		SELECT co.package, co.customer, ch.product 
 		FROM CUSTOMERORDER co JOIN choosesproducts ch ON ch.customerorder=co.id
 		WHERE co.id=new.id;
-		
-        /*
-        
-        Set a procedure to make a user not insolvent anymore
-        
-        BEGIN 
-			set @buyer=(SELECT insolvent FROM CUSTOMER WHERE username=new.user);
-            
-            
-        END;*/
         
 		END;
 	END IF//
 
-CREATE TRIGGER failed_payments
+CREATE TRIGGER make_solvent
+	AFTER UPDATE ON CUSTOMERORDER
+	FOR EACH ROW
+	IF (new.valid=1 and old.valid<>1)
+	THEN
+		BEGIN
+		
+        SET @insolv=(SELECT MAX(o.rejected) FROM CUSTOMERORDER AS o WHERE o.customer=new.customer);
+        IF (@insolv=0) THEN
+			UPDATE CUSTOMER SET insolvent=0 WHERE username=new.customer;
+		END IF;
+        
+		END;
+	END IF//
+        
+CREATE TRIGGER set_insolvent
 	AFTER UPDATE ON CUSTOMERORDER
 	FOR EACH ROW
 	BEGIN 
 		IF (new.rejected=1 and old.rejected<>1)
 		THEN
-			UPDATE CUSTOMER SET insolvent=1 WHERE username=new.customer ;
-		ELSEIF (new.rejected=3 and old.rejected<>3)
+			UPDATE CUSTOMER SET insolvent=1 WHERE username=new.customer;
+		END IF;
+	END//
+    
+CREATE TRIGGER create_auditing
+	AFTER UPDATE ON CUSTOMERORDER
+	FOR EACH ROW
+	BEGIN 
+		IF (new.rejected=3 and old.rejected<>3)
 		THEN
 			BEGIN
 			SET @insolvent_mail = (SELECT u.email FROM CUSTOMER AS u WHERE u.username=new.customer);
