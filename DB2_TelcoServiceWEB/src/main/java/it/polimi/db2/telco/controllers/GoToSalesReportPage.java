@@ -58,7 +58,7 @@ public class GoToSalesReportPage extends HttpServlet {
 		List<Purchasespackage> purchases_package = purPackSer.findAllPurchasesForPackage();
 		List<Packagevalidityperiod> purchases_validity = packVal.findAllPackagesValidityPeriods();
 		List<Validitysaleproduct> validity_sale = valSaleProd.findAllValiditySaleProduct();
-		List<Avgproductsold> avg_product = avgProd.findAllAVGProductsSold();
+		List<Averageproductsold> avg_product = avgProd.findAllAVGProductsSold();
 		List<Insolventcustomer> insolvent_customer = insCust.findAllInsolventCustomers();
 		List<Bestseller> best_seller = bestSell.findAllBestSellers();
 		String path = "/WEB-INF/SalesReport.html";		
@@ -67,7 +67,7 @@ public class GoToSalesReportPage extends HttpServlet {
 		ctx.setVariable("purchases_package_view", purchases_package);
 		ctx.setVariable("purchases_validity_view", purchases_validity);
 		ctx.setVariable("validity_sale_view", validity_sale);
-		ctx.setVariable("avg_product_view", avg_product);
+		ctx.setVariable("average_product_view", avg_product);
 		ctx.setVariable("insolvent_customer_view", insolvent_customer);
 		ctx.setVariable("best_seller_view", best_seller);
 		templateEngine.process(path, ctx, response.getWriter());
