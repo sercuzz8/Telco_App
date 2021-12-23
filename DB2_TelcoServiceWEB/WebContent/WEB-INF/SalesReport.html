@@ -109,12 +109,12 @@
 				<thead>
 					<tr>
 						<th>Package Id</th>
-						<th>Average number of optional products sold</th>
+						<th>Average number of optional products sold for each package</th>
 						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="view_four : ${avg_product_view}">
+					<tr th:each="view_four : ${average_product_view}">
 						<td><span th:text="${view_four.getPackage_()}"> Id </span></td>
 						<td><span th:text="${view_four.getAvgProducts()}"> Name </span></td>
 					</tr>
