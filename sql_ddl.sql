@@ -134,11 +134,13 @@ WHERE s.package = c.package AND s.customer=c.customer AND c.package=v.package AN
 GROUP BY s.package
 ORDER BY s.package ASC;
 
-CREATE VIEW avgproductsold (package, avgProducts) AS
-SELECT s.package, COUNT(p.product)
-FROM SERVICEACTIVATIONSCHEDULE AS s, purchasesproducts as p
-WHERE s.package = p.package AND s.customer=p.customer
-GROUP BY s.package, s.customer;
+CREATE VIEW averageproductsold(package, avgProductSold) AS
+SELECT package, avg(productsSold) as avgProductSold
+FROM (	SELECT c.id as orderId, c.package, count(*) as productsSold
+		FROM CUSTOMERORDER c JOIN choosesproducts ON  customerorder = c.id
+		GROUP BY c.id, c.package) AS productsSoldPerOrder 
+GROUP BY package;        
+
 
 CREATE VIEW insolventcustomers(insolvent, rejectedOrder, alertDate) AS
 SELECT c.customer, c.id, a.lastrejectiondate
