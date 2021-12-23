@@ -15,8 +15,8 @@ public class AvgproductsoldService {
 	
 	public AvgproductsoldService() {}
 	
-	public List<Avgproductsold> findAllAVGProductsSold(){
-		return em.createNamedQuery("Avgproductsold.findAll", Avgproductsold.class).getResultList();
+	public List<Averageproductsold> findAllAVGProductsSold(){
+		return em.createNamedQuery("Avgproductsold.findAll", Averageproductsold.class).getResultList();
 	}
 	
 
