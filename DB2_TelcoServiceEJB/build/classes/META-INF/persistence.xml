@@ -13,12 +13,12 @@
 		<class>it.polimi.db2.telco.entities.ServicePackage</class>
 		<class>it.polimi.db2.telco.entities.User</class>
 		<class>it.polimi.db2.telco.entities.ValidityPeriod</class>
-		<class>it.polimi.db2.telco.views.Avgproductsold</class>
-		<class>it.polimi.db2.telco.views.Bestseller</class>
-		<class>it.polimi.db2.telco.views.Insolventcustomer</class>
-		<class>it.polimi.db2.telco.views.Packagevalidityperiod</class>
-		<class>it.polimi.db2.telco.views.Purchasespackage</class>
-		<class>it.polimi.db2.telco.views.Validitysaleproduct</class>
+		<class>it.polimi.db2.telco.views.AverageProductSold</class>
+		<class>it.polimi.db2.telco.views.BestSeller</class>
+		<class>it.polimi.db2.telco.views.InsolventCustomer</class>
+		<class>it.polimi.db2.telco.views.PackageValidityPeriod</class>
+		<class>it.polimi.db2.telco.views.PurchasesPackage</class>
+		<class>it.polimi.db2.telco.views.ValiditySaleProduct</class>
 		<validation-mode>NONE</validation-mode>
 	</persistence-unit>
 </persistence>

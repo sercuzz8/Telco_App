@@ -79,29 +79,6 @@
 		</div>
 	</section>
 	
-
-	<section>
-		<div align="left">
-		<h2>Total sales per package with and without optional products</h2>
-			<table>
-				<thead>
-					<tr>
-						<th>Package Id</th>
-						<th>Average number of optional products sold</th>
-						<th>Sales without optional products</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="view_four : ${avg_product_view}">
-						<td><span th:text="${view_four.getPackage_()}"> Id </span></td>
-						<td><span th:text="${view_four.getAvgProducts()}"> Name </span></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</section>	
-	
 	<section>
 		<div align="left">
 		<h2>Average products sold with package</h2>

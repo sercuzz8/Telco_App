@@ -85,17 +85,17 @@ SELECT * FROM CUSTOMERORDER;
 
 SELECT * FROM SERVICEACTIVATIONSCHEDULE;
 
-SELECT * FROM purchasesproducts;
+SELECT * FROM PURCHASEPERPACKAGE;
 
-SELECT * FROM packagevalidityperiod;
+SELECT * FROM PURCHASEPERVALIDITY;
 
-SELECT * FROM validitysaleproduct;
+SELECT * FROM SALEPERPACKAGE;
 
-SELECT * FROM avgproductsold;
+SELECT * FROM AVERAGEPRODUCTSOLD;
 
-SELECT * FROM insolventcustomers;
+SELECT * FROM INSOLVENTCUSTOMER;
 
-SELECT * FROM bestsellers;
+SELECT * FROM BESTSELLER;
 
 ---------------------------------------------------------------------
 /*

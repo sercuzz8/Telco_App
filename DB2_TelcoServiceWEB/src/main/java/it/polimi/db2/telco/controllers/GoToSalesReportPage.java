@@ -26,18 +26,18 @@ public class GoToSalesReportPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine;
 
-	@EJB(name = "it.polimi.db2.telco.services/PurchasespackageService")
-	private PurchasespackageService purPackSer;
-	@EJB(name = "it.polimi.db2.telco.services/PackagevalidityperiodService")
-	private PackagevalidityperiodService packVal;
-	@EJB(name = "it.polimi.db2.telco.services/ValiditysaleproductService")
-	private ValiditysaleproductService valSaleProd;
-	@EJB(name = "it.polimi.db2.telco.services/AvgproductsoldService")
-	private AvgproductsoldService avgProd;
-	@EJB(name = "it.polimi.db2.telco.services/InsolventcustomerService")
-	private InsolventcustomerService insCust;
-	@EJB(name = "it.polimi.db2.telco.services/BestsellerService")
-	private BestsellerService bestSell;
+	@EJB(name = "it.polimi.db2.telco.services/PurchasesPackageService")
+	private PurchasesPackageService purPackSer;
+	@EJB(name = "it.polimi.db2.telco.services/PackageValidityPeriodService")
+	private PackageValidityPeriodService packVal;
+	@EJB(name = "it.polimi.db2.telco.services/ValiditySaleProductService")
+	private ValiditySaleProductService valSaleProd;
+	@EJB(name = "it.polimi.db2.telco.services/AverageProductSoldService")
+	private AverageProductSoldService avgProd;
+	@EJB(name = "it.polimi.db2.telco.services/InsolventCustomerService")
+	private InsolventCustomerService insCust;
+	@EJB(name = "it.polimi.db2.telco.services/BestSellerService")
+	private BestSellerService bestSell;
 	
 
 	public GoToSalesReportPage() {
@@ -55,12 +55,12 @@ public class GoToSalesReportPage extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		List<Purchasespackage> purchases_package = purPackSer.findAllPurchasesForPackage();
-		List<Packagevalidityperiod> purchases_validity = packVal.findAllPackagesValidityPeriods();
-		List<Validitysaleproduct> validity_sale = valSaleProd.findAllValiditySaleProduct();
-		List<Averageproductsold> avg_product = avgProd.findAllAVGProductsSold();
-		List<Insolventcustomer> insolvent_customer = insCust.findAllInsolventCustomers();
-		List<Bestseller> best_seller = bestSell.findAllBestSellers();
+		List<PurchasesPackage> purchases_package = purPackSer.findAllPurchasesForPackage();
+		List<PackageValidityPeriod> purchases_validity = packVal.findAllPackagesValidityPeriods();
+		List<ValiditySaleProduct> validity_sale = valSaleProd.findAllValiditySaleProduct();
+		List<AverageProductSold> avg_product = avgProd.findAllAVGProductsSold();
+		List<InsolventCustomer> insolvent_customer = insCust.findAllInsolventCustomers();
+		List<BestSeller> best_seller = bestSell.findAllBestSellers();
 		String path = "/WEB-INF/SalesReport.html";		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());

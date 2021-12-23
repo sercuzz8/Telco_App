@@ -115,46 +115,46 @@ CREATE TABLE purchasesproducts (
 	FOREIGN KEY (product) REFERENCES OPTIONALPRODUCT(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
-CREATE VIEW purchasespackage (package, purchases) AS
+CREATE VIEW PURCHASEPERPACKAGE(package, purchases) AS
 SELECT package, COUNT(*)
 FROM SERVICEACTIVATIONSCHEDULE 
 GROUP BY package
 ORDER BY package ASC;
 
-CREATE VIEW packagevalidityperiod (package, months, purchases) AS
+CREATE VIEW PURCHASEPERVALIDITY(package, months, purchases) AS
 SELECT package, TIMESTAMPDIFF(MONTH,activationdate,deactivationdate), COUNT(*)
 FROM SERVICEACTIVATIONSCHEDULE	
 GROUP BY package, TIMESTAMPDIFF(MONTH,activationdate,deactivationdate)
 ORDER BY package, TIMESTAMPDIFF(MONTH,activationdate,deactivationdate);
 
-CREATE VIEW validitysaleproduct (package, withProducts, withoutProducts) AS
+CREATE VIEW SALEPERPACKAGE(package, withProducts, withoutProducts) AS
 SELECT s.package, SUM(c.totalValue), SUM(v.monthsnumber*v.monthlyfee)
 FROM SERVICEACTIVATIONSCHEDULE AS s, CUSTOMERORDER AS c, VALIDITYPERIOD as v
 WHERE s.package = c.package AND s.customer=c.customer AND c.package=v.package AND c.months=v.monthsnumber
 GROUP BY s.package
 ORDER BY s.package ASC;
 
-CREATE VIEW averageproductsold(package, avgProductSold) AS
-SELECT package, avg(productsSold) as avgProductSold
+CREATE VIEW AVERAGEPRODUCTSOLD(package, avgproductsold) AS
+SELECT package, avg(productssold) as avgproductsold
 FROM (	SELECT c.id as orderId, c.package, count(*) as productsSold
 		FROM CUSTOMERORDER c JOIN choosesproducts ON  customerorder = c.id
-		GROUP BY c.id, c.package) AS productsSoldPerOrder 
+		GROUP BY c.id, c.package) AS productssoldperorder 
 GROUP BY package;        
 
 
-CREATE VIEW insolventcustomers(insolvent, rejectedOrder, alertDate) AS
+CREATE VIEW INSOLVENTCUSTOMER(insolvent, rejectedOrder, alertDate) AS
 SELECT c.customer, c.id, a.lastrejectiondate
 FROM CUSTOMERORDER c LEFT JOIN AUDITING a ON c.customer=a.customer
 WHERE rejected>0
 ORDER BY c.customer ASC;
 
-CREATE VIEW bestsellers(product, numOfSales) AS
+CREATE VIEW BESTSELLER(product, numOfSales) AS
 SELECT p.product, COUNT(*) AS NUM
 FROM SERVICEACTIVATIONSCHEDULE AS s, purchasesproducts as p
 WHERE s.package = p.package AND s.customer=p.customer
 GROUP BY p.product
-ORDER BY NUM DESC;
--- LIMIT 5;
+ORDER BY NUM DESC
+LIMIT 1;
 
 -- TODO: Add the materialized views of the data, to be populated by triggers
 CREATE TRIGGER calculate_fee BEFORE INSERT ON CUSTOMERORDER
