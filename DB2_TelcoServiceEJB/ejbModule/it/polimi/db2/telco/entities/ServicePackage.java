@@ -1,5 +1,6 @@
 package it.polimi.db2.telco.entities;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.*;
@@ -33,6 +34,14 @@ public class ServicePackage {
 	private Collection<ValidityPeriod> validityPeriods;
 	
 	public ServicePackage () {}
+	
+	public ServicePackage (int id, String name) {
+		this.id=id;
+		this.name=name;
+		this.products=new ArrayList<OptionalProduct>();
+		this.services=new ArrayList<Service>();
+		this.validityPeriods=new ArrayList<ValidityPeriod>();
+	}
 	
 	public void setId(int id) {
 		this.id = id;
@@ -80,6 +89,10 @@ public class ServicePackage {
 
 	public void setValidityPeriods(Collection<ValidityPeriod> validityPeriods) {
 		this.validityPeriods = validityPeriods;
+	}
+	
+	public void addValidityPeriod(ValidityPeriod validityPeriod) {
+		this.validityPeriods.add(validityPeriod);
 	}
 }
 	

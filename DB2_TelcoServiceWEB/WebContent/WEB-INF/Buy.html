@@ -18,7 +18,7 @@
 		
 		<label for="chosen_pack">Choose a package:</label>
 		<p>
-    	<select name="chosen_pack" class="package-control" id="dropPackage">
+    	<select name="chosen_pack" class="package-control" id="dropPackage" required>
     	<option th:each="package : ${packages}" th:value="${package.getId()}" th:text="${package.getName()}"></option>
     	</select>
 		</p>
@@ -27,15 +27,15 @@
         <p>
         <input name="chosen_months" type="radio" value="12">
   		<label for="12">12</label><br>
-  		<input type="radio" id="twenty-four_months" name="chosen_months" value="24">
+  		<input type="radio" id="twenty-four_months" name="chosen_months" value="24" required>
   		<label for="24">24</label><br>
-  		<input type="radio" id="thirty-six_months" name="chosen_months" value="36">
+  		<input type="radio" id="thirty-six_months" name="chosen_months" value="36" required>
   		<label for="36">36</label>
   		</p>
   		
   		<p>
   		<label for="start_date">Choose starting date:</label>
-		<input type="date" id="startdate" name="start_date"> 
+		<input type="date" id="startdate" name="start_date" required> 
   		</p>
   		
   		<p>

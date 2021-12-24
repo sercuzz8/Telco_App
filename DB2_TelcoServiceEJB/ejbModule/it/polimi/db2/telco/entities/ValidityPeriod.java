@@ -20,6 +20,12 @@ public class ValidityPeriod {
 	
 	public ValidityPeriod() {}
 	
+	public ValidityPeriod(ServicePackage sPackage, int numMonths, float monthlyFee) {
+		this.sPackage=sPackage;
+		this.monthsnumber=numMonths;
+		this.monthlyfee=monthlyFee;
+	}
+	
 	public void setPackage(ServicePackage id) {
 		this.sPackage = id;
 	}

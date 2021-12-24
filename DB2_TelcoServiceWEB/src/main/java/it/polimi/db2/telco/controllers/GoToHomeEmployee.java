@@ -33,7 +33,13 @@ public class GoToHomeEmployee extends HttpServlet {
 
 	@EJB(name = "it.polimi.db2.telco.services/OptionalProductService")
 	private OptionalProductService oProd;
+	
+	@EJB(name = "it.polimi.db2.telco.services/ServicePackageService")
+	private ServicePackageService sPack;
 
+	@EJB(name = "it.polimi.db2.telco.services/ValidityPeriodService")
+	private ValidityPeriodService vPer;
+	
 	public GoToHomeEmployee() {
 		super();
 	}
@@ -74,25 +80,103 @@ public class GoToHomeEmployee extends HttpServlet {
 		String productName = null;
 		String productCost = null;
 		
+		String packageName = null;
+		String packageCostTwelve = null;		
+		String packageCostTwentyFour = null;	
+		String packageCostThirtySix = null;	
+		String[] servs = null;
+		String[] prods = null;
+		
+		ServicePackage sPackage = null;
+		
+		ValidityPeriod shortPeriod = null;
+		ValidityPeriod mediumPeriod = null;
+		ValidityPeriod longPeriod = null;
+
+				
 		try {
 			
 			productName = StringEscapeUtils.escapeJava(request.getParameter("product_name"));
 			productCost = StringEscapeUtils.escapeJava(request.getParameter("product_cost"));
+			
 
 			if (productName == null || productCost == null || productName.isBlank() || productCost.isBlank()) {
-				throw new Exception("Empty fields in creation");
+				
+				try {
+				packageName = StringEscapeUtils.escapeJava(request.getParameter("package_name"));
+				packageCostTwelve = StringEscapeUtils.escapeJava(request.getParameter("package_cost_twelve"));
+				packageCostTwentyFour = StringEscapeUtils.escapeJava(request.getParameter("package_cost_twentyfour"));
+				packageCostThirtySix = StringEscapeUtils.escapeJava(request.getParameter("package_cost_thirtysix"));
+				servs=request.getParameterValues("chosen_services");
+				prods=request.getParameterValues("chosen_products");
+				
+				if (packageName==null || packageCostTwelve==null || packageCostTwentyFour==null || packageCostThirtySix==null || servs==null ||
+						packageName.isBlank() || packageCostTwelve.isBlank() || packageCostTwentyFour.isBlank() || packageCostThirtySix.isBlank()) {
+					throw new Exception("Empty fields in creation");
+				}
+				
+				sPackage = sPack.createServicePackage(packageName);
+				
+				sPack.addServicePackage(sPackage);
+				
+				for (String s: servs) {
+					sPack.addServiceToPackage(sPackage, sServ.findServicebyId(Integer.parseInt(s)));
+				}
+				
+				
+				
+				shortPeriod = vPer.createValidityPeriod(sPackage, 12, Float.parseFloat(packageCostTwelve));
+				mediumPeriod = vPer.createValidityPeriod(sPackage, 24, Float.parseFloat(packageCostTwentyFour));
+				longPeriod = vPer.createValidityPeriod(sPackage, 36, Float.parseFloat(packageCostThirtySix));
+				
+				sPack.addValidityPeriodToPackage(sPackage, shortPeriod);
+				sPack.addValidityPeriodToPackage(sPackage, mediumPeriod);
+				sPack.addValidityPeriodToPackage(sPackage, longPeriod);
+				
+				sPack.updateServicePackage(sPackage);
+				
+				try {
+					for (String p : prods) {
+						sPack.addProductToPackage(sPackage, oProd.findProductsById(Integer.parseInt(p)));
+					}
+				}
+				catch(NullPointerException e) {
+					
+				}
+				
+				sPack.updateServicePackage(sPackage);
+				
+				}
+				catch(Exception e) {
+					
+					List<Service> services = sServ.findAllServices();
+					List<OptionalProduct> products = oProd.findAllProducts();
+					ServletContext servletContext = getServletContext();
+					final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+					ctx.setVariable("errorMsg", e.getMessage());
+					ctx.setVariable("services", services);
+					ctx.setVariable("products", products);
+					String path = "/WEB-INF/HomeEmployee.html";
+					templateEngine.process(path, ctx, response.getWriter());
+					return;
+				}
 			}
+			
+			oProd.createProduct(productName, Float.parseFloat(productCost));
 
 		} catch (Exception e) {
+			List<Service> services = sServ.findAllServices();
+			List<OptionalProduct> products = oProd.findAllProducts();
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 			ctx.setVariable("errorMsg", e.getMessage());
-			String path = "/WEB-INF/Confirmation.html";
+			ctx.setVariable("services", services);
+			ctx.setVariable("products", products);
+			String path = "/WEB-INF/HomeEmployee.html";
 			templateEngine.process(path, ctx, response.getWriter());
 			return;
 		}
 		
-		oProd.createProduct(productName, Float.parseFloat(productCost));
 		
 		String path = getServletContext().getContextPath() + "/GoToHomeEmployee";
 		response.setContentType("text/html");

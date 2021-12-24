@@ -173,18 +173,6 @@ FOR EACH ROW
 		WHERE c.id=new.customerorder; --  It also contains the total value
 
 delimiter //
-CREATE TRIGGER product_not_on_package 
-	BEFORE INSERT ON choosesproducts 
-	FOR EACH ROW
-	BEGIN
-	IF (new.product NOT IN (
-		SELECT OP.product FROM offersproducts AS OP WHERE OP.package =
-			(SELECT CO.package from CUSTOMERORDER AS CO WHERE CO.id=new.customerorder)))
-		THEN
-			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Product not offered with the package';
-	END IF;
-	END//
-
 CREATE TRIGGER accepted_payment
 	BEFORE UPDATE ON CUSTOMERORDER
 	FOR EACH ROW

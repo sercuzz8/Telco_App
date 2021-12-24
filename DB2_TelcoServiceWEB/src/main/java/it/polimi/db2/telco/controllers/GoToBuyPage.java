@@ -85,18 +85,11 @@ public class GoToBuyPage extends HttpServlet {
 		
 		
 		try {
-
 			
 			pack = StringEscapeUtils.escapeJava(request.getParameter("chosen_pack"));
 			months = StringEscapeUtils.escapeJava(request.getParameter("chosen_months"));
 			start = StringEscapeUtils.escapeJava(request.getParameter("start_date"));
 			prods = request.getParameterValues("chosen_products");
-
-			if (pack == null || months == null || start == null || pack.isBlank() || months.isBlank()
-					|| start.isBlank()) {
-				throw new Exception("Empty fields in order");
-			}
-
 			Collection<OptionalProduct> rightProducts = sPacks.findPackageById(Integer.parseInt(pack)).getProducts();
 			
 			List<Integer> rightId=new ArrayList<>();

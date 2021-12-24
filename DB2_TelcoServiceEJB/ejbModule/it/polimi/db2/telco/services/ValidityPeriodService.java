@@ -23,7 +23,9 @@ public class ValidityPeriodService {
 	} 
 	
 	
-	public void createValidityPeriod() {
-		
+	public ValidityPeriod createValidityPeriod(ServicePackage sPackage, int numMonths, float monthlyFee) {
+		ValidityPeriod vPeriod = new ValidityPeriod(sPackage, numMonths, monthlyFee);
+		em.persist(vPeriod);
+		return vPeriod;
 	}
 }

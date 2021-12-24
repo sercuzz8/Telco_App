@@ -7,6 +7,7 @@ import javax.persistence.PersistenceContext;
 import it.polimi.db2.telco.entities.*;
 
 import java.util.List;
+import java.util.Random;
 
 @Stateless
 public class ServicePackageService {
@@ -15,8 +16,11 @@ public class ServicePackageService {
 	
 	public ServicePackageService() {}
 	
-	public void createServicePackage() {
-		
+	public ServicePackage createServicePackage(String name) {
+		Random rand = new Random();
+		int n = rand.nextInt(1000);
+		ServicePackage sPackage = new ServicePackage(n, name);
+		return sPackage;
 	}
 	
 	public List<ServicePackage> findAllPackages() /*throws PackageNotFoundException*/{
@@ -35,5 +39,25 @@ public class ServicePackageService {
 		catch (PersistenceException e){
 			throw new PackageNotFoundException("No Package Found");
 		}*/
+	}
+	
+	public void addServiceToPackage(ServicePackage sPackage, Service service) {
+		sPackage.addService(service);
+	}
+	
+	public void addProductToPackage(ServicePackage sPackage, OptionalProduct product) {
+		sPackage.addProduct(product);
+	}
+	
+	public void addValidityPeriodToPackage(ServicePackage sPackage, ValidityPeriod vPeriod) {
+		sPackage.addValidityPeriod(vPeriod);
+	}
+	
+	public void addServicePackage(ServicePackage sPackage) {
+		em.persist(sPackage);
+	}
+	
+	public void updateServicePackage(ServicePackage sPackage) {
+		em.merge(sPackage);
 	}
 }

@@ -66,11 +66,10 @@ public class GoToConfirmationPage extends HttpServlet {
 			boolean success=false;
 				
 			
-			
-			success = Boolean.parseBoolean(request.getParameter("success"));
-			
 			cOrds.addCustomerToOrder(order, buyer);
 			cOrds.addCustomerOrder(order);
+			
+			success = Boolean.parseBoolean(request.getParameter("success"));
 			
 			if (success) {
 				order.setValid();
