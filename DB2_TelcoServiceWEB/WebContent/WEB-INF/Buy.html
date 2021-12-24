@@ -19,7 +19,7 @@
 		<label for="chosen_pack">Choose a package:</label>
 		<p>
     	<select name="chosen_pack" class="package-control" id="dropPackage">
-    	<option th:each="package : ${session.packages}" th:value="${package.getId()}" th:text="${package.getName()}"></option>
+    	<option th:each="package : ${packages}" th:value="${package.getId()}" th:text="${package.getName()}"></option>
     	</select>
 		</p>
 		
@@ -40,8 +40,8 @@
   		
   		<p>
   		<label for="chooseproducts">Choose some products (if you like):</label>
-		<select id="chooseproducts" name="chosen_products" size="${session.products.size()}" multiple>
-  		<option th:each="prod: ${session.products}" th:value="${prod.getId()}" th:text="${prod.getName()}"></option>
+		<select id="chooseproducts" name="chosen_products" size="${products.size()}" multiple>
+  		<option th:each="prod: ${products}" th:value="${prod.getId()}" th:text="${prod.getName()}"></option>
 		</select> 
   		</p>
   		

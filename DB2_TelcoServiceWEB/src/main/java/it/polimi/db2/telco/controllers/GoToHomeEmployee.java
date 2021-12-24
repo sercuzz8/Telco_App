@@ -49,9 +49,18 @@ public class GoToHomeEmployee extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
+		String path=null;
+		
+		if (request.getSession().getAttribute("user")!=null) {
+			path = getServletContext().getContextPath() + "/GoToHomePage";
+			response.sendRedirect(path);
+			return;
+		}
+		
 		List<Service> services = sServ.findAllServices();
 		List<OptionalProduct> products = oProd.findAllProducts();
-		String path = "/WEB-INF/HomeEmployee.html";		
+		path = "/WEB-INF/HomeEmployee.html";		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("services", services);
@@ -64,23 +73,15 @@ public class GoToHomeEmployee extends HttpServlet {
 		
 		String productName = null;
 		String productCost = null;
-		/*String start = null;
-		String[] prods = null;
-		CustomerOrder order = null;*/
-		
 		
 		try {
-
 			
 			productName = StringEscapeUtils.escapeJava(request.getParameter("product_name"));
 			productCost = StringEscapeUtils.escapeJava(request.getParameter("product_cost"));
-			/*start = StringEscapeUtils.escapeJava(request.getParameter("start_date"));
-			prods = request.getParameterValues("chosen_products");*/
 
 			if (productName == null || productCost == null || productName.isBlank() || productCost.isBlank()) {
 				throw new Exception("Empty fields in creation");
 			}
-
 
 		} catch (Exception e) {
 			ServletContext servletContext = getServletContext();

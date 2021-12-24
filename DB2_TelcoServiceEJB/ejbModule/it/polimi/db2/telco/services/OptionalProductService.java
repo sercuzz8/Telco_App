@@ -17,7 +17,7 @@ public class OptionalProductService {
 	public OptionalProductService() {}
 	
 	public List<OptionalProduct> findAllProducts(){
-		return em.createNamedQuery("OptionalProduct.findAll", OptionalProduct.class).getResultList();
+		return em.createNamedQuery("OptionalProduct.findAll", OptionalProduct.class).setHint("javax.persistence.cache.storeMode", "REFRESH").getResultList();
 	}
 	
 	public OptionalProduct findProductsById(int productId){

@@ -66,10 +66,12 @@ public class GoToBuyPage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		List<OptionalProduct> optionalProducts = oProds.findAllProducts();
+		List<ServicePackage> servicePackages = sPacks.findAllPackages();
 		String path = "/WEB-INF/Buy.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		request.getSession().setAttribute("products", optionalProducts);
+		ctx.setVariable("packages", servicePackages);
+		ctx.setVariable("products", optionalProducts);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
@@ -115,10 +117,14 @@ public class GoToBuyPage extends HttpServlet {
 			}
 
 		} catch (Exception e) {
+			List<OptionalProduct> optionalProducts = oProds.findAllProducts();
+			List<ServicePackage> servicePackages = sPacks.findAllPackages();
+			String path = "/WEB-INF/Buy.html";
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+			ctx.setVariable("packages", servicePackages);
+			ctx.setVariable("products", optionalProducts);
 			ctx.setVariable("errorMsg", e.getMessage());
-			String path = "/WEB-INF/Buy.html";
 			templateEngine.process(path, ctx, response.getWriter());
 			return;
 		}

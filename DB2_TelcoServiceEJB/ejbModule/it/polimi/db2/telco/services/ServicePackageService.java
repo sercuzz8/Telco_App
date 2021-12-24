@@ -21,7 +21,7 @@ public class ServicePackageService {
 	
 	public List<ServicePackage> findAllPackages() /*throws PackageNotFoundException*/{
 		//try {
-			return em.createNamedQuery("ServicePackage.findAll", ServicePackage.class).getResultList();
+			return em.createNamedQuery("ServicePackage.findAll", ServicePackage.class).setHint("javax.persistence.cache.storeMode", "REFRESH").getResultList();
 		/*}
 		catch (PersistenceException e){
 			throw new PackageNotFoundException("No Package Found");

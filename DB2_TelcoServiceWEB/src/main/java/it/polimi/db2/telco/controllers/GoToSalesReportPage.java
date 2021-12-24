@@ -55,21 +55,34 @@ public class GoToSalesReportPage extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
+		String path=null;
+		
+		if (request.getSession().getAttribute("user")!=null) {
+			path = getServletContext().getContextPath() + "/GoToHomePage";
+			response.sendRedirect(path);
+			return;
+		}
+		
 		List<PurchasesPackage> purchases_package = purPackSer.findAllPurchasesForPackage();
 		List<PackageValidityPeriod> purchases_validity = packVal.findAllPackagesValidityPeriods();
 		List<ValiditySaleProduct> validity_sale = valSaleProd.findAllValiditySaleProduct();
 		List<AverageProductSold> avg_product = avgProd.findAllAVGProductsSold();
 		List<InsolventCustomer> insolvent_customer = insCust.findAllInsolventCustomers();
 		List<BestSeller> best_seller = bestSell.findAllBestSellers();
-		String path = "/WEB-INF/SalesReport.html";		
+		
+		path = "/WEB-INF/SalesReport.html";		
+		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		
 		ctx.setVariable("purchases_package_view", purchases_package);
 		ctx.setVariable("purchases_validity_view", purchases_validity);
 		ctx.setVariable("validity_sale_view", validity_sale);
 		ctx.setVariable("average_product_view", avg_product);
 		ctx.setVariable("insolvent_customer_view", insolvent_customer);
 		ctx.setVariable("best_seller_view", best_seller);
+		
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 

@@ -25,9 +25,9 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 public class GoToHomePage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine;
+	
 	@EJB(name = "it.polimi.db2.telco.services/ServicePackageService")
 	private ServicePackageService sPacks;
-
 	@EJB(name = "it.polimi.db2.telco.services/CustomerOrderService")
 	private CustomerOrderService cOrds;
 
@@ -50,7 +50,7 @@ public class GoToHomePage extends HttpServlet {
 		String path = "/WEB-INF/Home.html";		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		request.getSession().setAttribute("packages", servicePackages);
+		ctx.setVariable("packages", servicePackages);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 

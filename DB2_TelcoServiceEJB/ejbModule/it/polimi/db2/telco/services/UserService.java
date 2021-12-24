@@ -22,7 +22,7 @@ public class UserService {
 	public User checkCredentials(String name, String pwd) throws CredentialsException, NonUniqueResultException {
 		List<User> userList = null;
 		try {
-			userList = em.createNamedQuery("User.checkCredentials", User.class).setParameter(1, name).setParameter(2, pwd)
+			userList = em.createNamedQuery("User.checkCredentials", User.class).setParameter(1, name).setParameter(2, pwd).setHint("javax.persistence.cache.storeMode", "REFRESH")
 					.getResultList();
 		} catch (PersistenceException e) {
 			throw new CredentialsException("Impossible to verify credentials");
@@ -40,7 +40,5 @@ public class UserService {
 		em.persist(user);
 		return user;
 	}
-	
-	
 	
 }

@@ -45,7 +45,16 @@ public class CheckLoginEmployee extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String path = "WEB-INF/LoginEmployee.html";
+		String path = null;
+		
+		if (request.getSession().getAttribute("user")!=null) {
+			path = getServletContext().getContextPath() + "/GoToHomePage";
+			response.sendRedirect(path);
+			return;
+		}
+		
+		path="WEB-INF/LoginEmployee.html";
+		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		templateEngine.process(path, ctx, response.getWriter());
