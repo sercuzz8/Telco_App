@@ -109,11 +109,6 @@ public class CheckLogin extends HttpServlet {
 		} 
 		else {
 			
-			/*for (CustomerOrder ord: user.getRejectedOrders()) {
-				for (OptionalProduct prod: ord.getProducts()) {
-					System.out.println("Here: "+ prod.getName());
-				}
-			}*/
 			request.getSession().setAttribute("user", user);
 			if (request.getSession().getAttribute("order")!=null) {
 				path = getServletContext().getContextPath() + "/GoToConfirmationPage";

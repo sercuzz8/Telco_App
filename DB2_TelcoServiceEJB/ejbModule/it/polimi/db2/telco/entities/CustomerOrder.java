@@ -20,7 +20,9 @@ public class CustomerOrder {
 	private LocalTime hour;
 	private LocalDate start;
 	
-	private float totalvalue;
+	@Column(name="totalvalue")
+	private float totalValue;
+	
 	private int rejected;
 	private boolean valid;
 	
@@ -72,7 +74,7 @@ public class CustomerOrder {
 		return this.start;
 	}
 	public float getTotalValue() {
-		return this.totalvalue;
+		return this.totalValue;
 	}
 	public int getRejected() {
 		return this.rejected;
@@ -97,20 +99,20 @@ public class CustomerOrder {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public void setDate(LocalDate dt) {
-		this.date = dt;
+	public void setDate(LocalDate date) {
+		this.date = date;
 	}
-	public void setHour(LocalTime h) {
-		this.hour = h;
+	public void setHour(LocalTime hour) {
+		this.hour = hour;
 	}
-	public void setStart(LocalDate st) {
-		this.start= st;
+	public void setStart(LocalDate start) {
+		this.start= start;
 	}
-	public void setTotalValue(float tv) {
-		this.totalvalue = tv;
+	public void setTotalValue(float totalValue) {
+		this.totalValue = totalValue;
 	}
-	public void setRejected(int rej) {
-		this.rejected = rej;
+	public void setRejected(int rejected) {
+		this.rejected = rejected;
 	}
 	public void incrementRejected() {
 		this.rejected++;
@@ -137,9 +139,9 @@ public class CustomerOrder {
 	}
 	
 	public void computeTotalValue() {
-		this.totalvalue=this.validity.getMonthsNumber()*this.validity.getMonthlyFee();
+		this.totalValue=this.validity.getMonthsNumber()*this.validity.getMonthlyFee();
 		for (OptionalProduct p: this.products) {
-			this.totalvalue=this.totalvalue + this.validity.getMonthsNumber()*p.getMonthlyFee(); 
+			this.totalValue=this.totalValue + this.validity.getMonthsNumber()*p.getMonthlyFee(); 
 		}
 	}
 }

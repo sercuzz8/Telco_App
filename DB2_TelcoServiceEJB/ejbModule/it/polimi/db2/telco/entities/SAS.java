@@ -14,28 +14,30 @@ public class SAS {
 	@JoinColumn(name="customer")
 	private User user;
 	
-	private LocalDateTime activationdate;
-	private LocalDateTime deactivationdate;
+	@Column(name="activationdate")
+	private LocalDateTime activationDate;
+	@Column(name="deactivationdate")
+	private LocalDateTime deactivationDate;
 	
 	public SAS() {}
 	
-	public void setUser(User u) {
-		this.user = u;
+	public void setUser(User user) {
+		this.user = user;
 	}
-	public void setActivationDate(LocalDateTime ad) {
-		this.activationdate = ad;
+	public void setActivationDate(LocalDateTime ActivationDate) {
+		this.activationDate = ActivationDate;
 	}
-	public void setDeactivationDate(LocalDateTime dd) {
-		this.deactivationdate = dd;
+	public void setDeactivationDate(LocalDateTime DeactivationDate) {
+		this.deactivationDate = DeactivationDate;
 	}
 	
 	public User getUser() {
 		return this.user;
 	}
 	public LocalDateTime getActivationDate() {
-		return this.activationdate;
+		return this.activationDate;
 	}
 	public LocalDateTime getDeactivationDate() {
-		return this.deactivationdate;
+		return this.deactivationDate;
 	}
 }

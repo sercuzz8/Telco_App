@@ -12,19 +12,26 @@ public class Service {
 	private int id;
 	
 	@Enumerated(EnumType.STRING)
-	private ServiceType servicetype;
+	@Column(name="servicetype")
+	private ServiceType serviceType;
 	
-	private int minnumber;
+	@Column(name="minnumber")
+	private int minNumber;
 	
-	private int smsnumber;
+	@Column(name="smsnumber")
+	private int smsNumber;
 	
-	private int gbnumber;
+	@Column(name="gbnumber")
+	private int gbNumber;
 	
-	private float minfee;
+	@Column(name="minfee")
+	private float minFee;
 	
-	private float smsfee;
+	@Column(name="smsfee")
+	private float smsFee;
 	
-	private float gbfee;
+	@Column(name="gbfee")
+	private float gbFee;
 	
 	@ManyToMany(fetch=FetchType.LAZY, mappedBy="services")
 	private Collection<ServicePackage> packages;
@@ -40,59 +47,59 @@ public class Service {
 	}
 
 	public ServiceType getServiceType() {
-		return servicetype;
+		return this.serviceType;
 	}
 
 	public void setServicetype(ServiceType servicetype) {
-		this.servicetype = servicetype;
+		this.serviceType = servicetype;
 	}
 
 	public int getMinNumber() {
-		return minnumber;
+		return this.minNumber;
 	}
 
-	public void setMinNumber(int minnumber) {
-		this.minnumber = minnumber;
+	public void setMinNumber(int minNumber) {
+		this.minNumber = minNumber;
 	}
 
 	public int getSmsNumber() {
-		return smsnumber;
+		return this.smsNumber;
 	}
 
-	public void setSmsNumber(int smsnumber) {
-		this.smsnumber = smsnumber;
+	public void setSmsNumber(int smsNumber) {
+		this.smsNumber = smsNumber;
 	}
 
 	public int getGBNumber() {
-		return gbnumber;
+		return gbNumber;
 	}
 
 	public void setGBNumber(int gbnumber) {
-		this.gbnumber = gbnumber;
+		this.gbNumber = gbnumber;
 	}
 
 	public float getMinFee() {
-		return minfee;
+		return minFee;
 	}
 
-	public void setMinFee(float minfee) {
-		this.minfee = minfee;
+	public void setMinFee(float minFee) {
+		this.minFee = minFee;
 	}
 
 	public float getSmsFee() {
-		return smsfee;
+		return smsFee;
 	}
 
-	public void setSmsFee(float smsfee) {
-		this.smsfee = smsfee;
+	public void setSmsFee(float smsFee) {
+		this.smsFee = smsFee;
 	}
 
 	public float getGBFee() {
-		return gbfee;
+		return gbFee;
 	}
 
 	public void setGBFee(float gbfee) {
-		this.gbfee = gbfee;
+		this.gbFee = gbfee;
 	}
 
 	public Collection<ServicePackage> getPackages() {

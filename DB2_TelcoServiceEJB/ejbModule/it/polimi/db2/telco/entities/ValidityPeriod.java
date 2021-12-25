@@ -6,7 +6,7 @@ import javax.persistence.*;
 @Table(name="VALIDITYPERIOD")
 @IdClass(ValidityPeriodId.class)
 @NamedQuery(name="ValidityPeriod.findAll", query="SELECT v FROM ValidityPeriod v")
-@NamedQuery(name="ValidityPeriod.findValidity", query="SELECT v FROM ValidityPeriod v WHERE v.sPackage=?1 AND v.monthsnumber=?2 ORDER BY v.monthsnumber ASC")
+@NamedQuery(name="ValidityPeriod.findValidity", query="SELECT v FROM ValidityPeriod v WHERE v.sPackage=?1 AND v.monthsNumber=?2 ORDER BY v.monthsNumber ASC")
 public class ValidityPeriod {
 	
 	@Id
@@ -14,36 +14,38 @@ public class ValidityPeriod {
 	@JoinColumn(name="package", referencedColumnName="id")
 	private ServicePackage sPackage;
 	@Id
-	private int monthsnumber;
+	@Column(name="monthsnumber")
+	private int monthsNumber;
 	
-	private float monthlyfee;
+	@Column(name="monthlyfee")
+	private float monthlyFee;
 	
 	public ValidityPeriod() {}
 	
-	public ValidityPeriod(ServicePackage sPackage, int numMonths, float monthlyFee) {
+	public ValidityPeriod(ServicePackage sPackage, int monthsNumber, float monthlyFee) {
 		this.sPackage=sPackage;
-		this.monthsnumber=numMonths;
-		this.monthlyfee=monthlyFee;
+		this.monthsNumber=monthsNumber;
+		this.monthlyFee=monthlyFee;
 	}
 	
 	public void setPackage(ServicePackage id) {
 		this.sPackage = id;
 	}
-	public void setMonthsNumber(int mn) {
-		this.monthsnumber = mn;
+	public void setMonthsNumber(int monthsNumber) {
+		this.monthsNumber = monthsNumber;
 	}
-	public void setMonthlyFee(float mf) {
-		this.monthlyfee = mf;
+	public void setMonthlyFee(float monthlyFee) {
+		this.monthlyFee = monthlyFee;
 	}
 	
 	public ServicePackage getPackage() {
 		return this.sPackage;
 	}
 	public int getMonthsNumber() {
-		return this.monthsnumber;
+		return this.monthsNumber;
 	}
 	public float getMonthlyFee() {
-		return this.monthlyfee;
+		return this.monthlyFee;
 	}
 	
 	//relationship "has" with order

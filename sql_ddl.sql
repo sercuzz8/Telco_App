@@ -25,7 +25,8 @@ CREATE TABLE VALIDITYPERIOD (
 	monthlyfee float NOT NULL, 
 	PRIMARY KEY (package,monthsnumber), 
 	FOREIGN KEY (package) REFERENCES SERVICEPACKAGE(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT out_of_fixed_values CHECK (monthsnumber in (12, 24, 36))
+	CONSTRAINT out_of_fixed_values CHECK (monthsnumber in (12, 24, 36)),
+    CONSTRAINT non_negative_fee CHECK (monthlyfee>=0)
 	);
 		
 CREATE TABLE CUSTOMERORDER (
@@ -38,10 +39,11 @@ CREATE TABLE CUSTOMERORDER (
 	months int NOT NULL, -- one service package thus the validity period is associated with a single service package
 	rejected int NOT NULL DEFAULT 0,  
 	valid int NOT NULL DEFAULT 0,
-	totalValue float,
+	totalvalue float,
 	FOREIGN KEY (customer) REFERENCES CUSTOMER(username),
-	FOREIGN KEY (package, months) REFERENCES VALIDITYPERIOD(package, monthsnumber) -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
-	);
+	FOREIGN KEY (package, months) REFERENCES VALIDITYPERIOD(package, monthsnumber), -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
+	CONSTRAINT non_negative_value CHECK (totalvalue>=0)
+    );
 
 CREATE TABLE AUDITING (
 	customer varchar(50) PRIMARY KEY, 
@@ -61,13 +63,20 @@ CREATE TABLE SERVICE (
     gbnumber int DEFAULT 0,
 	minfee float DEFAULT 0.0,  
 	smsfee float DEFAULT 0.0,
-	gbfee float DEFAULT 0.0
+	gbfee float DEFAULT 0.0, 
+    CONSTRAINT non_negative_min CHECK (minnumber>=0),
+    CONSTRAINT non_negative_minfee CHECK (minfee>=0),
+    CONSTRAINT non_negative_sms CHECK (smsnumber>=0),
+    CONSTRAINT non_negative_smsfee CHECK (smsfee>=0),
+    CONSTRAINT non_negative_gb CHECK (gbnumber>=0),
+    CONSTRAINT non_negative_gbfee CHECK (gbfee>=0)
 	);
 
 CREATE TABLE OPTIONALPRODUCT (
 	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name varchar(50) NOT NULL,
-	monthlyfee float NOT NULL
+	monthlyfee float NOT NULL,
+    CONSTRAINT non_negative_product_fee CHECK (monthlyfee>=0)
 	);
 
 CREATE TABLE SERVICEACTIVATIONSCHEDULE (
@@ -77,7 +86,8 @@ CREATE TABLE SERVICEACTIVATIONSCHEDULE (
 	deactivationdate Date,
 	PRIMARY KEY (package, customer),
 	FOREIGN KEY (customer) REFERENCES CUSTOMER(username) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (package) REFERENCES SERVICEPACKAGE(id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (package) REFERENCES SERVICEPACKAGE(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT deactivation_after_activation CHECK (deactivationdate>activationdate)
 	);
 
 
@@ -114,6 +124,8 @@ CREATE TABLE purchasesproducts (
 	FOREIGN KEY (customer) REFERENCES CUSTOMER(username) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (product) REFERENCES OPTIONALPRODUCT(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
+    
+-- TODO: Make this views materialized
 
 CREATE VIEW PURCHASEPERPACKAGE(package, purchases) AS
 SELECT package, COUNT(*)
@@ -156,7 +168,6 @@ GROUP BY p.product
 ORDER BY NUM DESC
 LIMIT 1;
 
--- TODO: Add the materialized views of the data, to be populated by triggers
 CREATE TRIGGER calculate_fee BEFORE INSERT ON CUSTOMERORDER
 FOR EACH ROW
 	SET new.totalValue = new.months *

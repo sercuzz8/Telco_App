@@ -8,14 +8,14 @@ public class ValidityPeriodId implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private int sPackage;
-	private int monthsnumber;
+	private int monthsNumber;
 
     public ValidityPeriodId() {
     }
 
     public ValidityPeriodId(int id, int monthsNumber) {
         this.sPackage = id;
-        this.monthsnumber = monthsNumber;
+        this.monthsNumber = monthsNumber;
     }
 
     @Override
@@ -24,11 +24,11 @@ public class ValidityPeriodId implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         ValidityPeriodId validityPeriodId = (ValidityPeriodId) o;
         return sPackage==validityPeriodId.sPackage &&
-                monthsnumber==validityPeriodId.monthsnumber;
+                monthsNumber==validityPeriodId.monthsNumber;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sPackage, monthsnumber);
+        return Objects.hash(sPackage, monthsNumber);
     }
 }

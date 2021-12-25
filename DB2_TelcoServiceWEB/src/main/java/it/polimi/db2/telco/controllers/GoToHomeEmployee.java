@@ -75,47 +75,24 @@ public class GoToHomeEmployee extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		String productName = null;
-		String productCost = null;
-		
-		String packageName = null;
-		String packageCostTwelve = null;		
-		String packageCostTwentyFour = null;	
-		String packageCostThirtySix = null;	
-		String[] servs = null;
-		String[] prods = null;
-		
-		ServicePackage sPackage = null;
-		
-		ValidityPeriod shortPeriod = null;
-		ValidityPeriod mediumPeriod = null;
-		ValidityPeriod longPeriod = null;
-
-				
+			throws ServletException, IOException {				
 		try {
 			
-			productName = StringEscapeUtils.escapeJava(request.getParameter("product_name"));
-			productCost = StringEscapeUtils.escapeJava(request.getParameter("product_cost"));
+			String productName = StringEscapeUtils.escapeJava(request.getParameter("product_name"));
+			String productCost = StringEscapeUtils.escapeJava(request.getParameter("product_cost"));
 			
 
 			if (productName == null || productCost == null || productName.isBlank() || productCost.isBlank()) {
 				
 				try {
-				packageName = StringEscapeUtils.escapeJava(request.getParameter("package_name"));
-				packageCostTwelve = StringEscapeUtils.escapeJava(request.getParameter("package_cost_twelve"));
-				packageCostTwentyFour = StringEscapeUtils.escapeJava(request.getParameter("package_cost_twentyfour"));
-				packageCostThirtySix = StringEscapeUtils.escapeJava(request.getParameter("package_cost_thirtysix"));
-				servs=request.getParameterValues("chosen_services");
-				prods=request.getParameterValues("chosen_products");
+				String packageName = StringEscapeUtils.escapeJava(request.getParameter("package_name"));
+				String packageCostTwelve = StringEscapeUtils.escapeJava(request.getParameter("package_cost_twelve"));
+				String packageCostTwentyFour = StringEscapeUtils.escapeJava(request.getParameter("package_cost_twentyfour"));
+				String packageCostThirtySix = StringEscapeUtils.escapeJava(request.getParameter("package_cost_thirtysix"));
+				String[] servs=request.getParameterValues("chosen_services");
+				String[] prods=request.getParameterValues("chosen_products");
 				
-				if (packageName==null || packageCostTwelve==null || packageCostTwentyFour==null || packageCostThirtySix==null || servs==null ||
-						packageName.isBlank() || packageCostTwelve.isBlank() || packageCostTwentyFour.isBlank() || packageCostThirtySix.isBlank()) {
-					throw new Exception("Empty fields in creation");
-				}
-				
-				sPackage = sPack.createServicePackage(packageName);
+				ServicePackage sPackage = sPack.createServicePackage(packageName);
 				
 				sPack.addServicePackage(sPackage);
 				
@@ -123,15 +100,9 @@ public class GoToHomeEmployee extends HttpServlet {
 					sPack.addServiceToPackage(sPackage, sServ.findServicebyId(Integer.parseInt(s)));
 				}
 				
-				
-				
-				shortPeriod = vPer.createValidityPeriod(sPackage, 12, Float.parseFloat(packageCostTwelve));
-				mediumPeriod = vPer.createValidityPeriod(sPackage, 24, Float.parseFloat(packageCostTwentyFour));
-				longPeriod = vPer.createValidityPeriod(sPackage, 36, Float.parseFloat(packageCostThirtySix));
-				
-				sPack.addValidityPeriodToPackage(sPackage, shortPeriod);
-				sPack.addValidityPeriodToPackage(sPackage, mediumPeriod);
-				sPack.addValidityPeriodToPackage(sPackage, longPeriod);
+				sPack.addValidityPeriodToPackage(sPackage, vPer.createValidityPeriod(sPackage, 12, Float.parseFloat(packageCostTwelve)));
+				sPack.addValidityPeriodToPackage(sPackage, vPer.createValidityPeriod(sPackage, 24, Float.parseFloat(packageCostTwentyFour)));
+				sPack.addValidityPeriodToPackage(sPackage, vPer.createValidityPeriod(sPackage, 36, Float.parseFloat(packageCostThirtySix)));
 				
 				sPack.updateServicePackage(sPackage);
 				

@@ -103,7 +103,7 @@
 		<p><input type="text" name="package_cost_twentyfour" placeholder="Package Cost 24 months" required><br></p>
 		<p><input type="text" name="package_cost_thirtysix" placeholder="Package Cost 36 months" required><br></p>
 		<p><label for="chooseservice">Choose one or more services:</label></p>
-		<p><select id="chooseservice" name="chosen_services" size="${services.size()}" multiple>
+		<p><select id="chooseservice" name="chosen_services" size="${services.size()}" multiple required>
   		<option th:each="serv: ${services}" th:value="${serv.getId()}" th:text="${serv.getId()}"></option>
 		</select> </p>
 		<p><label for="chooseproducts">Choose zero or more products:</label></p>

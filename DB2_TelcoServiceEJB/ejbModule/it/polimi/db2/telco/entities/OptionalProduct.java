@@ -13,6 +13,8 @@ public class OptionalProduct {
 	private int id;
 	
 	private String name;
+	
+	@Column(name="monthlyfee")
 	private float monthlyFee;
 	
 	public OptionalProduct() {}
@@ -37,8 +39,8 @@ public class OptionalProduct {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public void setMonthlyFee(float mf) {
-		this.monthlyFee = mf;
+	public void setMonthlyFee(float monthlyFee) {
+		this.monthlyFee = monthlyFee;
 	}
 	
 	public int getId() {
