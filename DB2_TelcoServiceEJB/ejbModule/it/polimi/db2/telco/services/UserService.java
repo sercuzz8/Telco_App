@@ -35,10 +35,9 @@ public class UserService {
 
 	}
 
-	public User addUser(String name, String email, String pwd) {
+	public void addUser(String name, String email, String pwd) {
 		User user = new User(name, email, pwd);
 		em.persist(user);
-		return user;
 	}
 	
 }

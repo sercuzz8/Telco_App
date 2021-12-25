@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Login</title>
+	<link rel="stylesheet" type="text/css" media="all" href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
+</head>
+<body>
+	<h1>Telco Service</h1>
+
+	<form class="LoginForm" action="GoToLandingPage" method="POST" autocomplete="off">
+		<h2>Login</h2>
+		<input type="hidden" name="pageName" value="login">
+		<p th:text=" ${errorMsgLogin}" class="errorMsg"></p>
+		<p><input type="text" name="username" placeholder="Username" required><br></p>
+		<p><input type="password" name="pwd" placeholder="Password" required><br></p>
+		<p><input class="buttonStyle" type="submit" value="Login now"> <br></p><br>
+	</form>
+	
+	<form class="RegistrationForm" action="GoToLandingPage" method="POST" autocomplete="off">
+		<h2>Registration</h2>
+		<input type="hidden" name="pageName" value="registration">
+		<p th:text=" ${errorMsgRegistration}" class="errorMsg"></p>
+		<p><input type="text" name="username" placeholder="Username" required><br></p>
+		<p><input type="text" name="email" placeholder="Email Address" required><br></p>
+		<p><input type="password" name="pwd" placeholder="Password" required><br></p>
+		<p><input class="buttonStyle" type="submit" value="Register now"><br></p>
+	</form>
+	
+	<div>
+			<p><span>Are you an Employee?</span> <a th:href="@{/CheckLoginEmployee}"> Employee Login</a></p>
+		</div>
+		<div>
+			<p><span>Want to browse anyway?</span> <a th:href="@{/GoToHomePage}"> Home Page</a></p>
+		</div>
+</body>
+</html>

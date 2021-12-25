@@ -75,16 +75,42 @@ public class GoToHomeEmployee extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {				
-		try {
+			throws ServletException, IOException {			
+		
+		
+		if(request.getParameter("pageName").equals("create_product"))
+		{
 			
-			String productName = StringEscapeUtils.escapeJava(request.getParameter("product_name"));
-			String productCost = StringEscapeUtils.escapeJava(request.getParameter("product_cost"));
+			String productName = null;
+			String productCost = null;
 			
-
+			try {
+			productName = StringEscapeUtils.escapeJava(request.getParameter("product_name"));
+			productCost = StringEscapeUtils.escapeJava(request.getParameter("product_cost"));
+			
 			if (productName == null || productCost == null || productName.isBlank() || productCost.isBlank()) {
-				
-				try {
+				throw new Exception("Missing or empty product value");
+			}
+			
+			}
+			catch (Exception e) {
+				List<Service> services = sServ.findAllServices();
+				List<OptionalProduct> products = oProd.findAllProducts();
+				ServletContext servletContext = getServletContext();
+				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+				ctx.setVariable("errorMsg", e.getMessage());
+				ctx.setVariable("services", services);
+				ctx.setVariable("products", products);
+				String path = "/WEB-INF/HomeEmployee.html";
+				templateEngine.process(path, ctx, response.getWriter());
+				return;
+			}
+			
+			oProd.createProduct(productName, Float.parseFloat(productCost));
+		}
+		else if(request.getParameter("pageName").equals("create_package"))
+		{
+			try {
 				String packageName = StringEscapeUtils.escapeJava(request.getParameter("package_name"));
 				String packageCostTwelve = StringEscapeUtils.escapeJava(request.getParameter("package_cost_twelve"));
 				String packageCostTwentyFour = StringEscapeUtils.escapeJava(request.getParameter("package_cost_twentyfour"));
@@ -131,23 +157,9 @@ public class GoToHomeEmployee extends HttpServlet {
 					templateEngine.process(path, ctx, response.getWriter());
 					return;
 				}
-			}
-			
-			oProd.createProduct(productName, Float.parseFloat(productCost));
-
-		} catch (Exception e) {
-			List<Service> services = sServ.findAllServices();
-			List<OptionalProduct> products = oProd.findAllProducts();
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			ctx.setVariable("errorMsg", e.getMessage());
-			ctx.setVariable("services", services);
-			ctx.setVariable("products", products);
-			String path = "/WEB-INF/HomeEmployee.html";
-			templateEngine.process(path, ctx, response.getWriter());
-			return;
 		}
-		
+				
+				
 		
 		String path = getServletContext().getContextPath() + "/GoToHomeEmployee";
 		response.setContentType("text/html");

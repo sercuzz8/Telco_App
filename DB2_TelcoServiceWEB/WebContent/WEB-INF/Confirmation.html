@@ -28,8 +28,7 @@
 </div>
 
 <div th:if=${session.user==null} align="left">
-		<a th:href="@{/CheckLogin}">Login</a>
-		<a th:href="@{/CheckRegister}">Register</a>
+		<a th:href="@{/GoToLandingPage}">Login/Register</a>
 </div>
 
 <div th:unless=${session.user==null} align="left">

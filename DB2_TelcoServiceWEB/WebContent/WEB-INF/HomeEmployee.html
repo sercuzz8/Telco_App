@@ -75,7 +75,9 @@
 	<section>
 	
 		<form class="CreateOptionalProduct" action="GoToHomeEmployee" method="POST" autocomplete="off">
-
+		
+		<input type="hidden" name="pageName" value="create_product">
+		
 		<p th:text="${errorMsg}" class="errorMsg"></p>
 		<p th:text="${regSucc}" class="correctMsg"></p>
 		
@@ -92,6 +94,9 @@
 	<section>
 	
 		<form class="CreateServicePackage" action="GoToHomeEmployee" method="POST" autocomplete="off">
+		
+		<input type="hidden" name="pageName" value="create_package">
+		
 
 		<p th:text="${errorMsg}" class="errorMsg"></p>
 		<p th:text="${regSucc}" class="correctMsg"></p>

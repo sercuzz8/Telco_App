@@ -14,7 +14,7 @@
 	<h1>Welcome to the Telco service Home Page</h1>
 
 	<div th:if=${session.user==null} align="right">
-		<a th:href="@{/CheckLogin}">Login</a>
+		<a th:href="@{/GoToLandingPage}">Login</a>
 	</div>
 	<div th:unless=${session.user==null} align="right">
 		<a th:text="${session.user.username}">Username</a>
