@@ -26,12 +26,12 @@ public class GoToSalesReportPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine;
 
-	@EJB(name = "it.polimi.db2.telco.services/PurchasesPackageService")
-	private PurchasesPackageService purPackSer;
-	@EJB(name = "it.polimi.db2.telco.services/PackageValidityPeriodService")
-	private PackageValidityPeriodService packVal;
-	@EJB(name = "it.polimi.db2.telco.services/ValiditySaleProductService")
-	private ValiditySaleProductService valSaleProd;
+	@EJB(name = "it.polimi.db2.telco.services/PurchasePerPackageService")
+	private PurchasePerPackageService purPackSer;
+	@EJB(name = "it.polimi.db2.telco.services/PurchasePerValidityService")
+	private PurchasePerValidityService packVal;
+	@EJB(name = "it.polimi.db2.telco.services/SalePerPackageService")
+	private SalePerPackageService valSaleProd;
 	@EJB(name = "it.polimi.db2.telco.services/AverageProductSoldService")
 	private AverageProductSoldService avgProd;
 	@EJB(name = "it.polimi.db2.telco.services/InsolventCustomerService")
@@ -64,9 +64,9 @@ public class GoToSalesReportPage extends HttpServlet {
 			return;
 		}
 		
-		List<PurchasesPackage> purchases_package = purPackSer.findAllPurchasesForPackage();
-		List<PackageValidityPeriod> purchases_validity = packVal.findAllPackagesValidityPeriods();
-		List<ValiditySaleProduct> validity_sale = valSaleProd.findAllValiditySaleProduct();
+		List<PurchasePerPackage> purchases_package = purPackSer.findAllPurchasesForPackage();
+		List<PurchasePerValidity> purchases_validity = packVal.findAllPackagesValidityPeriods();
+		List<SalePerPackage> validity_sale = valSaleProd.findAllValiditySaleProduct();
 		List<AverageProductSold> avg_product = avgProd.findAllAVGProductsSold();
 		List<InsolventCustomer> insolvent_customer = insCust.findAllInsolventCustomers();
 		List<BestSeller> best_seller = bestSell.findAllBestSellers();

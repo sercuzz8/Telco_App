@@ -11,8 +11,8 @@ import java.math.BigInteger;
  */
 @Entity
 @Table(name="PURCHASEPERPACKAGE")
-@NamedQuery(name="PurchasesPackage.findAll", query="SELECT p FROM PurchasesPackage p")
-public class PurchasesPackage implements Serializable {
+@NamedQuery(name="PurchasePerPackage.findAll", query="SELECT p FROM PurchasePerPackage p")
+public class PurchasePerPackage implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -21,7 +21,7 @@ public class PurchasesPackage implements Serializable {
 
 	private BigInteger purchases;
 
-	public PurchasesPackage() {
+	public PurchasePerPackage() {
 	}
 
 	public int getPackage_() {

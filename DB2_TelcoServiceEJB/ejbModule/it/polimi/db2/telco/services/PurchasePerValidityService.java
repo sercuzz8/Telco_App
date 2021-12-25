@@ -9,14 +9,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 @Stateless
-public class ValiditySaleProductService {
+public class PurchasePerValidityService {
 	@PersistenceContext(unitName="DB2_TelcoServiceEJB")
 	private EntityManager em;
 	
-	public ValiditySaleProductService() {}
+	public PurchasePerValidityService() {}
 	
-	public List<ValiditySaleProduct> findAllValiditySaleProduct(){
-		return em.createNamedQuery("ValiditySaleProduct.findAll", ValiditySaleProduct.class).getResultList();
+	public List<PurchasePerValidity> findAllPackagesValidityPeriods(){
+		return em.createNamedQuery("PurchasePerValidity.findAll", PurchasePerValidity.class).getResultList();
 	}
 	
 

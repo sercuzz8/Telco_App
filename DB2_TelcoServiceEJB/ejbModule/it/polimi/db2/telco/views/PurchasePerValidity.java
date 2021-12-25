@@ -12,9 +12,9 @@ import java.math.BigInteger;
  */
 @Entity
 @Table(name="PURCHASEPERVALIDITY")
-@IdClass(PackageValidityPeriodId.class)
-@NamedQuery(name="PackageValidityPeriod.findAll", query="SELECT p FROM PackageValidityPeriod p")
-public class PackageValidityPeriod implements Serializable {
+@IdClass(PurchasePerValidityId.class)
+@NamedQuery(name="PurchasePerValidity.findAll", query="SELECT p FROM PurchasePerValidity p")
+public class PurchasePerValidity implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -27,7 +27,7 @@ public class PackageValidityPeriod implements Serializable {
 	
 	private BigInteger purchases;
 
-	public PackageValidityPeriod() {
+	public PurchasePerValidity() {
 	}
 
 	public BigInteger getMonths() {

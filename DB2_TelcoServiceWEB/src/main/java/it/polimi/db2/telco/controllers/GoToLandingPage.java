@@ -102,15 +102,24 @@ public class GoToLandingPage extends HttpServlet {
 			// If the user exists, add info to the session and go to home page, otherwise
 			// show login page with error message
 			String path;
-				
-			request.getSession().setAttribute("user", user);
-			if (request.getSession().getAttribute("order")!=null) {
-				path = getServletContext().getContextPath() + "/GoToConfirmationPage";
-				response.sendRedirect(path);
-			}
+			if (user == null) {
+				ServletContext servletContext = getServletContext();
+				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+				ctx.setVariable("errorMsgLogin", "Incorrect username or password");
+				path = "/Landing.html";
+				templateEngine.process(path, ctx, response.getWriter());
+			} 
 			else {
-			path = getServletContext().getContextPath() + "/GoToHomePage";
-			response.sendRedirect(path);
+				
+				request.getSession().setAttribute("user", user);
+				if (request.getSession().getAttribute("order")!=null) {
+					path = getServletContext().getContextPath() + "/GoToConfirmationPage";
+					response.sendRedirect(path);
+				}
+				else {
+				path = getServletContext().getContextPath() + "/GoToHomePage";
+				response.sendRedirect(path);
+				}
 			}
 			
 		}
@@ -129,7 +138,7 @@ public class GoToLandingPage extends HttpServlet {
 			} catch (Exception e) {
 				ServletContext servletContext = getServletContext();
 				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-				ctx.setVariable("errorMsg", e.getMessage());
+				ctx.setVariable("errorMsgRegistration", e.getMessage());
 				String path = "/Landing.html";
 				templateEngine.process(path, ctx, response.getWriter());
 				return;
@@ -140,8 +149,8 @@ public class GoToLandingPage extends HttpServlet {
 			} catch (Exception e) {
 				ServletContext servletContext = getServletContext();
 				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-				ctx.setVariable("errorMsg", "Email address or username already in use");
-				String path = "/WEB-INF/Registration.html";
+				ctx.setVariable("errorMsgRegistration", "Email address or username already in use");
+				String path = "/Landing.html";
 				templateEngine.process(path, ctx, response.getWriter());
 				return;
 			}

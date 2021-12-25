@@ -98,7 +98,7 @@ public class GoToHomeEmployee extends HttpServlet {
 				List<OptionalProduct> products = oProd.findAllProducts();
 				ServletContext servletContext = getServletContext();
 				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-				ctx.setVariable("errorMsg", e.getMessage());
+				ctx.setVariable("errorMsgProduct", e.getMessage());
 				ctx.setVariable("services", services);
 				ctx.setVariable("products", products);
 				String path = "/WEB-INF/HomeEmployee.html";
@@ -150,7 +150,7 @@ public class GoToHomeEmployee extends HttpServlet {
 					List<OptionalProduct> products = oProd.findAllProducts();
 					ServletContext servletContext = getServletContext();
 					final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-					ctx.setVariable("errorMsg", e.getMessage());
+					ctx.setVariable("errorMsgPackage", e.getMessage());
 					ctx.setVariable("services", services);
 					ctx.setVariable("products", products);
 					String path = "/WEB-INF/HomeEmployee.html";
@@ -159,8 +159,6 @@ public class GoToHomeEmployee extends HttpServlet {
 				}
 		}
 				
-				
-		
 		String path = getServletContext().getContextPath() + "/GoToHomeEmployee";
 		response.setContentType("text/html");
 		response.sendRedirect(path);

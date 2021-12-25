@@ -4,16 +4,16 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Objects;
 
-public class PackageValidityPeriodId implements Serializable{
+public class PurchasePerValidityId implements Serializable{
 private static final long serialVersionUID = 1L;
 	
 	private int package_;
 	private BigInteger months;
 
-    public PackageValidityPeriodId() {
+    public PurchasePerValidityId() {
     }
 
-    public PackageValidityPeriodId(int id, BigInteger months) {
+    public PurchasePerValidityId(int id, BigInteger months) {
         this.package_ = id;
         this.months = months;
     }
@@ -22,7 +22,7 @@ private static final long serialVersionUID = 1L;
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PackageValidityPeriodId packagevalidityperiodId = (PackageValidityPeriodId) o;
+        PurchasePerValidityId packagevalidityperiodId = (PurchasePerValidityId) o;
         return package_==packagevalidityperiodId.package_ &&
                 months==packagevalidityperiodId.months;
     }

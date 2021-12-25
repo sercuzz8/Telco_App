@@ -10,8 +10,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="SALEPERPACKAGE")
-@NamedQuery(name="ValiditySaleProduct.findAll", query="SELECT v FROM ValiditySaleProduct v")
-public class ValiditySaleProduct implements Serializable {
+@NamedQuery(name="SalePerPackage.findAll", query="SELECT s FROM SalePerPackage s")
+public class SalePerPackage implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -22,7 +22,7 @@ public class ValiditySaleProduct implements Serializable {
 
 	private double withProducts;
 
-	public ValiditySaleProduct() {
+	public SalePerPackage() {
 	}
 
 	public int getPackage_() {
