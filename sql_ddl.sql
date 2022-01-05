@@ -127,24 +127,116 @@ CREATE TABLE purchasesproducts (
     
 -- TODO: Make this views materialized
 
-CREATE VIEW PURCHASEPERPACKAGE(package, purchases) AS
-SELECT package, COUNT(*)
-FROM SERVICEACTIVATIONSCHEDULE 
-GROUP BY package
-ORDER BY package ASC;
+CREATE TABLE PURCHASEPERPACKAGE (
+	package int PRIMARY KEY,
+    purchases int
+);
 
-CREATE VIEW PURCHASEPERVALIDITY(package, months, purchases) AS
-SELECT package, TIMESTAMPDIFF(MONTH,activationdate,deactivationdate), COUNT(*)
-FROM SERVICEACTIVATIONSCHEDULE	
-GROUP BY package, TIMESTAMPDIFF(MONTH,activationdate,deactivationdate)
-ORDER BY package, TIMESTAMPDIFF(MONTH,activationdate,deactivationdate);
+delimiter //
+CREATE TRIGGER update_purchases
+AFTER INSERT ON SERVICEACTIVATIONSCHEDULE
+FOR EACH ROW
+BEGIN
+	SET @old_purchases = 0;
+    SELECT purchases
+    FROM PURCHASEPERPACKAGE
+    WHERE package = new.package 
+    INTO @old_purchases;
+    
+    SET @new_purchases = @old_purchases + 1;
+    UPDATE PURCHASEPERPACKAGE SET purchases = @new_purchases WHERE package = new.package;
+END//
+delimiter ;
+-- delete service package
+CREATE TRIGGER delete_pack
+AFTER DELETE ON SERVICEPACKAGE
+FOR EACH ROW
+DELETE FROM PURCHASEPERPACKAGE WHERE package = old.id;
+-- new service package
+CREATE TRIGGER new_pack
+AFTER INSERT ON SERVICEPACKAGE
+FOR EACH ROW 
+INSERT INTO PURCHASEPERPACKAGE VALUES (new.id,0);
 
-CREATE VIEW SALEPERPACKAGE(package, withProducts, withoutProducts) AS
-SELECT s.package, SUM(c.totalValue), SUM(v.monthsnumber*v.monthlyfee)
-FROM SERVICEACTIVATIONSCHEDULE AS s, CUSTOMERORDER AS c, VALIDITYPERIOD as v
-WHERE s.package = c.package AND s.customer=c.customer AND c.package=v.package AND c.months=v.monthsnumber
-GROUP BY s.package
-ORDER BY s.package ASC;
+
+CREATE TABLE PURCHASEPERVALIDITY (
+	package int,
+    months int,
+    purchases int,
+	PRIMARY KEY (package, months)
+);
+
+delimiter //
+CREATE TRIGGER insert_new_package_purchase
+AFTER INSERT ON SERVICEACTIVATIONSCHEDULE
+FOR EACH ROW
+BEGIN
+	SET @old_purchases = 0;
+	SET @new_months = TIMESTAMPDIFF(MONTH,new.activationdate,new.deactivationdate);
+    SELECT purchases
+    FROM PURCHASEPERVALIDITY
+    WHERE package = new.package AND months = @new_months
+    INTO @old_purchases;
+    
+    SET @new_purchases = @old_purchases + 1;
+    UPDATE PURCHASEPERVALIDITY SET purchases = @new_purchases WHERE package = new.package AND months = @new_months;
+END//
+
+-- new service package
+CREATE TRIGGER new_package
+AFTER INSERT ON SERVICEPACKAGE
+FOR EACH ROW 	
+BEGIN
+	INSERT INTO PURCHASEPERVALIDITY VALUES (new.id,12,0);
+	INSERT INTO PURCHASEPERVALIDITY VALUES (new.id,24,0);
+	INSERT INTO PURCHASEPERVALIDITY VALUES (new.id,36,0);
+END//
+delimiter ;
+
+-- delete service package
+CREATE TRIGGER delete_package
+AFTER DELETE ON SERVICEPACKAGE
+FOR EACH ROW
+DELETE FROM PURCHASEPERVALIDITY WHERE package = old.id;
+-- delete validity period
+CREATE TRIGGER delete_validity
+AFTER DELETE ON VALIDITYPERIOD
+FOR EACH ROW 
+DELETE FROM PURCHASEPERVALIDITY WHERE package = old.package AND months = old.monthsnumber;
+
+CREATE TABLE SALEPERPACKAGE (
+	package int PRIMARY KEY,
+    withproducts int,
+    withoutproducts int
+);
+
+delimiter //
+CREATE TRIGGER new_sale
+AFTER INSERT ON SERVICEACTIVATIONSCHEDULE
+FOR EACH ROW
+BEGIN
+	SET @old_withProd = 0;
+    SET @old_withoutProd = 0;
+    SET @vp_value = 0;
+	SET @new_months = TIMESTAMPDIFF(MONTH,new.activationdate,new.deactivationdate);
+	SET @total_value = (SELECT totalvalue FROM CUSTOMERORDER WHERE package=new.package AND customer=new.customer AND months=@new_months);
+    SELECT withproducts, withoutproducts
+    FROM SALEPERPACKAGE
+    WHERE package = new.package
+    INTO @old_withProd,@old_withoutProd;
+    
+    SELECT monthsnumber*monthlyfee
+    FROM VALIDITYPERIOD
+    WHERE package = new.package AND monthsnumber = @new_months
+    INTO @vp_value;
+    
+    SET @new_withProd = @old_withProd + @total_value;
+    SET @new_withoutProd = @old_withoutProd + @vp_value;
+    
+    UPDATE SALEPERPACKAGE SET withproducts = @new_withProd, withoutproducts=@new_withoutProd
+    WHERE package = new.package;
+END//
+delimiter ;
 
 CREATE VIEW AVERAGEPRODUCTSOLD(package, avgproductsold) AS
 SELECT package, avg(productssold) as avgproductsold
@@ -153,32 +245,82 @@ FROM (	SELECT c.id as orderId, c.package, count(*) as productsSold
 		GROUP BY c.id, c.package) AS productssoldperorder 
 GROUP BY package;        
 
+-- View for the insolvent customers
+CREATE TABLE INSOLVENTCUSTOMER (
+	insolvent varchar(50) PRIMARY KEY,
+    rejectedOrder int,
+    alertDate date
+);
+-- manteinance of insolventcustomer
+delimiter //
+CREATE TRIGGER new_insolvent
+AFTER INSERT ON AUDITING
+FOR EACH ROW
+BEGIN
+	SET @suspended_order = 0;
+    SELECT id 
+    FROM CUSTOMERORDER c LEFT JOIN AUDITING a ON c.customer = a.customer
+    WHERE rejected>0 AND c.customer = new.customer
+    INTO @suspended_order;
+    
+    INSERT INTO INSOLVENTCUSTOMER VALUES 
+    (new.customer,@suspended_order,new.lastrejectiondate);
+END//
+delimiter ;
 
-CREATE VIEW INSOLVENTCUSTOMER(insolvent, rejectedOrder, alertDate) AS
-SELECT c.customer, c.id, a.lastrejectiondate
-FROM CUSTOMERORDER c LEFT JOIN AUDITING a ON c.customer=a.customer
-WHERE rejected>0
-ORDER BY c.customer ASC;
+CREATE TRIGGER remove_insolvent
+AFTER DELETE ON AUDITING
+FOR EACH ROW
+DELETE FROM INSOLVENTCUSTOMER WHERE customer=old.customer AND alertDate = old.lastrejectiondate;
 
-CREATE VIEW BESTSELLER(product, numOfSales) AS
-SELECT p.product, COUNT(*) AS NUM
-FROM SERVICEACTIVATIONSCHEDULE AS s, purchasesproducts as p
-WHERE s.package = p.package AND s.customer=p.customer
-GROUP BY p.product
-ORDER BY NUM DESC
-LIMIT 1;
+-- View for the best seller
+CREATE TABLE BESTSELLER (
+	product int PRIMARY KEY,
+    numOfSales int
+);
+-- BESTSELLER triggers
+-- new product in optional product
+CREATE TRIGGER add_product
+AFTER INSERT ON OPTIONALPRODUCT
+FOR EACH ROW
+INSERT INTO BESTSELLER VALUES (new.id, 0);
+-- delete product from optional product
+CREATE TRIGGER remove_product
+AFTER DELETE ON OPTIONALPRODUCT
+FOR EACH ROW
+DELETE FROM BESTSELLER WHERE product=old.id;
+-- update product in BESTSELLER
+delimiter //
+CREATE TRIGGER update_product
+AFTER INSERT ON purchasesproducts
+FOR EACH ROW
+BEGIN
+	SET @old_sales = 0;
+        
+	SELECT IFNULL(numOfSales,0)
+	FROM BESTSELLER
+	WHERE product = new.product
+	INTO @old_sales;
+	
+	SET @new_sales = @old_sales + 1;
+	UPDATE BESTSELLER SET numOfSales = @new_sales WHERE product = new.product;
+END//
+delimiter ;
+
+
+-- ------------------------------------------------------------------------------
 
 CREATE TRIGGER calculate_fee BEFORE INSERT ON CUSTOMERORDER
 FOR EACH ROW
-	SET new.totalValue = new.months *
+	SET new.totalvalue = new.months *
 		-- Sum of fees of the SERVICE Package
 		(SELECT V.monthlyfee FROM VALIDITYPERIOD AS V WHERE V.package=new.package AND V.monthsnumber=new.months);
 
 CREATE TRIGGER adjust_Total AFTER INSERT ON choosesproducts 
 FOR EACH ROW
 	UPDATE CUSTOMERORDER AS c SET
-		c.totalValue = (
-		c.totalValue + c.months *
+		c.totalvalue = (
+		c.totalvalue + c.months *
 		-- Sum of all the fees of the Optional Product
 		(SELECT O.monthlyfee FROM OPTIONALPRODUCT as O WHERE O.id = new.product))
 		WHERE c.id=new.customerorder; --  It also contains the total value
@@ -236,7 +378,7 @@ CREATE TRIGGER create_auditing
 		THEN
 			BEGIN
 			SET @insolvent_mail = (SELECT u.email FROM CUSTOMER AS u WHERE u.username=new.customer);
-			INSERT INTO AUDITING (customer, email, lastrejectionamount, lastrejectiondate, lastrejectiontime) values (new.customer, @insolvent_mail, new.totalValue, CURRENT_DATE(), CURRENT_TIME()); 
+			INSERT INTO AUDITING (customer, email, lastrejectionamount, lastrejectiondate, lastrejectiontime) values (new.customer, @insolvent_mail, new.totalvalue, CURRENT_DATE(), CURRENT_TIME()); 
 			END;
 		END IF;
 	END//

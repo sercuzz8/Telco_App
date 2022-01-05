@@ -97,7 +97,7 @@ SELECT * FROM INSOLVENTCUSTOMER;
 
 SELECT * FROM BESTSELLER;
 
----------------------------------------------------------------------
+-- -------------------------------------------------------------------
 /*
 -- 1. Avoid duplicate mail
 DELETE FROM CUSTOMER WHERE username='sergio';
