@@ -1,4 +1,4 @@
-CREATE TABLE averageproductsold (
+/*CREATE TABLE averageproductsold (
 	package int PRIMARY KEY,
     avgProductSold int
 );
@@ -8,7 +8,7 @@ SELECT package, avg(productsSold) as avgProductSold
 FROM (	SELECT c.id as orderId, c.package, count(*) as productsSold
 		FROM CUSTOMERORDER c JOIN choosesproducts ON  customerorder = c.id
 		GROUP BY c.id, c.package) AS productsSoldPerOrder 
-GROUP BY package;        
+GROUP BY package;   */     
 	
 CREATE TABLE bestsellers (
 	product int PRIMARY KEY,
