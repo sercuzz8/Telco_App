@@ -1,4 +1,4 @@
-/*CREATE TABLE averageproductsold (
+CREATE TABLE averageproductsold (
 	package int PRIMARY KEY,
     avgProductSold int
 );
@@ -8,7 +8,35 @@ SELECT package, avg(productsSold) as avgProductSold
 FROM (	SELECT c.id as orderId, c.package, count(*) as productsSold
 		FROM CUSTOMERORDER c JOIN choosesproducts ON  customerorder = c.id
 		GROUP BY c.id, c.package) AS productsSoldPerOrder 
-GROUP BY package;   */ 
+GROUP BY package; 
+
+-- the trigger activates when a new order is created, it counts all the products included in the order and compute the new average for the service package selected in the order 
+delimiter //
+CREATE TRIGGER newOrder
+AFTER INSERT ON CUSTOMERORDER
+FOR EACH ROW
+BEGIN
+	SET @productsPerOrder = 0;
+    SET @oldAvg = 0;
+    
+    SELECT count(*)
+    FROM choosesproducts
+    WHERE customerorder = new.id
+    GROUP BY customerorder
+    INTO @productsPerOrder;
+    
+    SELECT avgProductSold
+    FROM averageProductSold
+    WHERE package = new.package
+    INTO @oldAvg;
+    
+    SET @newAvg = (@oldAvg + @productsPerOrder) / 2;
+    
+    UPDATE averageproductsold
+    SET avgProductSold = @newAvg
+    WHERE package = new.package;
+END //
+delimiter;
 
 INSERT INTO BESTSELLER
 SELECT p.product, COUNT(*) AS NUM
