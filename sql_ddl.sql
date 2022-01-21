@@ -254,25 +254,40 @@ CREATE TABLE INSOLVENTCUSTOMER (
 );
 -- manteinance of insolventcustomer
 delimiter //
-CREATE TRIGGER new_insolvent
-AFTER INSERT ON AUDITING
+CREATE TRIGGER remove_insolvent
+AFTER UPDATE OF valid ON CUSTOMERORDER 
+WHEN new.valid = 1 and old.valid <> 1
 FOR EACH ROW
 BEGIN
-	SET @suspended_order = 0;
-    SELECT id 
-    FROM CUSTOMERORDER c LEFT JOIN AUDITING a ON c.customer = a.customer
-    WHERE rejected>0 AND c.customer = new.customer
-    INTO @suspended_order;
+	SET @orderCount = 0;
+    SELECT count(*)
+    FROM CUSTOMERORDER
+    WHERE customer = new.customer
+    INTO @orderCount
     
-    INSERT INTO INSOLVENTCUSTOMER VALUES 
-    (new.customer,@suspended_order,new.lastrejectiondate);
+    IF (@orderCount == (SELECT count(*) 
+			FROM CUSTOMERORDER
+                        WHERE customer = new.customer AND valid = 1)
+                        ) THEN
+		DELETE FROM INSOLVENTCUSTOMER WHERE customer=old.customer AND alertDate = old.date;
 END//
 delimiter ;
 
-CREATE TRIGGER remove_insolvent
-AFTER DELETE ON AUDITING
+delimiter //
+CREATE TRIGGER new_insolvent
+AFTER INSERT ON CUSTOMERORDER
+WHEN new.rejected = 1 AND new.valid <> 1
 FOR EACH ROW
-DELETE FROM INSOLVENTCUSTOMER WHERE customer=old.customer AND alertDate = old.lastrejectiondate;
+INSERT INTO INSOLVENTCUSTOMER VALUES (new.customer,new.id,new.date);
+delimiter ;
+
+delimiter //
+CREATE TRIGGER new_insolvent
+AFTER UPDATE OF rejected ON CUSTOMERORDER
+WHEN new.rejected = 1 AND old.rejected <> 1 AND new.valid = 0 AND old.valid <> 0
+FOR EACH ROW
+INSERT INTO INSOLVENTCUSTOMER VALUES (new.customer,new.id,new.date);
+delimiter ;
 
 -- View for the best seller
 CREATE TABLE BESTSELLER (
