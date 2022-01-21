@@ -22,6 +22,7 @@
 		<h2>Registration</h2>
 		<input type="hidden" name="pageName" value="registration">
 		<p th:text=" ${errorMsgRegistration}" class="errorMsg"></p>
+		<p th:text="${successMsgRegistration}" class="correctMsg"></p>
 		<p><input type="text" name="username" placeholder="Username" required><br></p>
 		<p><input type="text" name="email" placeholder="Email Address" required><br></p>
 		<p><input type="password" name="pwd" placeholder="Password" required><br></p>

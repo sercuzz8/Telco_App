@@ -1,6 +1,7 @@
 package it.polimi.db2.telco.controllers;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
@@ -16,8 +17,10 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.db2.telco.entities.CustomerOrder;
+import it.polimi.db2.telco.entities.ServicePackage;
 import it.polimi.db2.telco.entities.User;
 import it.polimi.db2.telco.services.CustomerOrderService;
+import it.polimi.db2.telco.services.ServicePackageService;
 
 
 /**
@@ -30,7 +33,10 @@ public class GoToConfirmationPage extends HttpServlet {
 	
 	@EJB(name = "it.polimi.db2.telco.services/CustomerOrderService")
 	private CustomerOrderService cOrds;
-
+	
+	@EJB(name = "it.polimi.db2.telco.services/ServicePackageService")
+	private ServicePackageService sPacks;
+	
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -80,11 +86,20 @@ public class GoToConfirmationPage extends HttpServlet {
 			
 			cOrds.addCustomerOrder(order);
 			
-		} catch (Exception e) {
+		} 
+		
+		/*catch (SQLIntegrityConstraintViolationException e) {
+			
+		}*/
+		
+		catch (Exception e) {
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			ctx.setVariable("errorMsg", e.getMessage());
-			String path = "/WEB-INF/Confirmation.html";
+			request.getSession().removeAttribute("order");
+			List<ServicePackage> servicePackages = sPacks.findAllPackages();
+			ctx.setVariable("packages", servicePackages);
+			ctx.setVariable("errorMsg", "User already bought the package");
+			String path = "/WEB-INF/Home.html";
 			templateEngine.process(path, ctx, response.getWriter());
 			return;
 		}

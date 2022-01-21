@@ -41,6 +41,7 @@ CREATE TABLE CUSTOMERORDER (
 	valid int NOT NULL DEFAULT 0,
 	totalvalue float,
 	FOREIGN KEY (customer) REFERENCES CUSTOMER(username),
+    UNIQUE (package, customer),
 	FOREIGN KEY (package, months) REFERENCES VALIDITYPERIOD(package, monthsnumber), -- ON DELETE CASCADE ON UPDATE CASCADE we won't delete the order tuple if a validity period is updated or deleted
 	CONSTRAINT non_negative_value CHECK (totalvalue>=0)
     );
@@ -378,7 +379,7 @@ CREATE TRIGGER create_auditing
 		THEN
 			BEGIN
 			SET @insolvent_mail = (SELECT u.email FROM CUSTOMER AS u WHERE u.username=new.customer);
-			INSERT INTO AUDITING (customer, email, lastrejectionamount, lastrejectiondate, lastrejectiontime) values (new.customer, @insolvent_mail, new.totalvalue, CURRENT_DATE(), CURRENT_TIME()); 
+			INSERT INTO AUDITING (customer, email, lastrejectionamount, lastrejectiondate, lastrejectiontime) VALUES (new.customer, @insolvent_mail, new.totalvalue, CURRENT_DATE(), CURRENT_TIME()); 
 			END;
 		END IF;
 	END//

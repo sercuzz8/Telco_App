@@ -12,7 +12,14 @@
 <body>
 
 	<h1>Welcome to the Telco service Home Page</h1>
-
+	
+	<div>
+	
+	<p th:text="${errorMsg}" class="errorMsg"></p>
+	<p th:text="${successMsg}" class="successMsg"></p>
+	
+	</div>
+	
 	<div th:if=${session.user==null} align="right">
 		<a th:href="@{/GoToLandingPage}">Login</a>
 	</div>

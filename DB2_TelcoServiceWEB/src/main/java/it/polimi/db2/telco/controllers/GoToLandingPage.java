@@ -156,6 +156,7 @@ public class GoToLandingPage extends HttpServlet {
 			}
 			
 			String path = getServletContext().getContextPath() + "/GoToLandingPage";
+			//ctx.setVariable("successMsgRegistration", "User correctly registered");
 			response.setContentType("text/html");
 			response.sendRedirect(path);
 			return;
