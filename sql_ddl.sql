@@ -255,21 +255,22 @@ CREATE TABLE INSOLVENTCUSTOMER (
 -- manteinance of insolventcustomer
 delimiter //
 CREATE TRIGGER remove_insolvent
-AFTER UPDATE OF valid ON CUSTOMERORDER 
-WHEN new.valid = 1 and old.valid <> 1
+AFTER UPDATE ON CUSTOMERORDER 
 FOR EACH ROW
 BEGIN
 	SET @orderCount = 0;
     SELECT count(*)
     FROM CUSTOMERORDER
     WHERE customer = new.customer
-    INTO @orderCount
-    
-    IF (@orderCount == (SELECT count(*) 
-			FROM CUSTOMERORDER
-                        WHERE customer = new.customer AND valid = 1)
-                        ) THEN
-		DELETE FROM INSOLVENTCUSTOMER WHERE customer=old.customer AND alertDate = old.date;
+    INTO @orderCount;
+    IF (new.valid = 1 and old.valid <> 1) THEN
+		IF (@orderCount = (SELECT count(*) 
+				   FROM CUSTOMERORDER
+		        	   WHERE customer = new.customer AND valid = 1)
+	       			  ) THEN
+			DELETE FROM INSOLVENTCUSTOMER WHERE customer=old.customer AND alertDate = old.date;
+		END IF;	
+    END IF;
 END//
 delimiter ;
 
@@ -282,7 +283,7 @@ INSERT INTO INSOLVENTCUSTOMER VALUES (new.customer,new.id,new.date);
 delimiter ;
 
 delimiter //
-CREATE TRIGGER new_insolvent
+CREATE TRIGGER new_insolvent1
 AFTER UPDATE OF rejected ON CUSTOMERORDER
 WHEN new.rejected = 1 AND old.rejected <> 1 AND new.valid = 0 AND old.valid <> 0
 FOR EACH ROW
