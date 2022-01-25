@@ -258,40 +258,30 @@ CREATE TRIGGER remove_insolvent
 AFTER UPDATE ON CUSTOMERORDER 
 FOR EACH ROW
 BEGIN
-	SET @orderCount = 0;
-	
-    	SELECT count(*)
-    	FROM CUSTOMERORDER
-    	WHERE customer = new.customer
-    	INTO @ordercount;
-	
-	IF (new.customer IN (SELECT customer FROM INSOLVENTCUSTOMER)) THEN
-    		IF (new.valid = 1 and old.valid <> 1) THEN
-			IF (@orderCount = (SELECT count(*) 
-				   	   FROM CUSTOMERORDER
-		        	           WHERE customer = new.customer AND valid = 1)
-	       			  	) THEN
-			DELETE FROM INSOLVENTCUSTOMER WHERE customer=old.customer AND alertdate = old.date;
-			END IF;	
-    		END IF;
-    	END IF;
-END//
+	IF (new.valid = 1 AND old.valid = 0) THEN
+		IF (new.customer IN (SELECT i.insolvent FROM INSOLVENTCUSTOMER i)) THEN
+			SET @validorders = 0;
+			SELECT count(*)
+			FROM CUSTOMERORDER c
+			WHERE c.customer = new.customer AND (c.valid = 1 OR c.rejected = 0)
+			INTO @validorders;
+            IF (@validorders = (SELECT count(*) FROM CUSTOMERORDER c WHERE c.customer = new.customer)) THEN
+				DELETE FROM INSOLVENTCUSTOMER WHERE rejectedorder = new.id;
+            END IF;
+        END IF;
+    END IF;
+END //
 delimiter ;
 
 delimiter //
 CREATE TRIGGER new_insolvent
-AFTER INSERT ON CUSTOMERORDER
-WHEN new.rejected <> 1 AND new.valid = 0
+AFTER UPDATE ON CUSTOMERORDER
 FOR EACH ROW
-INSERT INTO INSOLVENTCUSTOMER VALUES (new.customer,new.id,new.date);
-delimiter ;
-
-delimiter //
-CREATE TRIGGER new_insolvent1
-AFTER UPDATE OF rejected ON CUSTOMERORDER
-WHEN new.rejected <> 0 AND old.rejected <> 1 
-FOR EACH ROW
-INSERT INTO INSOLVENTCUSTOMER VALUES (new.customer,new.id,new.date);
+BEGIN
+	IF (new.rejected = 1 AND old.rejected = 0) THEN
+		INSERT INTO INSOLVENTCUSTOMER VALUES (new.customer,new.id,new.date);
+	END IF;
+END //
 delimiter ;
 
 -- View for the best seller
