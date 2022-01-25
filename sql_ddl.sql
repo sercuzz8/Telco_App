@@ -289,7 +289,7 @@ delimiter ;
 delimiter //
 CREATE TRIGGER new_insolvent1
 AFTER UPDATE OF rejected ON CUSTOMERORDER
-WHEN new.rejected <> 0 AND old.rejected <> 1 AND new.valid = 0 AND old.valid = 1
+WHEN new.rejected <> 0 AND old.rejected <> 1 
 FOR EACH ROW
 INSERT INTO INSOLVENTCUSTOMER VALUES (new.customer,new.id,new.date);
 delimiter ;
