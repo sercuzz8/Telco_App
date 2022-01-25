@@ -271,7 +271,7 @@ BEGIN
 				   	   FROM CUSTOMERORDER
 		        	           WHERE customer = new.customer AND valid = 1)
 	       			  	) THEN
-			DELETE FROM INSOLVENTCUSTOMER WHERE customer=old.customer AND alertDate = old.date;
+			DELETE FROM INSOLVENTCUSTOMER WHERE customer=old.customer AND alertdate = old.date;
 			END IF;	
     		END IF;
     	END IF;
