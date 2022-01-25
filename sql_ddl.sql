@@ -126,7 +126,8 @@ CREATE TABLE purchasesproducts (
 	FOREIGN KEY (product) REFERENCES OPTIONALPRODUCT(id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
     
--- TODO: Make this views materialized
+
+-- Purchases per package view
 
 CREATE TABLE PURCHASEPERPACKAGE (
 	package int PRIMARY KEY,
@@ -159,6 +160,7 @@ AFTER INSERT ON SERVICEPACKAGE
 FOR EACH ROW 
 INSERT INTO PURCHASEPERPACKAGE VALUES (new.id,0);
 
+-- Purchases per validity periods view
 
 CREATE TABLE PURCHASEPERVALIDITY (
 	package int,
@@ -205,6 +207,8 @@ AFTER DELETE ON VALIDITYPERIOD
 FOR EACH ROW 
 DELETE FROM PURCHASEPERVALIDITY WHERE package = old.package AND months = old.monthsnumber;
 
+-- Sales per package (with products and without) view
+
 CREATE TABLE SALEPERPACKAGE (
 	package int PRIMARY KEY,
     withproducts int,
@@ -216,28 +220,21 @@ CREATE TRIGGER new_sale
 AFTER INSERT ON SERVICEACTIVATIONSCHEDULE
 FOR EACH ROW
 BEGIN
-	SET @old_withProd = 0;
-    SET @old_withoutProd = 0;
-    SET @vp_value = 0;
+
 	SET @new_months = TIMESTAMPDIFF(MONTH,new.activationdate,new.deactivationdate);
-	SET @total_value = (SELECT totalvalue FROM CUSTOMERORDER WHERE package=new.package AND customer=new.customer AND months=@new_months);
-    SELECT withproducts, withoutproducts
-    FROM SALEPERPACKAGE
-    WHERE package = new.package
-    INTO @old_withProd,@old_withoutProd;
-    
-    SELECT monthsnumber*monthlyfee
-    FROM VALIDITYPERIOD
-    WHERE package = new.package AND monthsnumber = @new_months
-    INTO @vp_value;
-    
-    SET @new_withProd = @old_withProd + @total_value;
-    SET @new_withoutProd = @old_withoutProd + @vp_value;
-    
-    UPDATE SALEPERPACKAGE SET withproducts = @new_withProd, withoutproducts=@new_withoutProd
-    WHERE package = new.package;
+	SET @vp_value = ( SELECT v.monthsnumber*v.monthlyfee FROM VALIDITYPERIOD AS v WHERE v.package = new.package AND v.monthsnumber = @new_months);
+	SET @total_value = (SELECT totalvalue FROM CUSTOMERORDER AS c WHERE c.package=new.package AND c.customer=new.customer);
+
+	IF new.package NOT IN (SELECT package FROM SALEPERPACKAGE) THEN
+		INSERT INTO SALEPERPACKAGE (package, withproducts, withoutproducts) VALUES (new.package, @total_value, @vp_value);
+	ELSE
+    	UPDATE SALEPERPACKAGE SET withproducts = withproducts + @total_value, withoutproducts = withoutproducts + @vp_value	WHERE package = new.package;
+	
+	END IF;
 END//
 delimiter ;
+
+-- Average products sold with every package view
 
 CREATE VIEW AVERAGEPRODUCTSOLD(package, avgproductsold) AS
 SELECT package, avg(productssold) as avgproductsold
@@ -246,11 +243,13 @@ FROM (	SELECT c.id as orderId, c.package, count(*) as productsSold
 		GROUP BY c.id, c.package) AS productssoldperorder 
 GROUP BY package;        
 
+
+
 -- View for the insolvent customers
 CREATE TABLE INSOLVENTCUSTOMER (
 	insolvent varchar(50) PRIMARY KEY,
-    	rejectedorder int,
-    	alertdate date
+    rejectedorder int,
+    alertdate date
 );
 -- manteinance of insolventcustomer
 delimiter //
@@ -266,7 +265,7 @@ BEGIN
 			WHERE c.customer = new.customer AND (c.valid = 1 OR c.rejected = 0)
 			INTO @validorders;
             IF (@validorders = (SELECT count(*) FROM CUSTOMERORDER c WHERE c.customer = new.customer)) THEN
-				DELETE FROM INSOLVENTCUSTOMER WHERE rejectedorder = new.id;
+				DELETE FROM INSOLVENTCUSTOMER WHERE insolvent=new.customer AND rejectedorder = new.id;
             END IF;
         END IF;
     END IF;
