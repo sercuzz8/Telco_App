@@ -14,7 +14,8 @@ import java.math.BigInteger;
 @NamedQuery(name="BestSeller.findAll", query="SELECT b FROM BestSeller b")
 public class BestSeller implements Serializable {
 	private static final long serialVersionUID = 1L;
-
+	
+	@Column(name="numOfSales")
 	private BigInteger numOfSales;
 	
 	@Id

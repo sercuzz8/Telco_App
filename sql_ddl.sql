@@ -127,40 +127,46 @@ CREATE TABLE purchasesproducts (
 	);
     
 
--- Purchases per package view
+/*
+VIEW 1: It keeps tracks of how many times a package was purchased
 
+@package : id of the package
+@purchases: counter of how many times the package was purchases
+
+*/
 CREATE TABLE PURCHASEPERPACKAGE (
 	package int PRIMARY KEY,
     purchases int
 );
 
+/* A new voice is added when a package is sold for the first time */
 delimiter //
 CREATE TRIGGER update_purchases
 AFTER INSERT ON SERVICEACTIVATIONSCHEDULE
 FOR EACH ROW
 BEGIN
-	SET @old_purchases = 0;
-    SELECT purchases
-    FROM PURCHASEPERPACKAGE
-    WHERE package = new.package 
-    INTO @old_purchases;
-    
-    SET @new_purchases = @old_purchases + 1;
-    UPDATE PURCHASEPERPACKAGE SET purchases = @new_purchases WHERE package = new.package;
+	IF new.package NOT IN (SELECT package FROM PURCHASEPERPACKAGE) THEN
+		INSERT INTO PURCHASEPERPACKAGE(package, purchases) VALUES (new.package, 1);
+	ELSE
+		UPDATE PURCHASEPERPACKAGE SET purchases = purchases+1 WHERE package = new.package;
+	END IF;
 END//
 delimiter ;
--- delete service package
+
+/* A voice is removed together with the package*/
 CREATE TRIGGER delete_pack
 AFTER DELETE ON SERVICEPACKAGE
 FOR EACH ROW
 DELETE FROM PURCHASEPERPACKAGE WHERE package = old.id;
--- new service package
-CREATE TRIGGER new_pack
-AFTER INSERT ON SERVICEPACKAGE
-FOR EACH ROW 
-INSERT INTO PURCHASEPERPACKAGE VALUES (new.id,0);
 
--- Purchases per validity periods view
+/*
+VIEW 2: It keeps tracks of how many times a package (for a specific number of months) was purchased
+
+@package : id of the package
+@months : number of months
+@purchases: counter of how many times the package was purchases
+
+*/
 
 CREATE TABLE PURCHASEPERVALIDITY (
 	package int,
@@ -174,25 +180,12 @@ CREATE TRIGGER insert_new_package_purchase
 AFTER INSERT ON SERVICEACTIVATIONSCHEDULE
 FOR EACH ROW
 BEGIN
-	SET @old_purchases = 0;
 	SET @new_months = TIMESTAMPDIFF(MONTH,new.activationdate,new.deactivationdate);
-    SELECT purchases
-    FROM PURCHASEPERVALIDITY
-    WHERE package = new.package AND months = @new_months
-    INTO @old_purchases;
-    
-    SET @new_purchases = @old_purchases + 1;
-    UPDATE PURCHASEPERVALIDITY SET purchases = @new_purchases WHERE package = new.package AND months = @new_months;
-END//
-
--- new service package
-CREATE TRIGGER new_package
-AFTER INSERT ON SERVICEPACKAGE
-FOR EACH ROW 	
-BEGIN
-	INSERT INTO PURCHASEPERVALIDITY VALUES (new.id,12,0);
-	INSERT INTO PURCHASEPERVALIDITY VALUES (new.id,24,0);
-	INSERT INTO PURCHASEPERVALIDITY VALUES (new.id,36,0);
+	IF (new.package, @new_months) NOT IN (SELECT package, months FROM PURCHASEPERVALIDITY) THEN 
+		INSERT INTO PURCHASEPERVALIDITY(package,months, purchases) VALUES (new.package, @new_months, 1);
+	ELSE
+    	UPDATE PURCHASEPERVALIDITY SET purchases = purchases+1 WHERE package = new.package AND months = @new_months;
+	END IF;
 END//
 delimiter ;
 
@@ -207,7 +200,14 @@ AFTER DELETE ON VALIDITYPERIOD
 FOR EACH ROW 
 DELETE FROM PURCHASEPERVALIDITY WHERE package = old.package AND months = old.monthsnumber;
 
--- Sales per package (with products and without) view
+/*
+VIEW 3: It keeps tracks of the sales for every package, accounting both the cases with and without the products
+
+@package : id of the package
+@withproducts : sales with the products included
+@withoutproducts : sales without the products included
+
+*/
 
 CREATE TABLE SALEPERPACKAGE (
 	package int PRIMARY KEY,
@@ -234,24 +234,56 @@ BEGIN
 END//
 delimiter ;
 
--- Average products sold with every package view
+/*
+VIEW 4: It keeps tracks of the average number of products sold with every package
 
-CREATE VIEW AVERAGEPRODUCTSOLD(package, avgproductsold) AS
-SELECT package, avg(productssold) as avgproductsold
-FROM (	SELECT c.id as orderId, c.package, count(*) as productsSold
-		FROM CUSTOMERORDER c JOIN choosesproducts ON  customerorder = c.id
-		GROUP BY c.id, c.package) AS productssoldperorder 
-GROUP BY package;        
+@package : id of the package
+@avgproductsold : average number of products sold with it
+
+*/
+
+CREATE TABLE AVERAGEPRODUCTSOLD(
+	package int PRIMARY KEY,
+	avgproductsold float
+);
+
+delimiter //
+CREATE TRIGGER update_average
+AFTER INSERT ON purchasesproducts
+FOR EACH ROW 
+BEGIN
+	IF (new.package NOT IN (SELECT package FROM AVERAGEPRODUCTSOLD)) THEN
+		SET @sumofproducts=(SELECT COUNT(*) FROM purchasesproducts WHERE package=new.package);
+		INSERT INTO AVERAGEPRODUCTSOLD(package, avgproductsold) VALUES 
+			(new.package, @sumofproducts);
+	ELSE
+		BEGIN
+		SET @sumofproducts=(SELECT COUNT(*) FROM purchasesproducts WHERE package=new.package);
+		SET @numofpurchases = (SELECT purchases FROM PURCHASEPERPACKAGE WHERE package=new.package);
+		UPDATE AVERAGEPRODUCTSOLD SET 
+            avgproductsold = @sumofproducts / @numofpurchases  
+            WHERE package=new.package;
+		END;
+    END IF;
+END //
+delimiter ;
+
+/*
+VIEW 3: It keeps tracks of the insolvent customers
+
+@insolvent: username of the insolvent user
+@rejectedorder: id of the rejected order
+@alertdate: (NULL) if the order has not been rejected for 3+ times, otherwise it is the date of the auditing
+
+*/
 
 
-
--- View for the insolvent customers
 CREATE TABLE INSOLVENTCUSTOMER (
 	insolvent varchar(50) PRIMARY KEY,
     rejectedorder int,
     alertdate date
 );
--- manteinance of insolventcustomer
+
 delimiter //
 CREATE TRIGGER remove_insolvent
 AFTER UPDATE ON CUSTOMERORDER 
@@ -259,11 +291,7 @@ FOR EACH ROW
 BEGIN
 	IF (new.valid = 1 AND old.valid = 0) THEN
 		IF (new.customer IN (SELECT i.insolvent FROM INSOLVENTCUSTOMER i)) THEN
-			SET @validorders = 0;
-			SELECT count(*)
-			FROM CUSTOMERORDER c
-			WHERE c.customer = new.customer AND (c.valid = 1 OR c.rejected = 0)
-			INTO @validorders;
+			SET @validorders = (SELECT count(*) FROM CUSTOMERORDER c WHERE c.customer = new.customer AND c.valid = 1);
             IF (@validorders = (SELECT count(*) FROM CUSTOMERORDER c WHERE c.customer = new.customer)) THEN
 				DELETE FROM INSOLVENTCUSTOMER WHERE insolvent=new.customer AND rejectedorder = new.id;
             END IF;
@@ -278,42 +306,49 @@ AFTER UPDATE ON CUSTOMERORDER
 FOR EACH ROW
 BEGIN
 	IF (new.rejected = 1 AND old.rejected = 0) THEN
-		INSERT INTO INSOLVENTCUSTOMER VALUES (new.customer,new.id,new.date);
+		INSERT INTO INSOLVENTCUSTOMER (insolvent, rejectedorder, alertdate) VALUES (new.customer,new.id, NULL);
 	END IF;
 END //
 delimiter ;
 
--- View for the best seller
+CREATE TRIGGER update_insolvent
+AFTER INSERT ON AUDITING
+FOR EACH ROW
+UPDATE INSOLVENTCUSTOMER SET alertdate=new.lastrejectiondate WHERE insolvent=new.customer;
+
+
+/*
+VIEW 3: It keeps tracks of the sales for every product
+
+@product: id of the product
+@numofsales: number of sales
+
+*/
+
 CREATE TABLE BESTSELLER (
 	product int PRIMARY KEY,
-    numOfSales int
+    numofsales int
 );
+
 -- BESTSELLER triggers
--- new product in optional product
-CREATE TRIGGER add_product
-AFTER INSERT ON OPTIONALPRODUCT
-FOR EACH ROW
-INSERT INTO BESTSELLER VALUES (new.id, 0);
+
 -- delete product from optional product
 CREATE TRIGGER remove_product
 AFTER DELETE ON OPTIONALPRODUCT
 FOR EACH ROW
 DELETE FROM BESTSELLER WHERE product=old.id;
+
 -- update product in BESTSELLER
 delimiter //
 CREATE TRIGGER update_product
 AFTER INSERT ON purchasesproducts
 FOR EACH ROW
 BEGIN
-	SET @old_sales = 0;
-        
-	SELECT IFNULL(numOfSales,0)
-	FROM BESTSELLER
-	WHERE product = new.product
-	INTO @old_sales;
-	
-	SET @new_sales = @old_sales + 1;
-	UPDATE BESTSELLER SET numOfSales = @new_sales WHERE product = new.product;
+	IF new.product NOT IN (SELECT PRODUCT FROM BESTSELLER) THEN 
+		INSERT INTO BESTSELLER(product,numofsales) VALUES (new.product, 1);
+	ELSE 
+		UPDATE BESTSELLER SET numofsales = numofsales+1 WHERE product = new.product;
+	END IF;
 END//
 delimiter ;
 
