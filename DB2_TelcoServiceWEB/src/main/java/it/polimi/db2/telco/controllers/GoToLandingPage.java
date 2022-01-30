@@ -143,9 +143,10 @@ public class GoToLandingPage extends HttpServlet {
 				templateEngine.process(path, ctx, response.getWriter());
 				return;
 			}
-
+			
+			User user=null;
 			try {
-				usrService.addUser(usrn, email, pwd);
+				user=usrService.addUser(usrn, email, pwd);
 			} catch (Exception e) {
 				ServletContext servletContext = getServletContext();
 				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
@@ -155,11 +156,26 @@ public class GoToLandingPage extends HttpServlet {
 				return;
 			}
 			
-			String path = getServletContext().getContextPath() + "/GoToLandingPage";
-			//ctx.setVariable("successMsgRegistration", "User correctly registered");
-			response.setContentType("text/html");
-			response.sendRedirect(path);
-			return;
+			String path;
+			if (user == null) {
+				ServletContext servletContext = getServletContext();
+				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+				ctx.setVariable("errorMsgLogin", "Incorrect username or password");
+				path = "/Landing.html";
+				templateEngine.process(path, ctx, response.getWriter());
+			} 
+			else {
+				
+				request.getSession().setAttribute("user", user);
+				if (request.getSession().getAttribute("order")!=null) {
+					path = getServletContext().getContextPath() + "/GoToConfirmationPage";
+					response.sendRedirect(path);
+				}
+				else {
+				path = getServletContext().getContextPath() + "/GoToHomePage";
+				response.sendRedirect(path);
+				}
+			}
 		}
 		
 		

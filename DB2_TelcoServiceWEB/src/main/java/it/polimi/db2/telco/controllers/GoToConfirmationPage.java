@@ -21,6 +21,7 @@ import it.polimi.db2.telco.entities.ServicePackage;
 import it.polimi.db2.telco.entities.User;
 import it.polimi.db2.telco.services.CustomerOrderService;
 import it.polimi.db2.telco.services.ServicePackageService;
+import it.polimi.db2.telco.services.UserService;
 
 
 /**
@@ -36,6 +37,9 @@ public class GoToConfirmationPage extends HttpServlet {
 	
 	@EJB(name = "it.polimi.db2.telco.services/ServicePackageService")
 	private ServicePackageService sPacks;
+	
+	@EJB(name = "it.polimi.db2.telco.services/UserService")
+	private UserService usrServ;
 	
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -85,7 +89,6 @@ public class GoToConfirmationPage extends HttpServlet {
 			}
 			
 			cOrds.addCustomerOrder(order);
-			
 		} 
 		
 		/*catch (SQLIntegrityConstraintViolationException e) {
@@ -104,14 +107,13 @@ public class GoToConfirmationPage extends HttpServlet {
 			return;
 		}
 		
-		
+
 		request.getSession().removeAttribute("order");
-		String path = getServletContext().getContextPath() + "/GoToHomePage";
+		request.getSession().removeAttribute("user");
+		String path = getServletContext().getContextPath() + "/GoToLandingPage";
 		response.setContentType("text/html");
 		response.sendRedirect(path);
 
-		
-		//doGet(request, response);
 	}
 
 }

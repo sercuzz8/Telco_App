@@ -29,11 +29,9 @@
 		<p><input class="buttonStyle" type="submit" value="Register"><br></p>
 	</form>
 	
-	<div>
+	<div th:if=${session.order==null}>
 			<p><span>Are you an Employee?</span> <a th:href="@{/CheckLoginEmployee}"> Employee Login</a></p>
-		</div>
-		<div>
 			<p><span>Want to browse anyway?</span> <a th:href="@{/GoToHomePage}"> Home Page</a></p>
-		</div>
+	</div>
 </body>
 </html>
