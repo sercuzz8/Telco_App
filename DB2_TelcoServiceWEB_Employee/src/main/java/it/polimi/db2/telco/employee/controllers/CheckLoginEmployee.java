@@ -1,4 +1,4 @@
-package it.polimi.db2.telco.controllers;
+package it.polimi.db2.telco.employee.controllers;
 
 import java.io.IOException;
 import javax.ejb.EJB;
@@ -47,13 +47,13 @@ public class CheckLoginEmployee extends HttpServlet {
 			throws ServletException, IOException {
 		String path = null;
 		
-		if (request.getSession().getAttribute("user")!=null) {
-			path = getServletContext().getContextPath() + "/GoToHomePage";
+		if (request.getSession().getAttribute("employee")!=null) {
+			path = getServletContext().getContextPath() + "/GoToHomeEmployee";
 			response.sendRedirect(path);
 			return;
 		}
 		
-		path="WEB-INF/LoginEmployee.html";
+		path="LoginEmployee.html";
 		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
@@ -74,7 +74,7 @@ public class CheckLoginEmployee extends HttpServlet {
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 			ctx.setVariable("errorMsg", "Missing or empty credential value");
-			String path = "/WEB-INF/LoginEmployee.html";
+			String path = "/LoginEmployee.html";
 			templateEngine.process(path, ctx, response.getWriter());
 			return;
 		}
@@ -86,7 +86,7 @@ public class CheckLoginEmployee extends HttpServlet {
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 			ctx.setVariable("errorMsg", "Incorrect code or password");
-			String path = "/WEB-INF/LoginEmployee.html";
+			String path = "/LoginEmployee.html";
 			templateEngine.process(path, ctx, response.getWriter());
 			return;
 		}
@@ -98,7 +98,7 @@ public class CheckLoginEmployee extends HttpServlet {
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 			ctx.setVariable("errorMsg", "Incorrect code or password");
-			path = "/WEB-INF/LoginEmployee.html";
+			path = "/LoginEmployee.html";
 			templateEngine.process(path, ctx, response.getWriter());
 		} else {
 			request.getSession().setAttribute("employee", employee);

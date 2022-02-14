@@ -1,4 +1,4 @@
-INSERT INTO SERVICE(id, servicetype) VALUES (1, 'fixed_phone');
+	INSERT INTO SERVICE(id, servicetype) VALUES (1, 'fixed_phone');
 INSERT INTO SERVICE(id, servicetype, minnumber, smsnumber, minfee, smsfee) VALUES (2, 'mobile_phone', 100, 50, 0.5, 0.2);
 INSERT INTO SERVICE(id, servicetype, gbnumber, gbfee) VALUES (3, 'fixed_internet', 50, 0.7);
 INSERT INTO SERVICE(id, servicetype, gbnumber, gbfee) VALUES (4, 'mobile_internet', 150, 0.2);
@@ -45,7 +45,7 @@ INSERT INTO CUSTOMER (username, password, email) VALUES ('ale', 'ale', 'ale@ale.
 INSERT INTO CUSTOMER (username, password, email) VALUES ('paolo', 'paolo', 'paolo@paolo.com');
 INSERT INTO CUSTOMER (username, password, email) VALUES ('donald', 'donald', 'donald@d.com');
 INSERT INTO CUSTOMER (username, password, email) VALUES ('fabio', 'fabio', 'fabio@fa.it');
-INSERT INTO CUSTOMER (username, password, email) VALUES ('marco', 'fabio', 'marco@mar.it');
+INSERT INTO CUSTOMER (username, password, email) VALUES ('marco', 'marco', 'marco@mar.it');
 
 INSERT INTO CUSTOMERORDER (id, date, hour, start, customer, package , months) VALUES (1, '2021-01-01', '13:00', '2021-03-01' ,"sergio", 1, 12);
 INSERT INTO CUSTOMERORDER (id, date, hour, start, customer, package , months) VALUES (2, '2021-02-01', '13:00', '2021-04-01' ,"ale", 1, 24);
@@ -69,6 +69,8 @@ UPDATE CUSTOMERORDER SET valid=1 WHERE id=1;
 UPDATE CUSTOMERORDER SET valid=1 WHERE id=2;
 UPDATE CUSTOMERORDER SET valid=1 WHERE id=3;
 UPDATE CUSTOMERORDER SET valid=1 WHERE id=4;
+UPDATE CUSTOMERORDER SET valid=1 WHERE id=4;
+UPDATE CUSTOMERORDER SET valid=1 WHERE id=7;
 
 UPDATE CUSTOMERORDER SET rejected=1 WHERE id=5;
 UPDATE CUSTOMERORDER SET rejected=2 WHERE id=5;

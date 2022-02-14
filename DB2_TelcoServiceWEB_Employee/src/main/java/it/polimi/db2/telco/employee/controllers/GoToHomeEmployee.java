@@ -1,4 +1,4 @@
-package it.polimi.db2.telco.controllers;
+package it.polimi.db2.telco.employee.controllers;
 
 import java.io.IOException;
 
@@ -64,11 +64,13 @@ public class GoToHomeEmployee extends HttpServlet {
 			return;
 		}
 		
+		List<ServicePackage> packages = sPack.findAllPackages();
 		List<Service> services = sServ.findAllServices();
 		List<OptionalProduct> products = oProd.findAllProducts();
 		path = "/WEB-INF/HomeEmployee.html";		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		ctx.setVariable("packages", packages);
 		ctx.setVariable("services", services);
 		ctx.setVariable("products", products);
 		templateEngine.process(path, ctx, response.getWriter());
@@ -94,11 +96,13 @@ public class GoToHomeEmployee extends HttpServlet {
 			
 			}
 			catch (Exception e) {
+				List<ServicePackage> packages = sPack.findAllPackages();
 				List<Service> services = sServ.findAllServices();
 				List<OptionalProduct> products = oProd.findAllProducts();
 				ServletContext servletContext = getServletContext();
 				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 				ctx.setVariable("errorMsgProduct", e.getMessage());
+				ctx.setVariable("packages", packages);				
 				ctx.setVariable("services", services);
 				ctx.setVariable("products", products);
 				String path = "/WEB-INF/HomeEmployee.html";
@@ -145,12 +149,13 @@ public class GoToHomeEmployee extends HttpServlet {
 				
 				}
 				catch(Exception e) {
-					
+					List<ServicePackage> packages = sPack.findAllPackages();
 					List<Service> services = sServ.findAllServices();
 					List<OptionalProduct> products = oProd.findAllProducts();
 					ServletContext servletContext = getServletContext();
 					final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 					ctx.setVariable("errorMsgPackage", e.getMessage());
+					ctx.setVariable("packages", packages);				
 					ctx.setVariable("services", services);
 					ctx.setVariable("products", products);
 					String path = "/WEB-INF/HomeEmployee.html";

@@ -3,17 +3,16 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Telco Home Employee</title>
-<!--
-<link rel="stylesheet" type="text/css" media="all"
-	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
-	-->
 </head>
 
 <body>
-
-	<h1>Hello Employee</h1>
+	
+	<h1>Hello <span th:text="${session.employee.getCode()}"> Employee Code</span></h1>
 	
 	<section>
+		<div align=left>
+			<a th:href="@{/GoToSalesReportPage}">Sales Report</a>
+		</div>
 		<div align="right">
 			<a th:href="@{/Logout}">Logout</a>
 		</div>
@@ -21,21 +20,16 @@
 	
 	<section>
 	
-	<div align=left>
-		<a th:href="@{/GoToSalesReportPage}">Sales Report</a>
-	</div>
-	
-	</section>
-
-	<section>
-	
 		<div align="left">
 		
 		<h2>Services</h2>
 		
 		<ul th:each="service : ${services}">
-			<li>
-					<a th:if="${service.getServiceType().toString()=='fixed_phone'}"> Fixed Phone </a>
+			<li> 
+				<span th:text="${service.getId()}"> Service ID </span> :
+					<a th:if="${service.getServiceType().toString()=='fixed_phone'}"> 
+						Fixed Phone 
+					</a>
 					<a th:if="${service.getServiceType().toString()=='mobile_phone'}">
 					Mobile Phone:
 						<span th:text="${service.getMinNumber()}"> Number Of minutes </span> MIN:
@@ -44,14 +38,14 @@
 						<span th:text="${service.getSmsFee()}"> Fee for Extra SMSs </span> &euro; per extra SMS
 					</a>
 					<a th:if="${service.getServiceType().toString()=='fixed_internet'}">	
-					Fixed Internet: 
-					<span th:text="${service.getGBNumber()}"> Number Of GBs </span> GB:  
-					<span th:text="${service.getGBFee()} "> Fee for Extra GBs </span> &euro; for any extra GB
+						Fixed Internet: 
+						<span th:text="${service.getGBNumber()}"> Number Of GBs </span> GB:  
+						<span th:text="${service.getGBFee()} "> Fee for Extra GBs </span> &euro; for any extra GB
 					</a>
 					<a th:if="${service.getServiceType().toString()=='mobile_internet'}">
-					Mobile Internet: 
-					<span th:text="${service.getGBNumber()}"> Number Of GBs </span> GB:
-					<span th:text="${service.getGBFee()}"> Fee for Extra GBs </span> &euro; for any extra GB
+						Mobile Internet: 
+						<span th:text="${service.getGBNumber()}"> Number Of GBs </span> GB:
+						<span th:text="${service.getGBFee()}"> Fee for Extra GBs </span> &euro; for any extra GB
 					</a>		
 			</li>
 			
@@ -68,6 +62,28 @@
 			
 		</ul>
 		
+		<h2> Packages </h2>
+		
+		<dl th:each="package : ${packages}">
+		
+			<dt> <b> <span th:text="${package.getId()}"> ID </span> : <span th:text="${package.getName()}"> Name </span> </b> </dt>
+			<dd th:each="validity : ${package.getValidityPeriods()}">	
+			<span th:text="${validity.getMonthsNumber()}"> Months </span> Months:
+			<span th:text="' ' + ${validity.getMonthlyFee()}"> Fee </span> &euro; per month
+			</dd>
+			
+			<dt> <b>Services: </b> </dt>
+			<dd th:each="service : ${package.getServices()}">
+				<span th:text="${service.getId()}"> Service ID </span>
+			</dd>
+			
+			<dt> <b>Optional Products </b> </dt>
+			<dd th:each="product : ${package.getProducts()}" >
+				<span th:text="${product.getName()}">Product Name</span>
+			</dd>
+			
+		</dl>
+		
 		</div>
 		
 	</section>
@@ -83,8 +99,8 @@
 		
 		<label for="CreateOptionalProduct">Create a Product:</label>
 		<p>
-		<p><input type="text" name="product_name" placeholder="Product Name" required><br></p>
-		<p><input type="text" name="product_cost" placeholder="Product Cost" required><br></p>
+		<p><input type="text" name="product_name" placeholder="Product Name" maxlength="49" required><br></p>
+		<p><input type="number" step="0.01" min=0 name="product_cost" placeholder="Product Cost" required><br></p>
 		<p><input class="buttonStyle" type="submit" value="Create"> <br></p><br>
 		
 		</form>
@@ -103,10 +119,10 @@
 		
 		<label for="created_package">Create a service package:</label>
 		<p>
-		<p><input type="text" name="package_name" placeholder="Package Name" required><br></p>
-		<p><input type="text" name="package_cost_twelve" placeholder="Package Cost 12 months" required><br></p>
-		<p><input type="text" name="package_cost_twentyfour" placeholder="Package Cost 24 months" required><br></p>
-		<p><input type="text" name="package_cost_thirtysix" placeholder="Package Cost 36 months" required><br></p>
+		<p><input type="text" name="package_name" placeholder="Package Name" maxlength="49" required><br></p>
+		<p><input type="number" step="0.01" min=0 name="package_cost_twelve" placeholder="Package Cost 12 months" required><br></p>
+		<p><input type="number" step="0.01" min=0 name="package_cost_twentyfour" placeholder="Package Cost 24 months" required><br></p>
+		<p><input type="number" step="0.01" min=0 name="package_cost_thirtysix" placeholder="Package Cost 36 months" required><br></p>
 		<p><label for="chooseservice">Choose one or more services:</label></p>
 		<p><select id="chooseservice" name="chosen_services" size="${services.size()}" multiple required>
   		<option th:each="serv: ${services}" th:value="${serv.getId()}" th:text="${serv.getId()}"></option>

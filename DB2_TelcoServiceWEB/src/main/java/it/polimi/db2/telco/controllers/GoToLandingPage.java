@@ -52,11 +52,6 @@ public class GoToLandingPage extends HttpServlet {
 			response.sendRedirect(path);
 			return;
 		}
-		else if (request.getSession().getAttribute("employee")!=null) {
-			path = getServletContext().getContextPath() + "/GoToHomePageEmployee";
-			response.sendRedirect(path);
-			return;
-		}
 		
 		path= "/Landing.html";
 		

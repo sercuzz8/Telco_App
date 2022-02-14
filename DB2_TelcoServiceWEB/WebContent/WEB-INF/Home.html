@@ -3,10 +3,6 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Telco Home</title>
-<!--
-<link rel="stylesheet" type="text/css" media="all"
-	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
-	-->
 </head>
 
 <body>
@@ -81,39 +77,49 @@
 	<a th:href="@{/GoToBuyPage}">Buy a package</a>
 	
 	</section>
+	
+	<section th:if="${session.user!=null}" >
+	
+		<h2 >All your orders</h2>
+			
+			<ul th:each="order: ${session.user.getOrders()}">
+				<li> ID: <span th:text="${order.getId()}">Order ID</span> </li>
+				<li> Date: <span th:text="${order.getDate()}">Order Date</span> </li>
+				<li> Hour: <span th:text="${order.getHour()}">Order Hour</span> </li>
+				<li> Date of beginning: <span th:text="${order.getStart()}">Order Start</span> </li>
+				<li> Service Package: <span th:text="${order.getValidity().getPackage().getId()}">Package ID</span></li>
+				<li> Months: <span th:text="${order.getValidity().getMonthsNumber()}">Months</span> </li>
+				<li th:each="prod : ${order.getProducts()}" > Chosen product:
+					<span th:text="${prod.getName()}">Product</span>
+				</li>  
+				<li> Total cost per year: <span th:text="${order.getTotalValue()}">Order Value</span> </li>
+				
+				<li th:switch="${order.getValid()}">
+  					<a th:case="${true}">ACCEPTED</a>
+  					<a th:case="*"> REJECTED <span th:text="${order.getRejected()}"> Number of times </span> time(s) </a>
+				</li>
+								
+			</ul>
+			
+	</section>
 		
 	<section th:if="${session.user!=null and session.user.getInsolvent()}" >
+			
+			<form class="RetryOrder" action="GoToHomePage" method="POST" autocomplete="off">
 	
-	<h2 >All your rejected orders</h2>
-		
-		<ul th:each="order: ${session.user.getRejectedOrders()}">
-			<li> ID: <span th:text="${order.getId()}">Order ID</span> </li>
-			<li> Date: <span th:text="${order.getDate()}">Order Date</span> </li>
-			<li> Hour: <span th:text="${order.getHour()}">Order Hour</span> </li>
-			<li> Date of beginning: <span th:text="${order.getStart()}">Order Start</span> </li>
-			<li> Service Package: <span th:text="${order.getValidity().getPackage().getId()}">Package ID</span></li>
-			<li> Months: <span th:text="${order.getValidity().getMonthsNumber()}">Months</span> </li>
-			<li th:each="prod : ${order.getProducts()}" > Chosen product:
-				<span th:text="${prod.getName()}">Product</span>
-			</li>  
-			<li> Total cost per year: <span th:text="${order.getTotalValue()}">Order Value</span> </li>
-		</ul>
-		
-		<form class="RetryOrder" action="GoToHomePage" method="POST" autocomplete="off">
-
-		<p th:text="${errorMsgRetry}" class="errorMsg"></p>
-		
-		<label for="chosen_order">Retry an order:</label>
-		<p>
-    	<select name="chosen_order" class="order-control" id="dropOrder">
-    	<option th:each="order : ${session.user.getRejectedOrders()}" th:value="${order.getId()}" th:text="${order.getId()}"></option>
-    	</select>
-		</p>
-  		
-		<p><input class="buttonStyle" type="submit" value="Confirm"><br></p>
-  		
-		
-		</form>
+			<p th:text="${errorMsgRetry}" class="errorMsg"></p>
+			
+			<label for="chosen_order">Retry an order:</label>
+			<p>
+		    	<select name="chosen_order" class="order-control" id="dropOrder">
+		    	<option th:each="order : ${session.user.getRejectedOrders()}" th:value="${order.getId()}" th:text="${order.getId()}"></option>
+		    	</select>
+			</p>
+	  		
+			<p><input class="buttonStyle" type="submit" value="Confirm"><br></p>
+	  		
+			
+			</form>
 			
 	</section>
 
