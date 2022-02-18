@@ -28,25 +28,13 @@ public class SalePerPackage implements Serializable {
 	public int getPackage_() {
 		return this.package_;
 	}
-
-	public void setPackage_(int package_) {
-		this.package_ = package_;
-	}
-
+	
 	public double getWithoutProducts() {
 		return this.withoutProducts;
 	}
 
-	public void setWithoutProducts(double withoutProducts) {
-		this.withoutProducts = withoutProducts;
-	}
-
 	public double getWithProducts() {
 		return this.withProducts;
-	}
-
-	public void setWithProducts(double withProducts) {
-		this.withProducts = withProducts;
 	}
 
 }

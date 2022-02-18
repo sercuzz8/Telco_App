@@ -27,17 +27,9 @@ public class AverageProductSold implements Serializable {
 	public float getAvgProducts() {
 		return this.avgProductSold;
 	}
-
-	public void setAvgProducts(float avgProducts) {
-		this.avgProductSold = avgProducts;
-	}
-
+	
 	public int getPackage_() {
 		return this.package_;
-	}
-
-	public void setPackage_(int package_) {
-		this.package_ = package_;
 	}
 
 }

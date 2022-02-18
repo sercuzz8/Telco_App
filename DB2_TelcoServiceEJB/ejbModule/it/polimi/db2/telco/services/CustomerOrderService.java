@@ -41,7 +41,7 @@ public class CustomerOrderService {
 		customerOrder.addProduct(product);
 	}
 
-	public void addCustomerOrder(CustomerOrder customerOrder) {
+	public void updateCustomerOrder(CustomerOrder customerOrder) {
 		em.merge(customerOrder);
 	}
 	

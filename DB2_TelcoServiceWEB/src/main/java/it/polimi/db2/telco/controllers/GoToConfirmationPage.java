@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.persistence.NonUniqueResultException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +20,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import it.polimi.db2.telco.entities.CustomerOrder;
 import it.polimi.db2.telco.entities.ServicePackage;
 import it.polimi.db2.telco.entities.User;
+import it.polimi.db2.telco.exceptions.CredentialsException;
 import it.polimi.db2.telco.services.CustomerOrderService;
 import it.polimi.db2.telco.services.ServicePackageService;
 import it.polimi.db2.telco.services.UserService;
@@ -77,7 +79,7 @@ public class GoToConfirmationPage extends HttpServlet {
 				
 			
 			cOrds.addCustomerToOrder(order, buyer);
-			cOrds.addCustomerOrder(order);
+			cOrds.updateCustomerOrder(order);
 			
 			success = Boolean.parseBoolean(request.getParameter("success"));
 			
@@ -88,7 +90,7 @@ public class GoToConfirmationPage extends HttpServlet {
 				order.incrementRejected();
 			}
 			
-			cOrds.addCustomerOrder(order);
+			cOrds.updateCustomerOrder(order);
 		} 
 		
 		/*catch (SQLIntegrityConstraintViolationException e) {
@@ -109,8 +111,15 @@ public class GoToConfirmationPage extends HttpServlet {
 		
 
 		request.getSession().removeAttribute("order");
-		request.getSession().removeAttribute("user");
-		String path = getServletContext().getContextPath() + "/GoToLandingPage";
+		User user = (User) request.getSession().getAttribute("user");
+		try {
+			user = usrServ.checkCredentials(user.getUsername(), user.getPassword());
+		} catch (NonUniqueResultException | CredentialsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		request.getSession().setAttribute("user", user);
+		String path = getServletContext().getContextPath() + "/GoToHomePage";
 		response.setContentType("text/html");
 		response.sendRedirect(path);
 

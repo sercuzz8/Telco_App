@@ -34,24 +34,12 @@ public class PurchasePerValidity implements Serializable {
 		return this.months;
 	}
 
-	public void setMonths(BigInteger months) {
-		this.months = months;
-	}
-
 	public int getPackage_() {
 		return this.package_;
 	}
 
-	public void setPackage_(int package_) {
-		this.package_ = package_;
-	}
-
 	public BigInteger getPurchases() {
 		return this.purchases;
-	}
-
-	public void setPurchases(BigInteger purchases) {
-		this.purchases = purchases;
 	}
 
 }

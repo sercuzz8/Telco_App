@@ -27,17 +27,9 @@ public class BestSeller implements Serializable {
 	public BigInteger getNumOfSales() {
 		return this.numOfSales;
 	}
-
-	public void setNumOfSales(BigInteger numOfSales) {
-		this.numOfSales = numOfSales;
-	}
-
+	
 	public int getProduct() {
 		return this.product;
-	}
-
-	public void setProduct(int product) {
-		this.product = product;
 	}
 
 }

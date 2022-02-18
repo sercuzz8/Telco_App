@@ -112,6 +112,7 @@
 						<th>Insolvent user</th>
 						<th>Id of the suspended order</th>
 						<th>Date of the last rejection </th>
+						<th>Time of the last rejection </th>
 						<th></th>
 					</tr>
 				</thead>
@@ -120,6 +121,7 @@
 						<td><span th:text="${view_five.getInsolvent()}"> Id </span></td>
 						<td><span th:text="${view_five.getRejectedOrder()}"> Name </span></td>
 						<td><span th:text="${view_five.getAlertDate()}"> Name </span></td>
+						<td><span th:text="${view_five.getAlertTime()}"> Name </span></td>
 					</tr>
 				</tbody>
 			</table>

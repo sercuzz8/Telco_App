@@ -34,7 +34,7 @@ CREATE TABLE CUSTOMERORDER (
 	date Date NOT NULL, 
 	hour Time NOT NULL,
 	start Date NOT NULL,
-	customer varchar(50), -- Not unique because the same customer can buy different packages
+	customer varchar(50) NOT NULL, -- Not unique because the same customer can buy different packages
 	package int NOT NULL, -- The order is associated with the validity period but the validity period is associated with only
 	months int NOT NULL, -- one service package thus the validity period is associated with a single service package
 	rejected int NOT NULL DEFAULT 0,  
@@ -281,7 +281,8 @@ VIEW 3: It keeps tracks of the insolvent customers
 CREATE TABLE INSOLVENTCUSTOMER (
 	insolvent varchar(50) PRIMARY KEY,
     rejectedorder int,
-    alertdate date
+    alertdate date,
+    alerttime time
 );
 
 delimiter //
@@ -306,16 +307,20 @@ AFTER UPDATE ON CUSTOMERORDER
 FOR EACH ROW
 BEGIN
 	IF (new.rejected = 1 AND old.rejected = 0) THEN
-		INSERT INTO INSOLVENTCUSTOMER (insolvent, rejectedorder, alertdate) VALUES (new.customer,new.id, NULL);
+		INSERT INTO INSOLVENTCUSTOMER (insolvent, rejectedorder, alertdate, alerttime) VALUES (new.customer,new.id, NULL, NULL);
 	END IF;
 END //
 delimiter ;
 
+delimiter //
 CREATE TRIGGER update_insolvent
 AFTER INSERT ON AUDITING
 FOR EACH ROW
-UPDATE INSOLVENTCUSTOMER SET alertdate=new.lastrejectiondate WHERE insolvent=new.customer;
-
+BEGIN
+	UPDATE INSOLVENTCUSTOMER SET alertdate=new.lastrejectiondate WHERE insolvent=new.customer;
+	UPDATE INSOLVENTCUSTOMER SET alerttime=new.lastrejectiontime WHERE insolvent=new.customer;
+END //
+delimiter ;
 
 /*
 VIEW 3: It keeps tracks of the sales for every product

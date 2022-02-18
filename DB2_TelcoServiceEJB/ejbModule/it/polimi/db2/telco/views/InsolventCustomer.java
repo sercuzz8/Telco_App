@@ -1,8 +1,10 @@
 package it.polimi.db2.telco.views;
 
 import java.io.Serializable;
+import java.sql.Time;
+import java.time.LocalDate;
+
 import javax.persistence.*;
-import java.util.Date;
 
 
 /**
@@ -14,40 +16,35 @@ import java.util.Date;
 @NamedQuery(name="InsolventCustomer.findAll", query="SELECT i FROM InsolventCustomer i")
 public class InsolventCustomer implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	@Temporal(TemporalType.DATE)
-	private Date alertDate;
 	
 	@Id
 	private String insolvent;
+	
+	@Column(name="alertdate")
+	private LocalDate alertDate;
+	
+	@Column(name="alerttime")
+	private Time alertTime;
 
 	private int rejectedOrder;
 
 	public InsolventCustomer() {
 	}
 
-	public Date getAlertDate() {
+	public LocalDate getAlertDate() {
 		return this.alertDate;
 	}
-
-	public void setAlertDate(Date alertDate) {
-		this.alertDate = alertDate;
+	
+	public Time getAlertTime() {
+		return this.alertTime;
 	}
-
+	
 	public String getInsolvent() {
 		return this.insolvent;
 	}
 
-	public void setInsolvent(String insolvent) {
-		this.insolvent = insolvent;
-	}
-
 	public int getRejectedOrder() {
 		return this.rejectedOrder;
-	}
-
-	public void setRejectedOrder(int rejectedOrder) {
-		this.rejectedOrder = rejectedOrder;
 	}
 
 }
