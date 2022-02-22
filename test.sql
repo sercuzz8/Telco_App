@@ -1,4 +1,4 @@
-	INSERT INTO SERVICE(id, servicetype) VALUES (1, 'fixed_phone');
+INSERT INTO SERVICE(id, servicetype) VALUES (1, 'fixed_phone');
 INSERT INTO SERVICE(id, servicetype, minnumber, smsnumber, minfee, smsfee) VALUES (2, 'mobile_phone', 100, 50, 0.5, 0.2);
 INSERT INTO SERVICE(id, servicetype, gbnumber, gbfee) VALUES (3, 'fixed_internet', 50, 0.7);
 INSERT INTO SERVICE(id, servicetype, gbnumber, gbfee) VALUES (4, 'mobile_internet', 150, 0.2);

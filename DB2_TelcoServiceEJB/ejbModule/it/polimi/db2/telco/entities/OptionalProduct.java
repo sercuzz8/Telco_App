@@ -9,7 +9,7 @@ import javax.persistence.*;
 @NamedQuery(name="OptionalProduct.findAll", query="SELECT o FROM OptionalProduct o")
 public class OptionalProduct {
 	
-	@Id @GeneratedValue(strategy=GenerationType.AUTO)
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	
 	private String name;
@@ -19,8 +19,7 @@ public class OptionalProduct {
 	
 	public OptionalProduct() {}
 	
-	public OptionalProduct(int id, String name, float monthlyFee) {
-		this.id = id;
+	public OptionalProduct(String name, float monthlyFee) {
 		this.name = name;
 		this.monthlyFee = monthlyFee;
 	}

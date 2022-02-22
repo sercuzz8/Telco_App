@@ -17,9 +17,7 @@ public class ServicePackageService {
 	public ServicePackageService() {}
 	
 	public ServicePackage createServicePackage(String name) {
-		Random rand = new Random();
-		int n = rand.nextInt(1000);
-		ServicePackage sPackage = new ServicePackage(n, name);
+		ServicePackage sPackage = new ServicePackage(name);
 		return sPackage;
 	}
 	

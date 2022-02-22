@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Table(name="SERVICEPACKAGE")
 @NamedQuery(name="ServicePackage.findAll", query="SELECT S FROM ServicePackage S")
 public class ServicePackage {
-	@Id@GeneratedValue(strategy=GenerationType.AUTO)
+	@Id@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	
 	private String name;
@@ -35,8 +35,7 @@ public class ServicePackage {
 	
 	public ServicePackage () {}
 	
-	public ServicePackage (int id, String name) {
-		this.id=id;
+	public ServicePackage (String name) {
 		this.name=name;
 		this.products=new ArrayList<OptionalProduct>();
 		this.services=new ArrayList<Service>();

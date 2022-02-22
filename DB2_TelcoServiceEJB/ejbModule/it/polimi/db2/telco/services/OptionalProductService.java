@@ -26,9 +26,7 @@ public class OptionalProductService {
 	}
 	
 	public void createProduct(String name, float monthlyFee) {
-		Random rand = new Random();
-		int n = rand.nextInt(1000);
-		OptionalProduct product=new OptionalProduct(n, name, monthlyFee);
+		OptionalProduct product=new OptionalProduct(name, monthlyFee);
 		em.persist(product);
 	}
 }
