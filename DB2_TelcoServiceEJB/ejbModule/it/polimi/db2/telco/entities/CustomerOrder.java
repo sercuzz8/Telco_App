@@ -10,7 +10,6 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="CUSTOMERORDER")
-@NamedQuery(name="CustomerOrder.findRejectedOrdersOfUser", query="SELECT o FROM CustomerOrder o WHERE o.user=?1 and o.rejected>0")
 public class CustomerOrder {
 	
 	@Id @GeneratedValue (strategy=GenerationType.AUTO)
